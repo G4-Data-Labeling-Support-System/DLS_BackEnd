@@ -2,6 +2,7 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,8 +30,10 @@ public class ActivityLog {
     @GeneratedValue(strategy = GenerationType.UUID)
     String logId;
 
+    @Column(nullable = false)
     String action;
 
+    @Column(nullable = false)
     LocalDate timestamp;
 
     @PrePersist
@@ -38,7 +41,8 @@ public class ActivityLog {
         this.timestamp = LocalDate.now();
     }
 
+    // Many Activity_Logs belongs to One User
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 }

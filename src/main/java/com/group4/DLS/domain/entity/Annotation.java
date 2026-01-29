@@ -7,6 +7,7 @@ import java.util.List;
 import com.group4.DLS.domain.entity.enums.AnnotationStatus;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -37,6 +38,7 @@ public class Annotation {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String annotationId;
 
+    @Column(nullable = false, unique = true)
     int version;
 
     @Enumerated(EnumType.STRING)
@@ -65,7 +67,8 @@ public class Annotation {
     @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<AnnotationObject> annotationObjects = new ArrayList<>();
 
+    // Many Annotation belongs to One Task
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taskId")
+    @JoinColumn(name = "taskId", nullable = false)
     private Task task;
 }

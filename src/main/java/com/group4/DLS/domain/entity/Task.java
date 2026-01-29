@@ -67,11 +67,13 @@ public class Task {
     @OneToOne(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Annotation> annotations = new ArrayList<>();
 
+    // Many Task belongs to One User
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    // Many Task belongs to One Assignment
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignmentId")
+    @JoinColumn(name = "assignmentId", nullable = false)
     private Assignment assignment;
 }

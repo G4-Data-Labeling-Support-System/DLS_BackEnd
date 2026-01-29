@@ -2,6 +2,7 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,10 +31,13 @@ public class Dataitem {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String dataitemId;
 
+    @Column(nullable = false, unique = true)
     String dataitemName;
 
+    @Column(nullable = true)
     String dataType;
 
+    @Column(nullable = false)
     String uri;
 
     LocalDate createdAt;
@@ -56,11 +60,13 @@ public class Dataitem {
     @JoinColumn(name = "taskId", unique = true)  // Foreign Key with unique constraint
     private Task task;
 
+    // Many Dataitem belongs to One Project
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId")
+    @JoinColumn(name = "projectId", nullable = false)
     private Project project;
 
+    // Many Dataitem belongs to One Dataset
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "datasetId")
+    @JoinColumn(name = "datasetId", nullable = false)
     private Dataset dataset;
 }

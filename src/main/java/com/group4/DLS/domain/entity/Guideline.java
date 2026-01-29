@@ -2,6 +2,7 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,8 +30,10 @@ public class Guideline {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String guideId;
 
+    @Column(nullable = false)
     String content;
 
+    @Column(nullable = false, unique = true)
     int version;
 
     LocalDate createdAt;
@@ -48,7 +51,8 @@ public class Guideline {
         this.updatedAt = LocalDate.now();
     }
 
+    // Many Guideline belongs to One Project
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId")
+    @JoinColumn(name = "projectId", nullable = false)
     private Project project;
 }

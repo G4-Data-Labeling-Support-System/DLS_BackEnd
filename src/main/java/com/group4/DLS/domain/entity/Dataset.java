@@ -7,6 +7,7 @@ import java.util.List;
 import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -37,8 +38,10 @@ public class Dataset {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String datasetId;
 
+    @Column(nullable = false)
     String datasetName;
 
+    @Column(nullable = false, unique = true)
     int version;
 
     @Enumerated(EnumType.STRING)
@@ -63,11 +66,13 @@ public class Dataset {
     @OneToMany(mappedBy = "dataset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Dataitem> dataitems = new ArrayList<>();
 
+    // Many Dataset belongs to One Prject
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId")
+    @JoinColumn(name = "projectId", nullable = false)
     private Project project;
 
+    // Many Dataset belongs to One Assignemnt
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignmentId")
+    @JoinColumn(name = "assignmentId", nullable = false)
     private Assignment assignment;
 }

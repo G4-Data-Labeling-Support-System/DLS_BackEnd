@@ -37,8 +37,6 @@ public class Assignment {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String assignmentId;
 
-    String exportId;
-
     @Enumerated(EnumType.STRING)
     AssignmentStatus assignmentStatus;
 
@@ -65,16 +63,13 @@ public class Assignment {
     @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 
+    // Many Assignment belongs to One Project
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId")
+    @JoinColumn(name = "projectId" , nullable = false)
     private Project project;
 
+    // Many Assignment belongs to One Dataset
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "datasetId")
+    @JoinColumn(name = "datasetId", nullable = false)
     private Dataset dataset;
-
-    // TODO: Need to fix
-    // @ManyToOne(fetch = FetchType.LAZY)
-    // @JoinColumn(name = "exportId")
-    // private Ex project;
 }

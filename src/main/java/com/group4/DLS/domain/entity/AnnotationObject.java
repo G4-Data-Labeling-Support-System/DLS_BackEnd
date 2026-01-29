@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +34,7 @@ public class AnnotationObject {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String annotationObjectId;
 
+    @Column(nullable = false)
     String geometry;
 
     LocalDate createdAt;
@@ -54,6 +56,7 @@ public class AnnotationObject {
     @OneToOne(mappedBy = "annotationObject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Label> labels = new ArrayList<>();
 
+    // Many Annotation_Object belongs to One Annotation
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "annotationId", nullable = false)
     private Annotation annotation;

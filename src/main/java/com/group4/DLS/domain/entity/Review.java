@@ -53,11 +53,13 @@ public class Review {
         this.updatedAt = LocalDate.now();
     }
 
+    // Many Review belongs to One User
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId")
+    @JoinColumn(name = "userId", nullable = false)
     private User user;
 
+    // Many Review belongs to One Annotation
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "annotationId")
+    @JoinColumn(name = "annotationId", nullable = false)
     private Annotation annotation;
 }

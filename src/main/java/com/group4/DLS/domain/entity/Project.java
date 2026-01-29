@@ -9,6 +9,7 @@ import java.util.List;
 import com.group4.DLS.domain.entity.enums.ProjectStatus;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -36,6 +37,7 @@ public class Project {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String projectId;
 
+    @Column(nullable = false, unique = true)
     String projectName;
 
     String description;

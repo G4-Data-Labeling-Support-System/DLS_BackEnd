@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,10 +34,12 @@ public class LabelSchema {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String schemaId;
 
+    @Column(nullable = false)
     String schemaName;
 
     String description;
 
+    @Column(nullable = false, unique = true)
     int version;
 
     LocalDate createdAt;
@@ -58,6 +61,7 @@ public class LabelSchema {
     @OneToMany(mappedBy = "labelSchema", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Label> labels = new ArrayList<>();
 
+    // Many LabelSchema belongs to One Project
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectId")
     private Project project;

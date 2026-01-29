@@ -2,6 +2,7 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,6 +30,7 @@ public class Label {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String labelId;
 
+    @Column(nullable = false, unique = true)
     String labelName;
 
     String color;
@@ -50,10 +52,12 @@ public class Label {
         this.updatedAt = LocalDate.now();
     }
 
+    // Many Labels belongs to One Label_Schema
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schemaId")
+    @JoinColumn(name = "schemaId", nullable = false)
     private LabelSchema labelSchema;
 
+    // Many Labels belongs to One Annotation_Object
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "annotationObjectId")
     private AnnotationObject annotationObject;

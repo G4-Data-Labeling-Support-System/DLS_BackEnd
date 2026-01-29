@@ -59,10 +59,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     UserStatus status;
 
-    @Column(nullable = false, updatable = false)
     LocalDate createdAt;
 
-    @Column(nullable = false, updatable = false)
     LocalDate updatedAt;
 
     @PrePersist
