@@ -28,7 +28,7 @@ public class UserCreationRequest {
     @Email(message = "INVALID_EMAIL_FORMAT")
     String email;
     
-    @Size(min = 8, message = "INVALID_PASSWORD")
+    @Size(min = 8, message = "INVALID_PASSWORD_LENGTH")
     String password;
 
     @Builder.Default
