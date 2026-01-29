@@ -1,5 +1,6 @@
 package com.group4.DLS.domain.dto.request;
 
+import com.group4.DLS.domain.entity.enums.UserRole;
 import com.group4.DLS.domain.entity.enums.UserStatus;
 
 import jakarta.validation.constraints.Email;
@@ -24,13 +25,17 @@ public class UserCreationRequest {
     @Size(min = 3, max = 100, message = "INVALID_FULLNAME_LENGTH")
     String fullName;
 
-    @Size(min = 8, message = "INVALID_PASSWORD")
-    String password;
-
     @Email(message = "INVALID_EMAIL_FORMAT")
     String email;
     
+    @Size(min = 8, message = "INVALID_PASSWORD")
+    String password;
+
+    @Builder.Default
+    UserRole userRole = UserRole.ANNOTATOR;
+    
     String coverImage;
 
-    UserStatus status;
+    @Builder.Default
+    UserStatus status = UserStatus.ACTIVE;
 }

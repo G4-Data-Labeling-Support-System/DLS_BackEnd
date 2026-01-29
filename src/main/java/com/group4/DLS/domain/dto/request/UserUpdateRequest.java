@@ -1,5 +1,6 @@
 package com.group4.DLS.domain.dto.request;
 
+import com.group4.DLS.domain.entity.enums.UserRole;
 import com.group4.DLS.domain.entity.enums.UserStatus;
 
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class UserUpdateRequest {
     String username;
     String fullName;
     String email;
+    UserRole userRole;
     String coverImage;
     UserStatus status;
 }

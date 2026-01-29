@@ -16,8 +16,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -81,14 +81,24 @@ public class UserController {
         return response;
     }
 
-    @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteUser(@PathVariable String id) {
-        ApiResponse<Void> response = new ApiResponse<>();
-        userService.deleteUser(id);
+    @PatchMapping("/{id}/deactivate")
+    public ApiResponse<UserResponse> deleteUser(@PathVariable String id) {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
 
         response.setCode(200);
-        response.setMessage("User deleted successfully");
-        response.setData(null);
+        response.setMessage("Deactivate user successfully");
+        response.setData(userService.deactivateUser(id));
+
+        return response;
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ApiResponse<UserResponse> activateUser(@PathVariable String id) {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+
+        response.setCode(200);
+        response.setMessage("Activate user successfully");
+        response.setData(userService.avtivateUser(id));
 
         return response;
     }

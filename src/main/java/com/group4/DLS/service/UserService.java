@@ -10,6 +10,7 @@ import com.group4.DLS.domain.dto.request.UserCreationRequest;
 import com.group4.DLS.domain.dto.request.UserUpdateRequest;
 import com.group4.DLS.domain.dto.response.UserResponse;
 import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.entity.enums.UserStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mapper.UserMapper;
@@ -62,14 +63,23 @@ public class UserService {
         return null;
     }
 
-    // Delete user by ID
-    public void deleteUser(String id) {
+    // Deactivate user by ID
+    public UserResponse deactivateUser(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         
-        if (user != null) {
-            userRepository.delete(user);
-            return;
-        }
-    }       
+        user.setStatus(UserStatus.INACTIVE);
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }    
+    
+    // Avtivate user by ID
+    public UserResponse avtivateUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        
+        user.setStatus(UserStatus.ACTIVE);
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
 }

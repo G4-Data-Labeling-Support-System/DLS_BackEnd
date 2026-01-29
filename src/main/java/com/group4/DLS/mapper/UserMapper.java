@@ -17,10 +17,19 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "activityLogs", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
     User toUser(UserCreationRequest request);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @Mapping(target = "activityLogs", ignore = true)
+    @Mapping(target = "tasks", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserFromRequest(UserUpdateRequest request, @MappingTarget User user);
 }
