@@ -6,8 +6,8 @@ spring:
     name: DLS
 
   datasource:
-    # url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS"
-    url: "jdbc:mysql://localhost:3306/DLS"
+    url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS"
+    # url: "jdbc:mysql://localhost:3306/DLS"
     username: root
     password: TMNNT012928637160822863716
 
