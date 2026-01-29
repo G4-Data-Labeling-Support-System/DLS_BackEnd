@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.group4.DLS.domain.dto.request.UserCreationRequest;
+import com.group4.DLS.domain.dto.request.UserPasswordChangeRequest;
 import com.group4.DLS.domain.dto.request.UserUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.UserResponse;
@@ -77,6 +78,17 @@ public class UserController {
         response.setCode(200);
         response.setData(userService.updateUser(id, request));
         response.setMessage("User updated successfully");
+
+        return response;
+    }
+
+    @PutMapping("/update/password/{id}")
+    public ApiResponse<UserResponse> updateUserPassword(@PathVariable String id, @RequestBody @Valid UserPasswordChangeRequest request) {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+
+        response.setCode(200);
+        response.setData(userService.updateUserPassword(id, request));
+        response.setMessage("Password change successfully");
 
         return response;
     }
