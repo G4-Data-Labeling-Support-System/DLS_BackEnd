@@ -24,7 +24,7 @@ COPY --from=build /app/target/*.jar dls.jar
 
 USER spring
 
-EXPOSE 8080
+EXPOSE 8081
 
 # JVM options optimized for containers
 ENTRYPOINT ["java", \

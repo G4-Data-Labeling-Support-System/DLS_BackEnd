@@ -1,5 +1,11 @@
 server:
-  port: 8080
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
 
 spring:
   application:
@@ -10,6 +16,7 @@ spring:
     # url: "jdbc:mysql://localhost:3306/DLS"
     username: root
     password: TMNNT012928637160822863716
+
 
   jpa:
     hibernate:
