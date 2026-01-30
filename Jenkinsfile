@@ -3,6 +3,9 @@ pipeline {
 
     environment {
 
+        MAVEN_HOME = tool 'maven'
+        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
+
         // Project info
         APP_NAME = 'DLS-BE'
         RELEASE = '1.1'
