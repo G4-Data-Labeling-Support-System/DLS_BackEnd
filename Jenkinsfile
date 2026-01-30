@@ -3,11 +3,12 @@ pipeline {
 
     environment {
 
+        // Maven info
         MAVEN_HOME = tool 'maven'
         PATH = "${MAVEN_HOME}/bin:${env.PATH}"
 
         // Project info
-        APP_NAME = 'DLS-BE'
+        APP_NAME = 'data-labeling-be'
         RELEASE = '1.1'
         GITHUB_URL = 'https://github.com/G4-Data-Labeling-Support-System/DLS_BackEnd.git'
         GIT_MANIFEST_FILE = "https://github.com/G4-Data-Labeling-Support-System/Infrastructure.git"
