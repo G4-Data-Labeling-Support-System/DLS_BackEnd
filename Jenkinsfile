@@ -170,15 +170,22 @@ pipeline {
                         docker run -d --name ${containerName} \
                         -p ${testPort}:${testPort} ${env.IMAGE_TAGGED}
 
-                        echo "⏳ Waiting for Spring Boot..."
-                        for i in {1..30}; do
-                            if curl -fs http://localhost:${testPort}/actuator/health; then
-                            echo "✅ App is UP"
+                        echo "⏳ Waiting for Spring Boot to be healthy..."
+
+                        ATTEMPTS=40
+                        SLEEP=3
+
+                        for i in \$(seq 1 \$ATTEMPTS); do
+                        if curl -fs http://localhost:${testPort}/actuator/health > /dev/null; then
+                            echo "App is UP (after \$((i*SLEEP))s)"
                             break
-                            fi
-                            sleep 3
+                        fi
+
+                        echo "⏱ Attempt \$i/\$ATTEMPTS – not ready yet"
+                        sleep \$SLEEP
                         done
 
+                        echo "🔍 Final health check"
                         curl -f http://localhost:${testPort}/actuator/health
 
                         docker stop ${containerName}
