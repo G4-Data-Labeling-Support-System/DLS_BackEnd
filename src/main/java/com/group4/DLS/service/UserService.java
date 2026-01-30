@@ -1,0 +1,117 @@
+package com.group4.DLS.service;
+
+import java.util.List;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.group4.DLS.domain.dto.request.UserCreationRequest;
+import com.group4.DLS.domain.dto.request.UserPasswordChangeRequest;
+import com.group4.DLS.domain.dto.request.UserUpdateRequest;
+import com.group4.DLS.domain.dto.response.UserResponse;
+import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.entity.enums.UserStatus;
+import com.group4.DLS.exceptions.AppException;
+import com.group4.DLS.exceptions.enums.ErrorCode;
+import com.group4.DLS.mapper.UserMapper;
+import com.group4.DLS.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+public class UserService {
+    UserRepository userRepository;
+    UserMapper userMapper;
+    PasswordEncoder passwordEncoder;
+
+    // Get all users
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    // Get user by ID
+    public UserResponse getUserById(String id) {
+        return userMapper.toUserResponse(userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
+    }
+
+    // Create user with email uniqueness check
+    public UserResponse createUser(UserCreationRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new AppException(ErrorCode.USER_EXISTS);
+        }
+
+        User user = userMapper.toUser(request);
+        PasswordEncoder encoder = new BCryptPasswordEncoder(10);
+        user.setPassword(encoder.encode(request.getPassword()));
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    // Update user detailes
+    public UserResponse updateUser(String id, UserUpdateRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user != null && user.getStatus().equals(UserStatus.ACTIVE)) {
+            userMapper.updateUserFromRequest(request, user);
+            return userMapper.toUserResponse(userRepository.save(user));
+        }
+
+        return null;
+    }
+
+    // Update user password
+    public UserResponse updateUserPassword(String id, UserPasswordChangeRequest request) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        // Check if user active or not
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
+        }
+
+        // Check old password
+        if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_OLD_PASSWORD);
+        }
+
+        // New password must not equals the old one
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.NEW_PASSWORD_SAME_AS_OLD);
+        }
+
+        // New password must match the confirm one
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_CONFIRM_NOT_MATCH);
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    // Deactivate user by ID
+    public UserResponse deactivateUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        
+        user.setStatus(UserStatus.INACTIVE);
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }    
+    
+    // Avtivate user by ID
+    public UserResponse avtivateUser(String id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+        
+        user.setStatus(UserStatus.ACTIVE);
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+}
