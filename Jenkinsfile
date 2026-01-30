@@ -218,87 +218,118 @@ pipeline {
             }
         }
 
-        // stage('Push to registry') {
-        //     steps {
-        //         echo "#====================== Push Docker Image to DockerHub Registry ======================#"
-        //         script {
-        //             withDockerRegistry(credentialsId: 'Docker_Login', toolName: 'Docker', url: 'https://index.docker.io/v1/') {
-        //                 def image = docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}")
+        stage('Push to registry') {
+            steps {
+                echo "#====================== Push Docker Image to DockerHub Registry ======================#"
+                script {
+                    withDockerRegistry(credentialsId: 'Docker_Login', toolName: 'Docker', url: 'https://index.docker.io/v1/') {
+                        def image = docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}")
 
-        //                 if (env.BRANCH_NAME == 'main') {
-        //                     echo "Pushing production images..."
-        //                     image.push('latest')
-        //                     image.push("v${DOCKER_IMAGE_VERSION}")
-        //                 } else {
-        //                     echo "Pushing development images..."
-        //                     image.push("${DOCKER_IMAGE_VERSION}-beta")
-        //                     image.push('dev-latest')
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                        if (env.BRANCH_NAME == 'main') {
+                            echo "Pushing production images..."
+                            image.push('latest')
+                            image.push("v${DOCKER_IMAGE_VERSION}")
+                        } else {
+                            echo "Pushing development images..."
+                            image.push("${DOCKER_IMAGE_VERSION}-beta")
+                            image.push('dev-latest')
+                        }
+                    }
+                }
+            }
+        }
 
-        // stage("Checkout Manifest Repository"){
-        //     steps{
-        //         script {
-        //             echo "#====================== Checkout Manifest Repository ======================#"
-        //             // def currentBranch = env.BRANCH_NAME == 'main' ? 'prod' : 'dev'
+        stage('Checkout Manifest Repository') {
+            steps {
+                script {
+                    echo "#====================== Checkout Manifest Repository ======================#"
+                    
+                    sh """
+                        rm -rf infrastructure || true
+                        git clone -b ${MANIFEST_BRANCH} ${GIT_MANIFEST_REPO} infrastructure
+                    """
+                }
+            }
+        }
 
-        //             sh 'rm -rf infrastructure || true' // Clean up old dir if exists
-        //             sh "git clone -b ${currentBranch} ${GIT_MANIFEST_FILE} infrastructure"
-        //         }
-        //     }
-        // }
+        stage('Update Manifest Files') {
+            steps {
+                echo "#====================== Update Kubernetes Manifest Files ======================#"
+                dir('infrastructure') {
+                    script {
+                        def deploymentPath = env.BRANCH_NAME == 'main' ? 
+                            'k8s-gitops/overlays/prod/patch-deployment.yaml' : 
+                            'k8s-gitops/overlays/dev/patch-deployment.yaml'
+                        
+                        sh """
+                            echo "Current deployment file:"
+                            cat ${deploymentPath}
+                            
+                            echo ""
+                            echo "Updating image to: ${env.IMAGE_TAGGED}"
+                            
+                            # Update the image tag using yq (more reliable than sed for YAML)
+                            # If yq is not available, fall back to sed
+                            if command -v yq &> /dev/null; then
+                                yq eval '.spec.template.spec.containers[0].image = "${env.IMAGE_TAGGED}"' -i ${deploymentPath}
+                            else
+                                # Using sed with more precise matching
+                                sed -i 's|image: fleeforezz/data-labeling-be:.*|image: ${env.IMAGE_TAGGED}|g' ${deploymentPath}
+                            fi
+                            
+                            echo ""
+                            echo "Updated deployment file:"
+                            cat ${deploymentPath}
+                        """
+                    }
+                }
+            }
+        }
 
-        // stage("Update Manifest Files") {
-        //     steps {
-        //         echo "#====================== Update Kubernetes Manifest Files ======================#"
-        //         dir('manifest') {
-        //             script {
-        //                 sh """
-        //                     echo "Updating ${APP_NAME} image to ${env.IMAGE_TAGGED} in manifest.yml"
-        //                     sed -i 's|image: .*${APP_NAME}:.*|image: ${env.IMAGE_TAGGED}|g' manifest.yml
-        //                     echo "Updated manifest.yml:"
-        //                     cat manifest.yml | grep -A 2 -B 2 "image:"
-        //                 """
-        //             }
-        //         }
-        //     }
-        // }
-
-        // stage("Commit and Push Manifest Changes") {
-        //     steps {
-        //         echo "#====================== Commit and Push Manifest Changes ======================#"
-        //         dir('manifest') {
-        //             script {
-        //                 sshagent(['guests-ssh']) {
-        //                     // def currentBranch = env.BRANCH_NAME == 'master' ? 'prod' : 'dev'
-
-        //                     sh """
-        //                     # Add Github to known hosts
-        //                     mkdir -p ~/.ssh
-        //                     ssh-keyscan github.com >> ~/.ssh/known_hosts
-        //                     # Configure git
-        //                     git config --global user.email "fleeforezz@gmail.com"
-        //                     git config --global user.name "fleeforezz"
+        stage('Commit and Push Manifest Changes') {
+            steps {
+                echo "#====================== Commit and Push Manifest Changes ======================#"
+                dir('infrastructure') {
+                    script {
+                        withCredentials([sshUserPrivateKey(credentialsId: 'guests-ssh', keyFileVariable: 'SSH_KEY')]) {
+                            sh """
+                                # Setup SSH
+                                mkdir -p ~/.ssh
+                                ssh-keyscan github.com >> ~/.ssh/known_hosts
                                 
-        //                     # Add changes
-        //                     git add .
+                                # Configure Git
+                                git config user.email "fleeforezz@gmail.com"
+                                git config user.name "fleeforezz"
                                 
-        //                     # Commit with descriptive message
-        //                     git commit -m "🚀 Update ${APP_NAME} to ${env.IMAGE_TAGGED} [skip ci]" || echo "No changes to commit"
+                                # Set SSH URL for push
+                                git remote set-url origin git@github.com:G4-Data-Labeling-Support-System/Infrastructure.git
                                 
-        //                     # Use SSH
-        //                     git remote set-url origin git@github.com:NguyenThinhNe/BE_Manifest.git
-        //                     # Push changes
-        //                     git push origin ${currentBranch}
-        //                     """
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                                # Setup SSH agent
+                                eval \$(ssh-agent -s)
+                                ssh-add ${SSH_KEY}
+                                
+                                # Check for changes
+                                git status
+                                
+                                # Add and commit changes
+                                git add .
+                                
+                                # Commit with skip ci flag to avoid triggering another build
+                                git commit -m "🚀 [${ENVIRONMENT}] Update ${APP_NAME} to ${env.IMAGE_TAG_SHORT} - Build #${env.BUILD_NUMBER} [skip ci]" || {
+                                    echo "No changes to commit"
+                                    exit 0
+                                }
+                                
+                                # Push changes
+                                git push origin ${MANIFEST_BRANCH}
+                                
+                                echo "✅ Successfully pushed manifest updates"
+                            """
+                        }
+                    }
+                }
+            }
+        }
     }
 
     post {
