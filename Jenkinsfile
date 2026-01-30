@@ -4,14 +4,14 @@ pipeline {
     environment {
 
         // Project info
-        APP_NAME = 'DLS-be'
-        RELEASE = '1'
+        APP_NAME = 'DLS-BE'
+        RELEASE = '1.1'
         GITHUB_URL = 'https://github.com/G4-Data-Labeling-Support-System/DLS_BackEnd.git'
         GIT_MANIFEST_FILE = "https://github.com/G4-Data-Labeling-Support-System/Infrastructure.git"
 
         // Sonar Scanner info
-        // SCANNER_HOME = tool 'sonarqube-scanner'
-        // SONAR_HOST_URL = 'https://sonarqube.hikarimoon.pro'
+        SCANNER_HOME = tool 'sonarqube-scanner'
+        SONAR_HOST_URL = 'https://sonarqube.hikarimoon.pro'
 
         // Docker info
         DOCKER_USER = 'fleeforezz'
@@ -57,19 +57,19 @@ pipeline {
             }
         }
 
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         withSonarQubeEnv('SonarQube') {
-        //             echo "#====================== Sonar Scan for (${env.BRANCH_NAME}) ======================#"
-        //             sh """
-        //                 $SCANNER_HOME/bin/sonar-scanner \
-        //                 -Dsonar.projectKey=${APP_NAME}-${env.BRANCH_NAME} \
-        //                 -Dsonar.projectName="${APP_NAME} (${ENVIRONMENT})" \
-        //                 -Dsonar.host.url=${SONAR_HOST_URL}
-        //             """
-        //         }
-        //     }
-        // }
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    echo "#====================== Sonar Scan for (${env.BRANCH_NAME}) ======================#"
+                    sh """
+                        $SCANNER_HOME/bin/sonar-scanner \
+                        -Dsonar.projectKey=${APP_NAME}-${env.BRANCH_NAME} \
+                        -Dsonar.projectName="${APP_NAME} (${ENVIRONMENT})" \
+                        -Dsonar.host.url=${SONAR_HOST_URL}
+                    """
+                }
+            }
+        }
 
         // stage('Quality Gate') {
         //     steps {
@@ -173,7 +173,7 @@ pipeline {
             steps {
                 echo "#====================== Trivy Docker Image Scan ======================#"
                 script {
-                    def securityLevel = env.BRANCH_NAME == 'master' ? 'HIGH,CRITICAL' : 'CRITICAL'
+                    def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
 
                     sh "trivy image --no-progress --exit-code 1 --format json --severity UNKNOWN,HIGH,CRITICAL ${env.IMAGE_TAGGED} > trivyimage.txt || true"
 
@@ -192,87 +192,87 @@ pipeline {
             }
         }
 
-        stage('Push to registry') {
-            steps {
-                echo "#====================== Push Docker Image to DockerHub Registry ======================#"
-                script {
-                    withDockerRegistry(credentialsId: 'Docker_Login', toolName: 'Docker', url: 'https://index.docker.io/v1/') {
-                        def image = docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}")
+        // stage('Push to registry') {
+        //     steps {
+        //         echo "#====================== Push Docker Image to DockerHub Registry ======================#"
+        //         script {
+        //             withDockerRegistry(credentialsId: 'Docker_Login', toolName: 'Docker', url: 'https://index.docker.io/v1/') {
+        //                 def image = docker.image("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}")
 
-                        if (env.BRANCH_NAME == 'main') {
-                            echo "Pushing production images..."
-                            image.push('latest')
-                            image.push("v${DOCKER_IMAGE_VERSION}")
-                        } else {
-                            echo "Pushing development images..."
-                            image.push("${DOCKER_IMAGE_VERSION}-beta")
-                            image.push('dev-latest')
-                        }
-                    }
-                }
-            }
-        }
+        //                 if (env.BRANCH_NAME == 'main') {
+        //                     echo "Pushing production images..."
+        //                     image.push('latest')
+        //                     image.push("v${DOCKER_IMAGE_VERSION}")
+        //                 } else {
+        //                     echo "Pushing development images..."
+        //                     image.push("${DOCKER_IMAGE_VERSION}-beta")
+        //                     image.push('dev-latest')
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage("Checkout Manifest Repository"){
-            steps{
-                script {
-                    echo "#====================== Checkout Manifest Repository ======================#"
-                    // def currentBranch = env.BRANCH_NAME == 'main' ? 'prod' : 'dev'
+        // stage("Checkout Manifest Repository"){
+        //     steps{
+        //         script {
+        //             echo "#====================== Checkout Manifest Repository ======================#"
+        //             // def currentBranch = env.BRANCH_NAME == 'main' ? 'prod' : 'dev'
 
-                    sh 'rm -rf infrastructure || true' // Clean up old dir if exists
-                    sh "git clone -b ${currentBranch} ${GIT_MANIFEST_FILE} infrastructure"
-                }
-            }
-        }
+        //             sh 'rm -rf infrastructure || true' // Clean up old dir if exists
+        //             sh "git clone -b ${currentBranch} ${GIT_MANIFEST_FILE} infrastructure"
+        //         }
+        //     }
+        // }
 
-        stage("Update Manifest Files") {
-            steps {
-                echo "#====================== Update Kubernetes Manifest Files ======================#"
-                dir('manifest') {
-                    script {
-                        sh """
-                            echo "Updating ${APP_NAME} image to ${env.IMAGE_TAGGED} in manifest.yml"
-                            sed -i 's|image: .*${APP_NAME}:.*|image: ${env.IMAGE_TAGGED}|g' manifest.yml
-                            echo "Updated manifest.yml:"
-                            cat manifest.yml | grep -A 2 -B 2 "image:"
-                        """
-                    }
-                }
-            }
-        }
+        // stage("Update Manifest Files") {
+        //     steps {
+        //         echo "#====================== Update Kubernetes Manifest Files ======================#"
+        //         dir('manifest') {
+        //             script {
+        //                 sh """
+        //                     echo "Updating ${APP_NAME} image to ${env.IMAGE_TAGGED} in manifest.yml"
+        //                     sed -i 's|image: .*${APP_NAME}:.*|image: ${env.IMAGE_TAGGED}|g' manifest.yml
+        //                     echo "Updated manifest.yml:"
+        //                     cat manifest.yml | grep -A 2 -B 2 "image:"
+        //                 """
+        //             }
+        //         }
+        //     }
+        // }
 
-        stage("Commit and Push Manifest Changes") {
-            steps {
-                echo "#====================== Commit and Push Manifest Changes ======================#"
-                dir('manifest') {
-                    script {
-                        sshagent(['guests-ssh']) {
-                            // def currentBranch = env.BRANCH_NAME == 'master' ? 'prod' : 'dev'
+        // stage("Commit and Push Manifest Changes") {
+        //     steps {
+        //         echo "#====================== Commit and Push Manifest Changes ======================#"
+        //         dir('manifest') {
+        //             script {
+        //                 sshagent(['guests-ssh']) {
+        //                     // def currentBranch = env.BRANCH_NAME == 'master' ? 'prod' : 'dev'
 
-                            sh """
-                            # Add Github to known hosts
-                            mkdir -p ~/.ssh
-                            ssh-keyscan github.com >> ~/.ssh/known_hosts
-                            # Configure git
-                            git config --global user.email "fleeforezz@gmail.com"
-                            git config --global user.name "fleeforezz"
+        //                     sh """
+        //                     # Add Github to known hosts
+        //                     mkdir -p ~/.ssh
+        //                     ssh-keyscan github.com >> ~/.ssh/known_hosts
+        //                     # Configure git
+        //                     git config --global user.email "fleeforezz@gmail.com"
+        //                     git config --global user.name "fleeforezz"
                                 
-                            # Add changes
-                            git add .
+        //                     # Add changes
+        //                     git add .
                                 
-                            # Commit with descriptive message
-                            git commit -m "🚀 Update ${APP_NAME} to ${env.IMAGE_TAGGED} [skip ci]" || echo "No changes to commit"
+        //                     # Commit with descriptive message
+        //                     git commit -m "🚀 Update ${APP_NAME} to ${env.IMAGE_TAGGED} [skip ci]" || echo "No changes to commit"
                                 
-                            # Use SSH
-                            git remote set-url origin git@github.com:NguyenThinhNe/BE_Manifest.git
-                            # Push changes
-                            git push origin ${currentBranch}
-                            """
-                        }
-                    }
-                }
-            }
-        }
+        //                     # Use SSH
+        //                     git remote set-url origin git@github.com:NguyenThinhNe/BE_Manifest.git
+        //                     # Push changes
+        //                     git push origin ${currentBranch}
+        //                     """
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     post {
