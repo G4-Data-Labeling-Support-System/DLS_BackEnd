@@ -7,7 +7,7 @@ pipeline {
         MAVEN_HOME = tool 'maven'
         PATH = "${MAVEN_HOME}/bin:${env.PATH}"
 
-        // Project info
+        // Project infof
         APP_NAME = 'data-labeling-be'
         RELEASE = '1.1'
         GITHUB_URL = 'https://github.com/G4-Data-Labeling-Support-System/DLS_BackEnd.git'
@@ -321,7 +321,7 @@ pipeline {
                                 }
                                 
                                 # Push changes
-                                git push origin ${MANIFEST_BRANCH}
+                                git push origin main
                                 
                                 echo "✅ Successfully pushed manifest updates"
                             """
