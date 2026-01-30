@@ -163,7 +163,7 @@ pipeline {
                 echo "#====================== Docker Test ======================#"
                 script {
                     def containerName = "test-${APP_NAME}-${env.BUILD_NUMBER}"
-                    def testPort = env.BRANCH_NAME == 'main' ? '8080' : '8080'
+                    def testPort = env.BRANCH_NAME == 'main' ? '8081' : '8081'
 
                     // Test docker in background
                     sh """
