@@ -11,7 +11,7 @@ pipeline {
         APP_NAME = 'data-labeling-be'
         RELEASE = '1.1'
         GITHUB_URL = 'https://github.com/G4-Data-Labeling-Support-System/DLS_BackEnd.git'
-        GIT_MANIFEST_FILE = "https://github.com/G4-Data-Labeling-Support-System/Infrastructure.git"
+        GIT_MANIFEST_REPO = "https://github.com/G4-Data-Labeling-Support-System/Infrastructure.git"
 
         // Sonar Scanner info
         SCANNER_HOME = tool 'sonarqube-scanner'
