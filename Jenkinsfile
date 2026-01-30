@@ -344,6 +344,8 @@ pipeline {
         cleanup {
             sh """
                 echo "🧹 Cleaning up Docker resources..."
+                docker stop test-${APP_NAME}-${env.BUILD_NUMBER} || true
+                docker rm test-${APP_NAME}-${env.BUILD_NUMBER} || true
                 docker rmi ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION} || true
                 docker rmi ${env.IMAGE_TAGGED} || true
                 docker system prune -f || true
