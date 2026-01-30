@@ -57,12 +57,21 @@ pipeline {
             }
         }
 
+        stage('Maven Build') {
+            steps {
+                echo "#====================== Maven Build ======================#"
+                sh '''
+                    mvn clean package -DskipTests
+                '''
+            }
+        }
+
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     echo "#====================== Sonar Scan for (${env.BRANCH_NAME}) ======================#"
                     sh """
-                        $SCANNER_HOME/bin/sonar-scanner \
+                        mvn sonar:sonar \
                         -Dsonar.projectKey=${APP_NAME}-${env.BRANCH_NAME} \
                         -Dsonar.projectName="${APP_NAME} (${ENVIRONMENT})" \
                         -Dsonar.host.url=${SONAR_HOST_URL}
