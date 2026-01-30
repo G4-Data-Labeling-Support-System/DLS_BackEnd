@@ -246,7 +246,7 @@ pipeline {
                     
                     sh """
                         rm -rf infrastructure || true
-                        git clone -b ${MANIFEST_BRANCH} ${GIT_MANIFEST_REPO} infrastructure
+                        git clone ${GIT_MANIFEST_REPO} infrastructure
                     """
                 }
             }
