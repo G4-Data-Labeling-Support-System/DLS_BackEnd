@@ -167,14 +167,20 @@ pipeline {
 
                     // Test docker in background
                     sh """
-                        # Start container in background
                         docker run -d --name ${containerName} \
                         -p ${testPort}:${testPort} ${env.IMAGE_TAGGED}
-                        # Wait for container to start
-                        sleep 10
-                        # Test if the container respone
-                        curl -f http://localhost:${testPort}/ || exit 1
-                        # Clean up
+
+                        echo "⏳ Waiting for Spring Boot..."
+                        for i in {1..30}; do
+                            if curl -fs http://localhost:${testPort}/actuator/health; then
+                            echo "✅ App is UP"
+                            break
+                            fi
+                            sleep 3
+                        done
+
+                        curl -f http://localhost:${testPort}/actuator/health
+
                         docker stop ${containerName}
                         docker rm ${containerName}
                     """
