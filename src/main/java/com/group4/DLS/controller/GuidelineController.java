@@ -33,7 +33,7 @@ public class GuidelineController {
             @RequestBody @Valid GuidelineCreateRequest request
     ) {
         ApiResponse<GuidelineResponse> response = new ApiResponse<>();
-        response.setCode(201);
+        response.setCode(200);
         response.setMessage("Guideline created successfully");
         response.setData(guidelineService.create(projectId, request));
         return response;
