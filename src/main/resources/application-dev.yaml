@@ -1,15 +1,22 @@
 server:
-  port: 8080
+  port: 8081
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
 
 spring:
   application:
     name: DLS
 
   datasource:
-    # url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS"
-    url: "jdbc:mysql://localhost:3306/DLS"
+    url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS"
+    # url: "jdbc:mysql://localhost:3306/DLS"
     username: root
     password: TMNNT012928637160822863716
+
 
   jpa:
     hibernate:
