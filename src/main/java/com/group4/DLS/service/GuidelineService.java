@@ -50,7 +50,9 @@ public class GuidelineService {
     }
 
     public List<GuidelineResponse> getAllByProject(String projectId) {
-        return guidelineRepository.findByProjectId(projectId);
+        return guidelineRepository.findAllByProjectId(projectId).stream()
+                .map(guidelineMapper::toResponse)
+                .toList();
     }
 
     public List<Guideline> getAllGuideline(){

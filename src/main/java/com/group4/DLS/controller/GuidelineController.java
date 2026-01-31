@@ -9,6 +9,7 @@ import com.group4.DLS.service.GuidelineService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,7 +61,8 @@ public class GuidelineController {
      * GET latest guideline
      * ======================
      */
-    @GetMapping("/project/{projectId}/latest")
+
+    @GetMapping("/{projectId}/latest")
     public ApiResponse<GuidelineResponse> getLatestGuideline(
             @PathVariable String projectId
     ) {

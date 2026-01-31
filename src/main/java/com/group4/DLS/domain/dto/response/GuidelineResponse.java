@@ -11,12 +11,10 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class GuidelineResponse {
-
-     String id;
-     String projectId;
+    String guideId;
+    String projectId;
     String content;
     int version;
     LocalDate createdAt;
     LocalDate updatedAt;
-
 }
