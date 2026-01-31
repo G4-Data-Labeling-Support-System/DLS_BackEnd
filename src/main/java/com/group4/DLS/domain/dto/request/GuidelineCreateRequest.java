@@ -11,4 +11,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class GuidelineCreateRequest {
     String content;
+<<<<<<< Updated upstream
 }
+=======
+}
+>>>>>>> Stashed changes

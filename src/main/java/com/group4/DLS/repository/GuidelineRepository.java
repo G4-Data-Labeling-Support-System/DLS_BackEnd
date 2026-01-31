@@ -1,3 +1,7 @@
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 package com.group4.DLS.repository;
 
 import com.group4.DLS.domain.entity.Guideline;
@@ -10,5 +14,9 @@ import java.util.UUID;
 public interface GuidelineRepository extends JpaRepository<Guideline, String> {
     Optional<Guideline> findTopByProjectIdOrderByVersionDesc(String projectId);
 
+<<<<<<< Updated upstream
     List<Guideline> findByProjectId(UUID projectId);
+=======
+    List<Guideline> findByProjectId(String projectId);
+>>>>>>> Stashed changes
 }
