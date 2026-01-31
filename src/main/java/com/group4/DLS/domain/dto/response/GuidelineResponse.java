@@ -4,8 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.UUID;
-
 @Builder
 @Getter
 @Setter
@@ -13,19 +11,12 @@ import java.util.UUID;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class GuidelineResponse {
-<<<<<<< Updated upstream
+
      String id;
      String projectId;
-=======
-    String id;
-    String projectId;
->>>>>>> Stashed changes
     String content;
     int version;
     LocalDate createdAt;
     LocalDate updatedAt;
-<<<<<<< Updated upstream
+
 }
-=======
-}
->>>>>>> Stashed changes

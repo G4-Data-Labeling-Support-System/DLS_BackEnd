@@ -53,11 +53,7 @@ public class GuidelineService {
         return mapToResponse(guideline);
     }
 
-<<<<<<< Updated upstream
-    public List<GuidelineResponse> getAllByProject(UUID projectId) {
-=======
     public List<GuidelineResponse> getAllByProject(String projectId) {
->>>>>>> Stashed changes
         return guidelineRepository.findByProjectId(projectId)
                 .stream()
                 .map(this::mapToResponse)
@@ -74,10 +70,6 @@ public class GuidelineService {
                 g.getUpdatedAt()
         );
     }
-<<<<<<< Updated upstream
+
 }
 
-
-=======
-}
->>>>>>> Stashed changes
