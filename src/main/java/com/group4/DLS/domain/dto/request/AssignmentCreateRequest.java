@@ -1,5 +1,6 @@
 package com.group4.DLS.domain.dto.request;
 
+import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,10 +11,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class GuidelineCreateRequest {
-    @Size(max = 50, message = "GUIDELINE_NAME_TOO_LONG")
-    String guideName;
-    @Size(max = 500, message = "GUIDELINE_CONTENT_TOO_LONG")
-    String content;
+public class AssignmentCreateRequest {
+    @Size(max = 100, message = "ASSIGNMENT_NAME_TOO_LONG")
+    String assignmentName;
 }
-
