@@ -9,8 +9,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class GuidelineCreateRequest {
+public class GuidelineUpdateRequest {
     String projectId;
     String content;
-}
 
+}
