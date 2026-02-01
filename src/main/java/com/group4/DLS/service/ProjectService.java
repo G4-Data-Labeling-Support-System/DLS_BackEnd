@@ -41,9 +41,9 @@ public class ProjectService {
             throw new AppException(ErrorCode.USER_NOT_ACTIVE);
         }
 
-        if (manager.getUserRole() != UserRole.MANAGER) {
-            throw new AppException(ErrorCode.FORBIDDEN);
-        }
+        // if (manager.getUserRole() != UserRole.MANAGER) {
+        //     throw new AppException(ErrorCode.FORBIDDEN);
+        // }
 
         Project project = projectMapper.toProject(request);
         project = projectRepository.save(project);

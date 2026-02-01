@@ -6,11 +6,14 @@ import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
 import com.group4.DLS.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@PreAuthorize("hasRole('MANAGER')")
 @RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
 public class ProjectController {
