@@ -39,6 +39,8 @@ public class Assignment {
 
     String assignmentName;
 
+    String descriptionAssignment;
+
     @Enumerated(EnumType.STRING)
     AssignmentStatus assignmentStatus;
 

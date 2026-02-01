@@ -14,4 +14,6 @@ import lombok.experimental.FieldDefaults;
 public class AssignmentCreateRequest {
     @Size(max = 100, message = "ASSIGNMENT_NAME_TOO_LONG")
     String assignmentName;
+    @Size(max = 500, message = "ASSIGNMENT_DESCRIPTION_TOO_LONG")
+    String descriptionAssignment;
 }
