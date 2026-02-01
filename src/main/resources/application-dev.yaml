@@ -7,6 +7,10 @@ management:
       exposure:
         include: health
 
+jwt:
+  secret: rP0Q3Q1hh2YEOjD9hrloTfhphgq2vK7SwT3ctd30YQw
+  expiration: 3600000 # 1 hour (ms)
+
 spring:
   application:
     name: DLS

@@ -1,21 +1,39 @@
 package com.group4.DLS.service;
 
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
-import com.group4.DLS.config.SecurityConfig;
 import com.group4.DLS.domain.dto.request.AuthRequest;
+import com.group4.DLS.domain.dto.response.AuthResponse;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.repository.UserRepository;
 
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AuthService {
     UserRepository userRepository;
     PasswordEncoder passwordEncoder;
+    JwtService jwtService;
 
-    public boolean authenticate(AuthRequest request) {
+    public AuthResponse authenticate(AuthRequest request) {
         var user = userRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        return passwordEncoder.matches(request.getPassword(), user.getPassword());
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.INVALID_CREDENTIALS);
+        }
+
+        String token = jwtService.generateToken(user.getEmail());
+
+        return AuthResponse.builder()
+                .authenticate(true)
+                .token(token)
+                .build();
     }
 }

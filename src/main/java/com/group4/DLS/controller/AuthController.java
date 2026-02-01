@@ -24,13 +24,8 @@ public class AuthController {
 
     @PostMapping("/login")
     public ApiResponse<AuthResponse> login(@RequestBody AuthRequest request) {
-        boolean isAuthenticated = authService.authenticate(request);
-
         return ApiResponse.<AuthResponse>builder()
-                .data(AuthResponse.builder()
-                        .isAuthenticated(isAuthenticated)
-                        .build())
+                .data(authService.authenticate(request))
                 .build();
     }
-    
 }
