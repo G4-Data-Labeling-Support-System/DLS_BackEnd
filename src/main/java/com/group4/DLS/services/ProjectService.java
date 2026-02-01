@@ -1,4 +1,4 @@
-package com.group4.DLS.service;
+package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
@@ -11,9 +11,9 @@ import com.group4.DLS.domain.entity.enums.UserRole;
 import com.group4.DLS.domain.entity.enums.UserStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
-import com.group4.DLS.mapper.ProjectMapper;
-import com.group4.DLS.repository.ProjectMemberRepository;
-import com.group4.DLS.repository.ProjectRepository;
+import com.group4.DLS.mappers.ProjectMapper;
+import com.group4.DLS.repositories.ProjectMemberRepository;
+import com.group4.DLS.repositories.ProjectRepository;
 import com.group4.DLS.security.CurrentUserProvider;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

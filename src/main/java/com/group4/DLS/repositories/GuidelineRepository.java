@@ -1,10 +1,11 @@
 
-package com.group4.DLS.repository;
+package com.group4.DLS.repositories;
 
-import com.group4.DLS.domain.entity.Guideline;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+
+import com.group4.DLS.domain.entity.Guideline;
 
 import java.util.List;
 import java.util.Optional;

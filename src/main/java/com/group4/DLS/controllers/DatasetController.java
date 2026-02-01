@@ -1,9 +1,10 @@
-package com.group4.DLS.controller;
+package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
-import com.group4.DLS.service.DatasetService;
+import com.group4.DLS.services.DatasetService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

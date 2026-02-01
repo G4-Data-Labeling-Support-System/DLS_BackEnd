@@ -1,9 +1,10 @@
-package com.group4.DLS.repository;
+package com.group4.DLS.repositories;
 
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.group4.DLS.controller;
+package com.group4.DLS.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,7 +9,7 @@ import com.group4.DLS.domain.dto.request.UserUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.UserResponse;
 import com.group4.DLS.domain.entity.User;
-import com.group4.DLS.service.UserService;
+import com.group4.DLS.services.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

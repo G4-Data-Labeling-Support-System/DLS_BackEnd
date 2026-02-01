@@ -1,4 +1,4 @@
-package com.group4.DLS.service;
+package com.group4.DLS.services;
 
 import java.util.List;
 
@@ -14,8 +14,8 @@ import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.entity.enums.UserStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
-import com.group4.DLS.mapper.UserMapper;
-import com.group4.DLS.repository.UserRepository;
+import com.group4.DLS.mappers.UserMapper;
+import com.group4.DLS.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

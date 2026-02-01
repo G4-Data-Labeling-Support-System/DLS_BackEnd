@@ -1,4 +1,4 @@
-package com.group4.DLS.config;
+package com.group4.DLS.middlewares;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

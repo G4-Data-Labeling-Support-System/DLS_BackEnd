@@ -1,10 +1,11 @@
-package com.group4.DLS.controller;
+package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
-import com.group4.DLS.service.ProjectService;
+import com.group4.DLS.services.ProjectService;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.prepost.PreAuthorize;

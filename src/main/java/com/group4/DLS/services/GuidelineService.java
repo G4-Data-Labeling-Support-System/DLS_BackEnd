@@ -1,12 +1,13 @@
-package com.group4.DLS.service;
+package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
 import com.group4.DLS.domain.entity.Project;
-import com.group4.DLS.mapper.GuidelineMapper;
-import com.group4.DLS.repository.GuidelineRepository;
-import com.group4.DLS.repository.ProjectRepository;
+import com.group4.DLS.mappers.GuidelineMapper;
+import com.group4.DLS.repositories.GuidelineRepository;
+import com.group4.DLS.repositories.ProjectRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;

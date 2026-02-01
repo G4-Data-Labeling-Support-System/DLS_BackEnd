@@ -1,10 +1,11 @@
 package com.group4.DLS.domain.dto.response;
 
-import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDate;
+
+import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 
 @Getter
 @Builder

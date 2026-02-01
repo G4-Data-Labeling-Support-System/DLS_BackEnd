@@ -1,8 +1,9 @@
-package com.group4.DLS.repository;
+package com.group4.DLS.repositories;
 
-import com.group4.DLS.domain.entity.Assignment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.group4.DLS.domain.entity.Assignment;
 
 @Repository
 public interface AssignmentRepository extends JpaRepository<Assignment, String> {

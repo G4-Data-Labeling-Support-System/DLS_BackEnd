@@ -1,4 +1,4 @@
-package com.group4.DLS.service;
+package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
@@ -10,9 +10,9 @@ import com.group4.DLS.domain.entity.enums.UserRole;
 import com.group4.DLS.domain.entity.enums.UserStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
-import com.group4.DLS.mapper.DatasetMapper;
-import com.group4.DLS.repository.DatasetRepository;
-import com.group4.DLS.repository.ProjectRepository;
+import com.group4.DLS.mappers.DatasetMapper;
+import com.group4.DLS.repositories.DatasetRepository;
+import com.group4.DLS.repositories.ProjectRepository;
 import com.group4.DLS.security.CurrentUserProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

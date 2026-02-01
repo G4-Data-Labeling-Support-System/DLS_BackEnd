@@ -1,7 +1,8 @@
-package com.group4.DLS.repository;
+package com.group4.DLS.repositories;
+
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.group4.DLS.domain.entity.Project;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ProjectRepository extends JpaRepository<Project, String> {
 
