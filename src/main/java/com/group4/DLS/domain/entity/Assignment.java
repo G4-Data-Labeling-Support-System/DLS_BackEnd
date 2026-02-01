@@ -37,6 +37,10 @@ public class Assignment {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String assignmentId;
 
+    String assignmentName;
+
+    String descriptionAssignment;
+
     @Enumerated(EnumType.STRING)
     AssignmentStatus assignmentStatus;
 
