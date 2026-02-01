@@ -81,7 +81,7 @@ public class AssignmentService {
                 .orElseThrow(() ->
                         new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND)
                 );
-        assignmentRepository.delete(assignment);
+        assignmentRepository.setatusByAssignmentId(assignment, AssignmentStatus.CANCELED);
     }
 
 }
