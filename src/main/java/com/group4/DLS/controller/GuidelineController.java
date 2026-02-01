@@ -4,12 +4,10 @@ import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
-import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.service.GuidelineService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,32 +42,15 @@ public class GuidelineController {
      * UPDATE (versioning)
      * ======================
      */
-    @PutMapping("/project/{projectId}")
+    @PutMapping("/{guidelineId}")
     public ApiResponse<GuidelineResponse> updateGuideline(
-            @PathVariable String projectId,
+            @PathVariable String guidelineId,
             @RequestBody @Valid GuidelineCreateRequest request
     ) {
         ApiResponse<GuidelineResponse> response = new ApiResponse<>();
         response.setCode(200);
         response.setMessage("Guideline updated successfully");
-        response.setData(guidelineService.create(projectId, request));
-        return response;
-    }
-
-    /*
-     * ======================
-     * GET latest guideline
-     * ======================
-     */
-
-    @GetMapping("/{projectId}/latest")
-    public ApiResponse<GuidelineResponse> getLatestGuideline(
-            @PathVariable String projectId
-    ) {
-        ApiResponse<GuidelineResponse> response = new ApiResponse<>();
-        response.setCode(200);
-        response.setMessage("Latest guideline retrieved successfully");
-        response.setData(guidelineService.getLatest(projectId));
+        response.setData(guidelineService.update(guidelineId, request));
         return response;
     }
 

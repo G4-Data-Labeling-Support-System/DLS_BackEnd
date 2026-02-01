@@ -31,7 +31,9 @@ public enum ErrorCode {
     INTERNAL_SERVER_ERROR(500, "Internal server error"),
     ASSIGNMENT_EXISTS(409,"Assignment name already exists" ),
     ASSIGNMENT_NOT_FOUND(400, "Assignment not found"),
-    INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment");
+    INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment"),
+    GUIDELINE_NOT_FOUND(400,"Guideline not found" ),
+    GUIDELINE_EXISTS(400,"Exist Guideline Name" );
 
     final int code;
     final String message;
