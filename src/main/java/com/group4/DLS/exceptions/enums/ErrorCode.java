@@ -25,6 +25,13 @@ public enum ErrorCode {
     PROJECT_NOT_FOUND(404, "Project not found"),
     INTERNAL_SERVER_ERROR(500, "Internal server error");
 
+    INTERNAL_SERVER_ERROR(500, "Internal server error"),
+    ASSIGNMENT_EXISTS(409,"Assignment name already exists" ),
+    PROJECT_NOT_FOUND(400, "Project not found"),
+    ASSIGNMENT_NOT_FOUND(400, "Assignment not found"),
+    DATASET_NOT_FOUND(400,"Dataset not found" ),
+    INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment");;
+
     final int code;
     final String message;
 }
