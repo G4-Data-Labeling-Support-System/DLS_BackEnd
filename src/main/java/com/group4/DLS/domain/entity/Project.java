@@ -42,8 +42,9 @@ public class Project {
 
     String description;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    ProjectStatus status;
+    ProjectStatus status = ProjectStatus.NOT_STARTED;
 
     LocalDate createdAt;
 

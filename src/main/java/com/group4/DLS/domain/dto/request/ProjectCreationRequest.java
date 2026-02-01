@@ -24,6 +24,5 @@ public class ProjectCreationRequest {
     @Size(max = 500, message = "INVALID_PROJECT_DESCRIPTION_LENGTH")
     String description;
 
-    @Builder.Default
-    ProjectStatus status = ProjectStatus.NOT_STARTED;
+    ProjectStatus status;
 }

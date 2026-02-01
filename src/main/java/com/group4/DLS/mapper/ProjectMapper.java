@@ -20,8 +20,7 @@ public interface ProjectMapper {
     @Mapping(target = "datasets", ignore = true)
     @Mapping(target = "dataitems", ignore = true)
     @Mapping(target = "schemas", ignore = true)
-
-    Project toProject(ProjectCreationRequest request);
+    Project createProjectFromRequest(ProjectCreationRequest request);
 
     @Mapping(target = "projectId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
