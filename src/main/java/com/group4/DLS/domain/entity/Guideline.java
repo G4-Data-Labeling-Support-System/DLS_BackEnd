@@ -31,6 +31,9 @@ public class Guideline {
     String guideId;
 
     @Column(nullable = false)
+    String guideName;
+
+    @Column(nullable = false)
     String content;
 
     @Column(nullable = false, unique = true)
