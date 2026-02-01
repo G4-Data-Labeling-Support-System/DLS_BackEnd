@@ -23,6 +23,8 @@ public enum ErrorCode {
     INVALID_EMAIL_FORMAT(400, "Invalid email format"),
     FORBIDDEN(403, "Access denied"),
     PROJECT_NOT_FOUND(404, "Project not found"),
+    DATASET_NOT_FOUND(404, "Dataset not found"),
+
     INTERNAL_SERVER_ERROR(500, "Internal server error");
 
     INTERNAL_SERVER_ERROR(500, "Internal server error"),

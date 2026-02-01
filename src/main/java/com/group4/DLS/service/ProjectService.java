@@ -110,6 +110,7 @@ public class ProjectService {
     }
 
     // ================= DELETE PROJECT =================
+
     public void deleteProject(String projectId) {
 
         User currentUser = currentUserProvider.getCurrentUser();
@@ -121,8 +122,10 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        projectRepository.delete(project);
+        project.setActive(false);
+        projectRepository.save(project);
     }
+
 }
 
 
