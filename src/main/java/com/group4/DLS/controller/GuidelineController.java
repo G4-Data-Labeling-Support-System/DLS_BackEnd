@@ -4,12 +4,10 @@ import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
-import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.service.GuidelineService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

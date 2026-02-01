@@ -1,7 +1,6 @@
 
 package com.group4.DLS.repository;
 
-import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
