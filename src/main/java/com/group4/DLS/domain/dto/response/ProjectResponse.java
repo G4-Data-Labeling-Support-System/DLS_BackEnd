@@ -25,5 +25,6 @@ public class ProjectResponse {
     String projectName;
     String description;
     ProjectStatus status;
+    boolean isActive;
     LocalDate createdAt;
 }

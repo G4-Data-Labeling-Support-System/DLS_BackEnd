@@ -43,7 +43,7 @@ public class ProjectController {
     }
 
     // DELETE PROJECT (soft / logic delete)
-    @DeleteMapping("/{id}")
+    @PatchMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable String id) {
         projectService.deleteProject(id);
 

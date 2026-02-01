@@ -25,5 +25,8 @@ public class ProjectCreationRequest {
     String description;
 
     @Builder.Default
+    boolean isActive = true;
+
+    @Builder.Default
     ProjectStatus status = ProjectStatus.NOT_STARTED;
 }
