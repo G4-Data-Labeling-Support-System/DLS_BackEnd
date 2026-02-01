@@ -31,8 +31,6 @@ public interface ProjectMapper {
     @Mapping(target = "datasets", ignore = true)
     @Mapping(target = "dataitems", ignore = true)
     @Mapping(target = "schemas", ignore = true)
-
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateProjectFromRequest(ProjectUpdateRequest request,
-                                  @MappingTarget Project project);
+    void updateProjectFromRequest(ProjectUpdateRequest request, @MappingTarget Project project);
 }

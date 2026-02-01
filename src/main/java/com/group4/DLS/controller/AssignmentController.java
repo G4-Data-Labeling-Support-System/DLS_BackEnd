@@ -16,55 +16,52 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AssignmentController {
 
-    private final AssignmentService assignmentService;
+        private final AssignmentService assignmentService;
 
-    // 1 Get all assignments
-    @GetMapping
-    public ApiResponse<List<Assignment>> getAllAssignments() {
-        return ApiResponse.<List<Assignment>>builder()
-                .code(200)
-                .message("Get all assignments successfully")
-                .data(assignmentService.getAllAssignments())
-                .build();
-    }
+        // 1 Get all assignments
+        @GetMapping
+        public ApiResponse<List<Assignment>> getAllAssignments() {
+                return ApiResponse.<List<Assignment>>builder()
+                                .code(200)
+                                .message("Get all assignments successfully")
+                                .data(assignmentService.getAllAssignments())
+                                .build();
+        }
 
-    // 2 Create assignment
-    @PostMapping("/projects/{projectId}/datasets/{datasetId}")
-    public ApiResponse<AssignmentResponse> createAssignment(
-            @PathVariable String projectId,
-            @PathVariable String datasetId,
-            @RequestBody AssignmentCreateRequest request
-    ) {
-        return ApiResponse.<AssignmentResponse>builder()
-                .code(201)
-                .message("Create assignment successfully")
-                .data(assignmentService.createAssignment(projectId, datasetId, request))
-                .build();
-    }
+        // 2 Create assignment
+        @PostMapping("/projects/{projectId}/datasets/{datasetId}")
+        public ApiResponse<AssignmentResponse> createAssignment(
+                        @PathVariable String projectId,
+                        @PathVariable String datasetId,
+                        @RequestBody AssignmentCreateRequest request) {
+                return ApiResponse.<AssignmentResponse>builder()
+                                .code(201)
+                                .message("Create assignment successfully")
+                                .data(assignmentService.createAssignment(projectId, datasetId, request))
+                                .build();
+        }
 
-    // 3️ Update assignment (name + status)
-    @PutMapping("/{assignmentId}")
-    public ApiResponse<AssignmentResponse> updateAssignment(
-            @PathVariable String assignmentId,
-            @RequestBody AssignmentUpdateRequest request
-    ) {
-        return ApiResponse.<AssignmentResponse>builder()
-                .code(200)
-                .message("Update assignment successfully")
-                .data(assignmentService.updateAssignment(assignmentId, request))
-                .build();
-    }
+        // 3️ Update assignment (name + status)
+        @PutMapping("/{assignmentId}")
+        public ApiResponse<AssignmentResponse> updateAssignment(
+                        @PathVariable String assignmentId,
+                        @RequestBody AssignmentUpdateRequest request) {
+                return ApiResponse.<AssignmentResponse>builder()
+                                .code(200)
+                                .message("Update assignment successfully")
+                                .data(assignmentService.updateAssignment(assignmentId, request))
+                                .build();
+        }
 
-    // 4️ Delete assignment
-    @DeleteMapping("/{assignmentId}")
-    public ApiResponse<Void> deleteAssignment(
-            @PathVariable String assignmentId
-    ) {
-        assignmentService.deleteAssignment(assignmentId);
+        // 4️ Delete assignment
+        @DeleteMapping("/{assignmentId}")
+        public ApiResponse<Void> deleteAssignment(
+                        @PathVariable String assignmentId) {
+                assignmentService.deleteAssignment(assignmentId);
 
-        return ApiResponse.<Void>builder()
-                .code(200)
-                .message("Delete assignment successfully")
-                .build();
-    }
+                return ApiResponse.<Void>builder()
+                                .code(200)
+                                .message("Delete assignment successfully")
+                                .build();
+        }
 }

@@ -2,7 +2,6 @@ package com.group4.DLS.service;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
-import com.group4.DLS.domain.dto.request.UserCreationRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
@@ -29,13 +28,12 @@ public class AssignmentService {
     ProjectRepository projectRepository;
     DatasetRepository datasetRepository;
 
-    public List<Assignment> getAllAssignments(){
+    public List<Assignment> getAllAssignments() {
         return assignmentRepository.findAll();
     }
 
-    public AssignmentResponse createAssignment( String projectId,
-                                                String datasetId, AssignmentCreateRequest request) {
-        if(assignmentRepository.existsByAssignmentName(request.getAssignmentName())){
+    public AssignmentResponse createAssignment(String projectId, String datasetId, AssignmentCreateRequest request) {
+        if (assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
             throw new AppException(ErrorCode.ASSIGNMENT_EXISTS);
         }
         Project project = projectRepository.findById(projectId)
@@ -51,21 +49,18 @@ public class AssignmentService {
         return assignmentMapper.toResponse(assignment);
     }
 
-    public AssignmentResponse updateAssignment(
-            String assignmentId,
-            AssignmentUpdateRequest request
-    ) {
+    public AssignmentResponse updateAssignment(String assignmentId, AssignmentUpdateRequest request) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        if (request.getAssignmentName() != null && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
+        if (request.getAssignmentName() != null
+                && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
             assignment.setAssignmentName(request.getAssignmentName());
         }
 
         if (request.getAssignmentStatus() != null) {
             try {
-                AssignmentStatus status =
-                        AssignmentStatus.valueOf(request.getAssignmentStatus());
+                AssignmentStatus status = AssignmentStatus.valueOf(request.getAssignmentStatus());
                 assignment.setAssignmentStatus(status);
             } catch (IllegalArgumentException e) {
                 throw new AppException(ErrorCode.INVALID_ASSIGNMENT_STATUS);
@@ -78,10 +73,10 @@ public class AssignmentService {
 
     public void deleteAssignment(String assignmentId) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
-                .orElseThrow(() ->
-                        new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND)
-                );
-        assignmentRepository.setatusByAssignmentId(assignment, AssignmentStatus.CANCELED);
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        assignment.setAssignmentStatus(AssignmentStatus.CANCELED);
+        assignmentRepository.save(assignment);
     }
 
 }
