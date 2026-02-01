@@ -4,6 +4,6 @@ server:
 spring:
   profiles:
     active:
-    - dev
+      - dev
   application:
     name: DLS
