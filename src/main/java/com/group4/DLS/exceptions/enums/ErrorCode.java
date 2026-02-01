@@ -21,6 +21,11 @@ public enum ErrorCode {
     NEW_PASSWORD_SAME_AS_OLD(400, "New password same as old"),
     PASSWORD_CONFIRM_NOT_MATCH(400, "Confirm password not match"),
     INVALID_EMAIL_FORMAT(400, "Invalid email format"),
+    FORBIDDEN(403, "Access denied"),
+    PROJECT_NOT_FOUND(404, "Project not found"),
+    DATASET_NOT_FOUND(404, "Dataset not found"),
+
+    INTERNAL_SERVER_ERROR(500, "Internal server error");
 
     INTERNAL_SERVER_ERROR(500, "Internal server error"),
     ASSIGNMENT_EXISTS(409,"Assignment name already exists" ),

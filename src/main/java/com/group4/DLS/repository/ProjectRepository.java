@@ -11,5 +11,7 @@ public interface ProjectRepository extends JpaRepository<Project, String> {
     boolean existsByProjectName(String projectName);
 
 
+   // List<Project> findAllByCreatedBy(User createdBy);
+}
 //    List<Project> findAllByCreatedBy(User createdBy);
 }

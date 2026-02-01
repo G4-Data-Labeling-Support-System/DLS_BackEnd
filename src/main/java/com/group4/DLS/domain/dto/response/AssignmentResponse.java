@@ -15,6 +15,7 @@ import java.time.LocalDate;
 public class AssignmentResponse {
     String assignmentId;
     String assignmentName;
+    String descriptionAssignment;
     AssignmentStatus assignmentStatus;
     String projectId;
     String datasetId;

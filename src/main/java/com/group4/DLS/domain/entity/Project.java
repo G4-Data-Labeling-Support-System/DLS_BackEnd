@@ -35,6 +35,7 @@ import lombok.experimental.FieldDefaults;
 public class Project {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+//    @Column(updatable = false, nullable = false)
     String projectId;
 
     @Column(nullable = false, unique = true)
@@ -44,6 +45,9 @@ public class Project {
 
     @Enumerated(EnumType.STRING)
     ProjectStatus status;
+
+    @Column(nullable = false)
+    boolean isActive;
 
     LocalDate createdAt;
 

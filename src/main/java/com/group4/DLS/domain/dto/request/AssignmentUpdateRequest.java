@@ -13,5 +13,7 @@ import lombok.experimental.FieldDefaults;
 public class AssignmentUpdateRequest {
     @Size(max = 100, message = "ASSIGNMENT_NAME_TOO_LONG")
     String assignmentName;
+    @Size(max = 100, message = "ASSIGNMENT_NAME_TOO_LONG")
+    String descriptionAssignment;
     String assignmentStatus;
 }
