@@ -7,6 +7,9 @@ import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.services.AssignmentService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,54 +18,68 @@ import java.util.List;
 @RestController
 @RequestMapping("/assignments")
 @RequiredArgsConstructor
+@Tag(name = "Assignments", description = "Assignment management endpoints")
+@SecurityRequirement(name = "Bearer Authentication")
 public class AssignmentController {
 
-        private final AssignmentService assignmentService;
+    private final AssignmentService assignmentService;
 
-        // 1 Get all assignments
-        @GetMapping
-        public ApiResponse<List<Assignment>> getAllAssignments() {
-                return ApiResponse.<List<Assignment>>builder()
-                                .code(200)
-                                .message("Get all assignments successfully")
-                                .data(assignmentService.getAllAssignments())
-                                .build();
-        }
+    // 1 Get all assignments
+    @GetMapping
+    @Operation(
+        summary = "Get all assignments", 
+        description = "Retrieve a list of all assignments in the system")
+    public ApiResponse<List<Assignment>> getAllAssignments() {
+        return ApiResponse.<List<Assignment>>builder()
+                .code(200)
+                .message("Get all assignments successfully")
+                .data(assignmentService.getAllAssignments())
+                .build();
+    }
 
-        // 2 Create assignment
-        @PostMapping("/projects/{projectId}/datasets/{datasetId}")
-        public ApiResponse<AssignmentResponse> createAssignment(
-                        @PathVariable String projectId,
-                        @PathVariable String datasetId,
-                        @RequestBody AssignmentCreateRequest request) {
-                return ApiResponse.<AssignmentResponse>builder()
-                                .code(201)
-                                .message("Create assignment successfully")
-                                .data(assignmentService.createAssignment(projectId, datasetId, request))
-                                .build();
-        }
+    // 2 Create assignment
+    @PostMapping("/projects/{projectId}/datasets/{datasetId}")
+    @Operation(
+        summary = "Create new assignment",
+        description = "Create a new assignment linking a project with a dataset")
+    public ApiResponse<AssignmentResponse> createAssignment(
+            @PathVariable String projectId,
+            @PathVariable String datasetId,
+            @RequestBody AssignmentCreateRequest request) {
+        return ApiResponse.<AssignmentResponse>builder()
+                .code(201)
+                .message("Create assignment successfully")
+                .data(assignmentService.createAssignment(projectId, datasetId, request))
+                .build();
+    }
 
-        // 3️ Update assignment (name + status)
-        @PutMapping("/{assignmentId}")
-        public ApiResponse<AssignmentResponse> updateAssignment(
-                        @PathVariable String assignmentId,
-                        @RequestBody AssignmentUpdateRequest request) {
-                return ApiResponse.<AssignmentResponse>builder()
-                                .code(200)
-                                .message("Update assignment successfully")
-                                .data(assignmentService.updateAssignment(assignmentId, request))
-                                .build();
-        }
+    // 3️ Update assignment (name + status)
+    @PutMapping("/{assignmentId}")
+    @Operation(
+        summary = "Update assignment",
+        description = "Update an existing assignment by its ID")
+    public ApiResponse<AssignmentResponse> updateAssignment(
+            @PathVariable String assignmentId,
+            @RequestBody AssignmentUpdateRequest request) {
+        return ApiResponse.<AssignmentResponse>builder()
+                .code(200)
+                .message("Update assignment successfully")
+                .data(assignmentService.updateAssignment(assignmentId, request))
+                .build();
+    }
 
-        // 4️ Delete assignment
-        @DeleteMapping("/{assignmentId}")
-        public ApiResponse<Void> deleteAssignment(
-                        @PathVariable String assignmentId) {
-                assignmentService.deleteAssignment(assignmentId);
+    // 4️ Delete assignment
+    @DeleteMapping("/{assignmentId}")
+    @Operation(
+        summary = "Delete assignment",
+        description = "Delete an assignment by its ID")
+    public ApiResponse<Void> deleteAssignment(
+            @PathVariable String assignmentId) {
+        assignmentService.deleteAssignment(assignmentId);
 
-                return ApiResponse.<Void>builder()
-                                .code(200)
-                                .message("Delete assignment successfully")
-                                .build();
-        }
+        return ApiResponse.<Void>builder()
+                .code(200)
+                .message("Delete assignment successfully")
+                .build();
+    }
 }

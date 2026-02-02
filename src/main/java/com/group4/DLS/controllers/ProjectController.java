@@ -6,6 +6,9 @@ import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
 import com.group4.DLS.services.ProjectService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -16,6 +19,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/projects")
 @RequiredArgsConstructor
+@Tag(name = "Projects", description = "Project management endpoints")
+@SecurityRequirement(name = "Bearer Authentication")
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -23,6 +28,10 @@ public class ProjectController {
     // CREATE PROJECT
     @PostMapping
     @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+        summary = "Create new project",
+        description = "Create a new data labeling project. Requires MANAGER role."
+    )
     public ApiResponse<ProjectResponse> create(
             @RequestBody ProjectCreationRequest request) {
 
@@ -59,6 +68,10 @@ public class ProjectController {
     // GET PROJECT BY ID
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
+    @Operation(
+        summary = "Get project by ID",
+        description = "Retrieve detailed information about a specific project"
+    )
     public ApiResponse<ProjectResponse> getById(@PathVariable String id) {
         return ApiResponse.<ProjectResponse>builder()
                 .code(200)
@@ -70,6 +83,10 @@ public class ProjectController {
     // LIST ALL PROJECTS
     @GetMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
+    @Operation(
+        summary = "List all projects",
+        description = "Retrieve a list of all data labeling projects"
+    )
     public ApiResponse<List<ProjectResponse>> getAllProjects() {
         return ApiResponse.<List<ProjectResponse>>builder()
                 .code(200)
