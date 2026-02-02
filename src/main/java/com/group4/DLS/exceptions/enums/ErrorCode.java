@@ -35,7 +35,8 @@ public enum ErrorCode {
     PASSWORD_CONFIRM_NOT_MATCH(400, "Confirm password not match"),
     INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment"),
 
-    INTERNAL_SERVER_ERROR(500, "Internal server error");
+    GUIDELINE_NOT_FOUND(400,"Guideline not found" ),
+    GUIDELINE_EXISTS(400,"Exist Guideline Name" );
 
     final int code;
     final String message;

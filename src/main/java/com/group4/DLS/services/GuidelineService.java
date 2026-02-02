@@ -4,6 +4,8 @@ import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
 import com.group4.DLS.domain.entity.Project;
+import com.group4.DLS.exceptions.AppException;
+import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.GuidelineMapper;
 import com.group4.DLS.repositories.GuidelineRepository;
 import com.group4.DLS.repositories.ProjectRepository;
@@ -26,37 +28,43 @@ public class GuidelineService {
     public GuidelineResponse create(String projectId, GuidelineCreateRequest request) {
 
         Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        int nextVersion = guidelineRepository
-                .findTopByProjectIdOrderByVersionDesc(projectId)
-                .map(g -> g.getVersion() + 1)
-                .orElse(1);
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         Guideline guideline = guidelineMapper.toEntity(request);
         guideline.setProject(project);
-        guideline.setVersion(nextVersion);
+        guideline.setVersion(1);
 
         guidelineRepository.save(guideline);
 
         return guidelineMapper.toResponse(guideline);
     }
 
-    public GuidelineResponse getLatest(String projectId) {
-        Guideline guideline = guidelineRepository
-                .findTopByProjectIdOrderByVersionDesc(projectId)
-                .orElseThrow(() -> new RuntimeException("Guideline not found"));
-
-        return guidelineMapper.toResponse(guideline);
-    }
-
     public List<GuidelineResponse> getAllByProject(String projectId) {
-        return guidelineRepository.findAllByProjectId(projectId).stream()
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+        List<Guideline> guidelines = guidelineRepository.findAllByProject_ProjectId(projectId);
+        return guidelines.stream()
                 .map(guidelineMapper::toResponse)
                 .toList();
     }
 
+    public GuidelineResponse update(String guidelineId, GuidelineCreateRequest request) {
+        Guideline guideline = guidelineRepository.findById(guidelineId).orElseThrow(() ->
+                new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
+
+        if (guidelineRepository.existsByGuideName(request.getGuideName())){
+            throw new AppException(ErrorCode.GUIDELINE_EXISTS);
+        }
+
+        guideline = guidelineMapper.toEntity(request);
+        guideline.setVersion(guideline.getVersion() + 1);
+        guidelineRepository.save(guideline);
+
+        return guidelineMapper.toResponse(guideline);
+    }
+
     public List<Guideline> getAllGuideline(){
-        return guidelineRepository.findAll();
+        List<Guideline> guidelines = guidelineRepository.findAll();
+        return guidelines;
     }
 }

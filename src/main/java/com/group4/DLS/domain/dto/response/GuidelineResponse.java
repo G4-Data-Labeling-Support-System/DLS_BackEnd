@@ -13,6 +13,7 @@ import java.time.LocalDate;
 public class GuidelineResponse {
     String guideId;
     String projectId;
+    String guideName;
     String content;
     int version;
     LocalDate createdAt;
