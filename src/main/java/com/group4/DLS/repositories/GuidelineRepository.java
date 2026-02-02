@@ -12,4 +12,5 @@ import java.util.List;
 public interface GuidelineRepository extends JpaRepository<Guideline, String> {
     List<Guideline> findAllByProject_ProjectId(String projectId);
     boolean existsByGuideNameAndProject_ProjectId(String guideName, String projectId);
+    boolean existsByGuideNameAndProject_ProjectIdAndGuideIdNot(String guideName, String projectId, String guideId);
 }

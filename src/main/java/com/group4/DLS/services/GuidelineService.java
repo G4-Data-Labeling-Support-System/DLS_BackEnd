@@ -4,6 +4,7 @@ import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
 import com.group4.DLS.domain.entity.Project;
+import com.group4.DLS.domain.entity.enums.GuidelineStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.GuidelineMapper;
@@ -15,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -36,7 +38,9 @@ public class GuidelineService {
             throw new AppException(ErrorCode.GUIDELINE_EXISTS);
         }
 
+
         Guideline guideline = guidelineMapper.toEntity(request);
+        guideline.setStatus(GuidelineStatus.ACTIVE);
         guideline.setProject(project);
         guideline.setVersion(1);
 
@@ -59,14 +63,14 @@ public class GuidelineService {
         Guideline guideline = guidelineRepository.findById(guidelineId)
                 .orElseThrow(() -> new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
 
-        if (guidelineRepository.existsByGuideNameAndProject_ProjectId(request.getGuideName(), guideline.getProject().getProjectId())) {
+        if (guidelineRepository.existsByGuideNameAndProject_ProjectIdAndGuideIdNot(request.getGuideName(), guideline.getProject().getProjectId(), guidelineId)) {
             throw new AppException(ErrorCode.GUIDELINE_EXISTS);
         }
 
         // update field, KHÔNG tạo entity mới
         guideline.setGuideName(request.getGuideName());
         guideline.setContent(request.getContent());
-
+        guideline.setUpdatedAt(LocalDate.now());
         guideline.setVersion(guideline.getVersion() + 1);
 
         guidelineRepository.save(guideline);
@@ -83,5 +87,13 @@ public class GuidelineService {
             throw new AppException(ErrorCode.GUIDELINE_NOT_FOUND);
         }
         return guidelines;
+    }
+
+    public GuidelineResponse deleteGuideline(String guidelineId){
+        Guideline guideline = guidelineRepository.findById(guidelineId)
+                .orElseThrow(() -> new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
+        guideline.setStatus(GuidelineStatus.INACTIVE);
+        guidelineRepository.save(guideline);
+        return guidelineMapper.toResponse(guideline);
     }
 }

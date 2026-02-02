@@ -23,7 +23,7 @@ public interface GuidelineMapper {
      * Request → Entity (Create)
      * ========================= */
     @Mapping(target = "guideId", ignore = true)
-    @Mapping(target = "project", ignore = true) // set trong service
+    @Mapping(target = "project", ignore = true)
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
