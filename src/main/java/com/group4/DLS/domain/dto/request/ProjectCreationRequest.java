@@ -1,6 +1,7 @@
 package com.group4.DLS.domain.dto.request;
 
 import com.group4.DLS.domain.entity.enums.ProjectStatus;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,5 @@ public class ProjectCreationRequest {
     @Size(max = 500, message = "INVALID_PROJECT_DESCRIPTION_LENGTH")
     String description;
 
-    @Builder.Default
-    ProjectStatus status = ProjectStatus.NOT_STARTED;
+    ProjectStatus status;
 }

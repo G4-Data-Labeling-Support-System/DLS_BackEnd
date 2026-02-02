@@ -1,4 +1,4 @@
-package com.group4.DLS.service;
+package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
@@ -9,10 +9,11 @@ import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
-import com.group4.DLS.mapper.AssignmentMapper;
-import com.group4.DLS.repository.AssignmentRepository;
-import com.group4.DLS.repository.DatasetRepository;
-import com.group4.DLS.repository.ProjectRepository;
+import com.group4.DLS.mappers.AssignmentMapper;
+import com.group4.DLS.repositories.AssignmentRepository;
+import com.group4.DLS.repositories.DatasetRepository;
+import com.group4.DLS.repositories.ProjectRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;

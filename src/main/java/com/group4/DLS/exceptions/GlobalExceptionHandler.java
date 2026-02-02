@@ -1,6 +1,8 @@
 package com.group4.DLS.exceptions;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -43,6 +45,20 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
+    // Handle AccessDeniedException (403 Forbidden)
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public ResponseEntity<ApiResponse<String>> handleAccessDeniedException(AccessDeniedException ex) {
+        ApiResponse<String> response = new ApiResponse<>();
+
+        response.setCode(403);
+        response.setMessage("Access denied. You don't have permission to access this resource.");
+        response.setData(null);
+
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(response);
+    }
+
     // Fallback for uncategorized errors
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<ApiResponse<String>> handleRuntimeException(Exception ex) {
@@ -51,10 +67,10 @@ public class GlobalExceptionHandler {
 
         response.setCode(errorCode.getCode());
         response.setMessage(errorCode.getMessage());
-        response.setData(null);
+        response.setData(ex.getMessage());
 
         return ResponseEntity
-                .badRequest()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(response);
     }
 }

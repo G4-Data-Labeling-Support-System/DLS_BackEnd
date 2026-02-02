@@ -1,8 +1,6 @@
 package com.group4.DLS.domain.dto.response;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.UUID;
 
 import com.group4.DLS.domain.entity.enums.ProjectStatus;
 
@@ -20,11 +18,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ProjectResponse {
-
-    UUID projectId;
     String projectName;
     String description;
     ProjectStatus status;
-    boolean isActive;
     LocalDate createdAt;
 }

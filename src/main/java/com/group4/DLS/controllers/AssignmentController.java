@@ -1,11 +1,12 @@
-package com.group4.DLS.controller;
+package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.entity.Assignment;
-import com.group4.DLS.service.AssignmentService;
+import com.group4.DLS.services.AssignmentService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

@@ -53,11 +53,11 @@ public class User {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    UserRole userRole;
+    UserRole userRole = UserRole.ANNOTATOR;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    UserStatus status;
+    UserStatus status = UserStatus.ACTIVE;
 
     LocalDate createdAt;
 

@@ -1,6 +1,5 @@
 package com.group4.DLS.domain.dto.request;
 
-import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

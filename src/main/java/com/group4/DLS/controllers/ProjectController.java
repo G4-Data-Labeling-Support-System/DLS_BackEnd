@@ -1,11 +1,14 @@
-package com.group4.DLS.controller;
+package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
-import com.group4.DLS.service.ProjectService;
+import com.group4.DLS.services.ProjectService;
+
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +22,7 @@ public class ProjectController {
 
     // CREATE PROJECT
     @PostMapping
+    @PreAuthorize("hasRole('MANAGER')")
     public ApiResponse<ProjectResponse> create(
             @RequestBody ProjectCreationRequest request) {
 
@@ -31,10 +35,8 @@ public class ProjectController {
 
     // UPDATE PROJECT
     @PutMapping("/{id}")
-    public ApiResponse<ProjectResponse> update(
-            @PathVariable String id,
-            @RequestBody ProjectUpdateRequest request) {
-
+    @PreAuthorize("hasRole('MANAGER')")
+    public ApiResponse<ProjectResponse> update(@PathVariable String id, @RequestBody ProjectUpdateRequest request) {
         return ApiResponse.<ProjectResponse>builder()
                 .code(200)
                 .message("Project updated successfully")
@@ -44,6 +46,7 @@ public class ProjectController {
 
     // DELETE PROJECT (soft / logic delete)
     @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
     public ApiResponse<Void> delete(@PathVariable String id) {
         projectService.deleteProject(id);
 
@@ -55,8 +58,8 @@ public class ProjectController {
 
     // GET PROJECT BY ID
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
     public ApiResponse<ProjectResponse> getById(@PathVariable String id) {
-
         return ApiResponse.<ProjectResponse>builder()
                 .code(200)
                 .message("Get project successfully")
@@ -66,8 +69,8 @@ public class ProjectController {
 
     // LIST ALL PROJECTS
     @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
     public ApiResponse<List<ProjectResponse>> getAllProjects() {
-
         return ApiResponse.<List<ProjectResponse>>builder()
                 .code(200)
                 .message("Get all projects successfully")
