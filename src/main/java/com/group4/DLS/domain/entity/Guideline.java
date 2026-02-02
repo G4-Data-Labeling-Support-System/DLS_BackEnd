@@ -38,7 +38,7 @@ public class Guideline {
     @Column(nullable = false)
     String content;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     int version;
 
     LocalDate createdAt;
