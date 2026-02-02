@@ -1,5 +1,7 @@
 package com.group4.DLS.mappers;
 
+import com.group4.DLS.domain.dto.response.ProjectResponse;
+import com.group4.DLS.domain.entity.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -14,6 +16,7 @@ public interface GuidelineMapper {
      * Entity → Response
      * ========================= */
     @Mapping(target = "projectId", source = "project.projectId")
+    @Mapping(target = "projectResponse", source = "project")
     GuidelineResponse toResponse(Guideline guideline);
 
     /* =========================
