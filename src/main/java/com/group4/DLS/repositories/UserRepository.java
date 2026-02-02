@@ -1,4 +1,4 @@
-package com.group4.DLS.repository;
+package com.group4.DLS.repositories;
 
 import java.util.Optional;
 

@@ -1,11 +1,12 @@
-package com.group4.DLS.mapper;
+package com.group4.DLS.mappers;
 
+
+import org.mapstruct.*;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
 import com.group4.DLS.domain.entity.Project;
-import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface ProjectMapper {
@@ -20,8 +21,7 @@ public interface ProjectMapper {
     @Mapping(target = "datasets", ignore = true)
     @Mapping(target = "dataitems", ignore = true)
     @Mapping(target = "schemas", ignore = true)
-
-    Project toProject(ProjectCreationRequest request);
+    Project createProjectFromRequest(ProjectCreationRequest request);
 
     @Mapping(target = "projectId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

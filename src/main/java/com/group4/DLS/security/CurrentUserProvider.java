@@ -3,7 +3,8 @@ package com.group4.DLS.security;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
-import com.group4.DLS.repository.UserRepository;
+import com.group4.DLS.repositories.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

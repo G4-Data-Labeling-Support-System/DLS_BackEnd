@@ -1,10 +1,11 @@
-package com.group4.DLS.controller;
+package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
-import com.group4.DLS.service.GuidelineService;
+import com.group4.DLS.services.GuidelineService;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

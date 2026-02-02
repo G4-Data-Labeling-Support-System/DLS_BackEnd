@@ -1,10 +1,11 @@
-package com.group4.DLS.mapper;
+package com.group4.DLS.mappers;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface GuidelineMapper {

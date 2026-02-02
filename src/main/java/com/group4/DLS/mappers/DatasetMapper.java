@@ -1,11 +1,12 @@
-package com.group4.DLS.mapper;
+package com.group4.DLS.mappers;
+
+import org.springframework.stereotype.Component;
 
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
-import org.springframework.stereotype.Component;
 
 @Component
 public class DatasetMapper {
