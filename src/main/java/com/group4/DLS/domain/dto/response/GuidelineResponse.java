@@ -1,5 +1,6 @@
 package com.group4.DLS.domain.dto.response;
 
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,4 +19,5 @@ public class GuidelineResponse {
     int version;
     LocalDate createdAt;
     LocalDate updatedAt;
+    ProjectResponse project;
 }

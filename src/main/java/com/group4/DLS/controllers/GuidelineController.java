@@ -73,8 +73,8 @@ public class GuidelineController {
 
 
     @GetMapping
-    public ApiResponse<List<Guideline>> getAllGuideline() {
-        ApiResponse<List<Guideline>> response = new ApiResponse<>();
+    public ApiResponse<List<GuidelineResponse>> getAllGuideline() {
+        ApiResponse<List<GuidelineResponse>> response = new ApiResponse<>();
 
         response.setCode(200);
         response.setData(guidelineService.getAllGuideline());

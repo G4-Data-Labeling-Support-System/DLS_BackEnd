@@ -12,10 +12,12 @@ import com.group4.DLS.repositories.ProjectRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
@@ -64,8 +66,14 @@ public class GuidelineService {
         return guidelineMapper.toResponse(guideline);
     }
 
-    public List<Guideline> getAllGuideline(){
-        List<Guideline> guidelines = guidelineRepository.findAll();
+    public List<GuidelineResponse> getAllGuideline(){
+        List<GuidelineResponse> guidelines = guidelineRepository.findAll()
+                .stream()
+                .map(guidelineMapper::toResponse)
+                .toList();
+        if(guidelines.isEmpty()){
+            throw new AppException(ErrorCode.GUIDELINE_NOT_FOUND);
+        }
         return guidelines;
     }
 }
