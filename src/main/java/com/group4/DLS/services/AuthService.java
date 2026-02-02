@@ -1,6 +1,5 @@
-package com.group4.DLS.service;
+package com.group4.DLS.services;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -8,7 +7,7 @@ import com.group4.DLS.domain.dto.request.AuthRequest;
 import com.group4.DLS.domain.dto.response.AuthResponse;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
-import com.group4.DLS.repository.UserRepository;
+import com.group4.DLS.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

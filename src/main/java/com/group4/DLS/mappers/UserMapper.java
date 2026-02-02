@@ -1,4 +1,4 @@
-package com.group4.DLS.mapper;
+package com.group4.DLS.mappers;
 
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;

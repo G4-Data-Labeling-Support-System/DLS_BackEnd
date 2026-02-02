@@ -1,4 +1,4 @@
-package com.group4.DLS.config;
+package com.group4.DLS.middlewares;
 
 import java.io.IOException;
 import java.util.List;
@@ -9,8 +9,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.group4.DLS.repository.UserRepository;
-import com.group4.DLS.service.JwtService;
+import com.group4.DLS.repositories.UserRepository;
+import com.group4.DLS.services.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

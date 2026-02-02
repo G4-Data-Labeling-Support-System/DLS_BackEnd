@@ -31,11 +31,9 @@ public class UserCreationRequest {
     @Size(min = 8, message = "INVALID_PASSWORD_LENGTH")
     String password;
 
-    @Builder.Default
-    UserRole userRole = UserRole.ANNOTATOR;
+    UserRole userRole;
     
     String coverImage;
 
-    @Builder.Default
-    UserStatus status = UserStatus.ACTIVE;
+    UserStatus status;
 }

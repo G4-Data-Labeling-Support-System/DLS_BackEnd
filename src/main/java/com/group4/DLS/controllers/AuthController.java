@@ -1,4 +1,4 @@
-package com.group4.DLS.controller;
+package com.group4.DLS.controllers;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.group4.DLS.domain.dto.request.AuthRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AuthResponse;
-import com.group4.DLS.service.AuthService;
+import com.group4.DLS.services.AuthService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

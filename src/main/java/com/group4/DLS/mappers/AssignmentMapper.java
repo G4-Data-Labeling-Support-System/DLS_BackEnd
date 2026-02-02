@@ -1,9 +1,10 @@
-package com.group4.DLS.mapper;
+package com.group4.DLS.mappers;
+
+import org.mapstruct.*;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.entity.Assignment;
-import org.mapstruct.*;
 
 import java.util.List;
 

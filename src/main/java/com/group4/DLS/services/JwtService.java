@@ -1,4 +1,4 @@
-package com.group4.DLS.service;
+package com.group4.DLS.services;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
