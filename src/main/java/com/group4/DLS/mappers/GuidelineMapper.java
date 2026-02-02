@@ -16,7 +16,7 @@ public interface GuidelineMapper {
      * Entity → Response
      * ========================= */
     @Mapping(target = "projectId", source = "project.projectId")
-    @Mapping(target = "projectResponse", source = "project")
+    @Mapping(target = "project", source = "project")
     GuidelineResponse toResponse(Guideline guideline);
 
     /* =========================

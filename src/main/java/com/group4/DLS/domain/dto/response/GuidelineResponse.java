@@ -19,5 +19,5 @@ public class GuidelineResponse {
     int version;
     LocalDate createdAt;
     LocalDate updatedAt;
-    ProjectResponse projectResponse;
+    ProjectResponse project;
 }
