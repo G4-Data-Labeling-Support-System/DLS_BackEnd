@@ -32,6 +32,10 @@ public class GuidelineService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
+        if (guidelineRepository.existsByGuideNameAndProject_ProjectId(request.getGuideName(), projectId)) {
+            throw new AppException(ErrorCode.GUIDELINE_EXISTS);
+        }
+
         Guideline guideline = guidelineMapper.toEntity(request);
         guideline.setProject(project);
         guideline.setVersion(1);
@@ -52,15 +56,19 @@ public class GuidelineService {
     }
 
     public GuidelineResponse update(String guidelineId, GuidelineCreateRequest request) {
-        Guideline guideline = guidelineRepository.findById(guidelineId).orElseThrow(() ->
-                new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
+        Guideline guideline = guidelineRepository.findById(guidelineId)
+                .orElseThrow(() -> new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
 
-        if (guidelineRepository.existsByGuideName(request.getGuideName())){
+        if (guidelineRepository.existsByGuideNameAndProject_ProjectId(request.getGuideName(), guideline.getProject().getProjectId())) {
             throw new AppException(ErrorCode.GUIDELINE_EXISTS);
         }
 
-        guideline = guidelineMapper.toEntity(request);
+        // update field, KHÔNG tạo entity mới
+        guideline.setGuideName(request.getGuideName());
+        guideline.setContent(request.getContent());
+
         guideline.setVersion(guideline.getVersion() + 1);
+
         guidelineRepository.save(guideline);
 
         return guidelineMapper.toResponse(guideline);
