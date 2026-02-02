@@ -40,8 +40,9 @@ public class GuidelineService {
     }
 
     public List<GuidelineResponse> getAllByProject(String projectId) {
-        Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+        if(projectRepository.findById(projectId).isEmpty()){
+            throw new AppException(ErrorCode.PROJECT_NOT_FOUND);
+        }
         List<Guideline> guidelines = guidelineRepository.findAllByProject_ProjectId(projectId);
         return guidelines.stream()
                 .map(guidelineMapper::toResponse)

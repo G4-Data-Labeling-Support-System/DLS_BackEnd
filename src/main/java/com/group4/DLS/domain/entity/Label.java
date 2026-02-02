@@ -2,6 +2,8 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -60,5 +62,6 @@ public class Label {
     // Many Labels belongs to One Annotation_Object
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "annotationObjectId")
+    @JsonIgnore
     private AnnotationObject annotationObject;
 }
