@@ -1,20 +1,31 @@
 package com.group4.DLS.domain.dto.response;
 
-import com.group4.DLS.domain.entity.enums.DatasetStorageType;
-import lombok.Builder;
-import lombok.Getter;
-
 import java.time.LocalDate;
 
-@Getter
-@Builder
-public class DatasetResponse {
-    private String datasetId;
-    private String datasetName;
-    private int version;
-    private DatasetStorageType storageType;
-    private String projectId;
-    private LocalDate createdAt;
-    private LocalDate updatedAt;
+import com.group4.DLS.domain.entity.enums.DatasetStatus;
+import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+public class DatasetResponse {
+
+    String datasetId;
+    String datasetName;
+    int version;
+    DatasetStorageType storageType;
+    DatasetStatus status;
+    String projectId;
+    LocalDate createdAt;
+    LocalDate updatedAt;
 }

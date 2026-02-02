@@ -4,8 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.entity.enums.DatasetStatus;
 import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 
+import com.group4.DLS.domain.entity.enums.ProjectStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +49,10 @@ public class Dataset {
     @Enumerated(EnumType.STRING)
     DatasetStorageType storageType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    DatasetStatus status = DatasetStatus.EMPTY;
+
     LocalDate createdAt;
 
     LocalDate updatedAt;
@@ -55,6 +61,9 @@ public class Dataset {
     protected void onCreate() {
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();
+        if (this.status == null) {
+            this.status = DatasetStatus.EMPTY;
+        }
     }
 
     @PreUpdate
@@ -73,6 +82,6 @@ public class Dataset {
 
     // Many Dataset belongs to One Assignemnt
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignmentId", nullable = false)
+    @JoinColumn(name = "assignmentId", nullable = true)
     private Assignment assignment;
 }

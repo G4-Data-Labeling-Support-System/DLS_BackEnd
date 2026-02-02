@@ -23,8 +23,11 @@ public enum ErrorCode {
     INVALID_EMAIL_FORMAT(400, "Invalid email format"),
     FORBIDDEN(403, "Access denied"),
     PROJECT_NOT_FOUND(404, "Project not found"),
-    DATASET_NOT_FOUND(404, "Dataset not found"),
 
+    DATASET_LOCKED(1011, "Dataset is locked and cannot be modified"),
+    DATASET_IN_USE(1012, "Dataset is in use and cannot be deleted"),
+    DATASET_EMPTY(1013, "Dataset is empty and cannot be assigned"),
+    DATASET_NOT_FOUND(1014, "Dataset not found"),
     INTERNAL_SERVER_ERROR(500, "Internal server error");
 
     final int code;
