@@ -82,4 +82,9 @@ public class GuidelineController {
 
         return response;
     }
+
+    @PatchMapping("/{guidelineId}")
+    public GuidelineResponse deleteGuideline(@PathVariable String guidelineId) {
+        return guidelineService.deleteGuideline(guidelineId);
+    }
 }
