@@ -73,13 +73,15 @@ public class ProjectService {
         }
 
         Project project = projectMapper.createProjectFromRequest(request);
-        project = projectRepository.save(project);
+        if (project != null) {
+            project = projectRepository.save(project);
 
-        // Manager auto là member của project
-        ProjectMember member = new ProjectMember();
-        member.setProject(project);
-        member.setUser(manager);
-        projectMemberRepository.save(member);
+            // Manager auto là member của project
+            ProjectMember member = new ProjectMember();
+            member.setProject(project);
+            member.setUser(manager);
+            projectMemberRepository.save(member);
+        }
 
         return projectMapper.toProjectResponse(project);
     }
@@ -88,15 +90,23 @@ public class ProjectService {
     public ProjectResponse updateProject(String projectId, ProjectUpdateRequest request) {
         User currentUser = currentUserProvider.getCurrentUser();
 
-        if (currentUser.getUserRole() != UserRole.MANAGER) {
-            throw new AppException(ErrorCode.FORBIDDEN);
+        if (currentUser.getStatus() != UserStatus.ACTIVE) {
+            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
+        }
+
+        if (projectId == null) {
+            throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
         }
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        projectMapper.updateProjectFromRequest(request, project);
-        return projectMapper.toProjectResponse(projectRepository.save(project));
+        if (project != null) {
+            projectMapper.updateProjectFromRequest(request, project);
+            project = projectRepository.save(project);
+        }
+        
+        return projectMapper.toProjectResponse(project);
     }
 
     // ================= DELETE PROJECT =================
@@ -114,5 +124,3 @@ public class ProjectService {
         projectRepository.save(project);
     }
 }
-
-
