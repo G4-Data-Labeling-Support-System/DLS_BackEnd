@@ -58,12 +58,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         userRepository.findByEmail(email).ifPresent(user -> {
             var authorities = List.of(
-                    new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name())
-            );
+                    new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name()));
 
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            user, null, authorities);
+            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                    user, null, authorities);
 
             SecurityContextHolder.getContext().setAuthentication(authentication);
         });
@@ -75,7 +73,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
         return path.startsWith("/api/v1/auth")
-            || path.startsWith("/actuator/health")
-            || path.startsWith("/health");
+                || path.startsWith("/actuator/health")
+                || path.startsWith("/health");
     }
 }

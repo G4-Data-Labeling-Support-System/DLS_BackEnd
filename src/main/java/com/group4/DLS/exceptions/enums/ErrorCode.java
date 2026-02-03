@@ -15,6 +15,7 @@ public enum ErrorCode {
     PROJECT_NOT_FOUND(404, "Project not found"),
     ASSIGNMENT_NOT_FOUND(404, "Assignment not found"),
     DATASET_NOT_FOUND(404, "Dataset not found"),
+    GUIDELINE_NOT_FOUND(404,"Guideline not found" ),
 
     // 403 errors
     USER_NOT_ACTIVE(403, "User is not active"),
@@ -34,8 +35,7 @@ public enum ErrorCode {
     NEW_PASSWORD_SAME_AS_OLD(400, "New password same as old"),
     PASSWORD_CONFIRM_NOT_MATCH(400, "Confirm password not match"),
     INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment"),
-
-    GUIDELINE_NOT_FOUND(400,"Guideline not found" ),
+    REQUIRE_PROJECT_ID(400, "Project Id is needed"),
     GUIDELINE_EXISTS(400,"Exist Guideline Name" );
 
     final int code;
