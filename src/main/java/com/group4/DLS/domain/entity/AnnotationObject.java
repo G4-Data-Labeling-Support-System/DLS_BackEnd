@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -53,7 +54,7 @@ public class AnnotationObject {
     }
 
     // One Annotation has Many Label
-    @OneToOne(mappedBy = "annotationObject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "annotationObject", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Label> labels = new ArrayList<>();
 
     // Many Annotation_Object belongs to One Annotation
