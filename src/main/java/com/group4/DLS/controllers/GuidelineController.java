@@ -90,17 +90,18 @@ public class GuidelineController {
 
 
     @GetMapping
-    @Operation(
-        summary = "Get all guidelines",
-        description = "Retrieve a list of all guidelines in the system"
-    )
-    public ApiResponse<List<Guideline>> getAllGuideline() {
-        ApiResponse<List<Guideline>> response = new ApiResponse<>();
+    public ApiResponse<List<GuidelineResponse>> getAllGuideline() {
+        ApiResponse<List<GuidelineResponse>> response = new ApiResponse<>();
 
         response.setCode(200);
         response.setData(guidelineService.getAllGuideline());
         response.setMessage("GuideLines retrieved successfully");
 
         return response;
+    }
+
+    @PatchMapping("/{guidelineId}")
+    public GuidelineResponse deleteGuideline(@PathVariable String guidelineId) {
+        return guidelineService.deleteGuideline(guidelineId);
     }
 }
