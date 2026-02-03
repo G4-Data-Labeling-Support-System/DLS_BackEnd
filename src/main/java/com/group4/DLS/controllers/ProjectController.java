@@ -82,14 +82,14 @@ public class ProjectController {
     * Remove a project
     * ===============
     */
-    @PatchMapping("/{id}")
+    @PatchMapping("/{id}/remove")
     @PreAuthorize("hasRole('MANAGER')")
     public ApiResponse<Void> delete(@PathVariable String id) {
         projectService.deleteProject(id);
 
         return ApiResponse.<Void>builder()
                 .code(200)
-                .message("Project deleted successfully")
+                .message("Project remove successfully")
                 .build();
     }
 

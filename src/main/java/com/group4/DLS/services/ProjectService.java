@@ -122,7 +122,7 @@ public class ProjectService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        project.setStatus(ProjectStatus.CANCELLED);
+        project.setStatus(ProjectStatus.INACTIVE);
         projectRepository.save(project);
     }
 }
