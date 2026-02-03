@@ -2,16 +2,10 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.group4.DLS.domain.entity.enums.GuidelineStatus;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,12 +30,15 @@ public class Guideline {
     @Column(nullable = false)
     String content;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     int version;
 
     LocalDate createdAt;
 
     LocalDate updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    GuidelineStatus status;
 
     @PrePersist
     protected void onCreate() {
