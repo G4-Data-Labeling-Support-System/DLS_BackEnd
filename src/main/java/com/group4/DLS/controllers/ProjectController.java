@@ -1,6 +1,7 @@
 package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
+import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
@@ -58,6 +59,21 @@ public class ProjectController {
                 .code(200)
                 .message("Project updated successfully")
                 .data(projectService.updateProject(id, request))
+                .build();
+    }
+
+    /*
+    * ================
+    * Update a project status
+    * ===============
+    */
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ApiResponse<ProjectResponse> updateProjectStatus(@PathVariable String id, @RequestBody ProjectStatusUpdateRequest request) {
+        return ApiResponse.<ProjectResponse>builder()
+                .code(200)
+                .message("Project status updated successfully")
+                .data(projectService.updateProjectStatus(id, request))
                 .build();
     }
 

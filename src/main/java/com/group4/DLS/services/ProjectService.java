@@ -1,6 +1,7 @@
 package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
+import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
 import com.group4.DLS.domain.entity.Project;
@@ -68,10 +69,6 @@ public class ProjectService {
     public ProjectResponse createProject(ProjectCreationRequest request) {
         User manager = currentUserProvider.getCurrentUser();
 
-        if (manager.getStatus() != UserStatus.ACTIVE) {
-            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
-        }
-
         Project project = projectMapper.createProjectFromRequest(request);
         if (project != null) {
             project = projectRepository.save(project);
@@ -88,12 +85,6 @@ public class ProjectService {
 
     // ================= UPDATE PROJECT =================
     public ProjectResponse updateProject(String projectId, ProjectUpdateRequest request) {
-        User currentUser = currentUserProvider.getCurrentUser();
-
-        if (currentUser.getStatus() != UserStatus.ACTIVE) {
-            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
-        }
-
         if (projectId == null) {
             throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
         }
@@ -109,14 +100,25 @@ public class ProjectService {
         return projectMapper.toProjectResponse(project);
     }
 
-    // ================= DELETE PROJECT =================
-    public void deleteProject(String projectId) {
-        User currentUser = currentUserProvider.getCurrentUser();
-
-        if (currentUser.getUserRole() != UserRole.MANAGER) {
-            throw new AppException(ErrorCode.FORBIDDEN);
+    // ================= UPDATE PROJECT STATUS =================
+    public ProjectResponse updateProjectStatus(String projectId, ProjectStatusUpdateRequest request) {
+        if (projectId == null) {
+            throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
         }
 
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+        if (project != null) {
+            projectMapper.updateProjectStatusFromRequest(request, project);
+            project = projectRepository.save(project);
+        }
+
+        return projectMapper.toProjectResponse(project);
+    }
+
+    // ================= DELETE PROJECT =================
+    public void deleteProject(String projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
