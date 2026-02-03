@@ -67,6 +67,14 @@ public class User {
     protected void onCreate() {
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();
+        
+        if (this.status == null) {
+            this.status = UserStatus.ACTIVE;
+        }
+
+        if (this.userRole == null) {
+            this.userRole = UserRole.ANNOTATOR;
+        }
     }
 
     @PreUpdate
