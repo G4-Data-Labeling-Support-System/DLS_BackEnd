@@ -73,6 +73,6 @@ public class Dataset {
 
     // Many Dataset belongs to One Assignemnt
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignmentId", nullable = false)
+    @JoinColumn(name = "assignmentId", nullable = true)
     private Assignment assignment;
 }
