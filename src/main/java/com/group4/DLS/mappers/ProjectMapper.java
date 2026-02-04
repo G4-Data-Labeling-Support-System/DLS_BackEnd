@@ -1,6 +1,8 @@
 package com.group4.DLS.mappers;
 
 
+import java.util.List;
+
 import org.mapstruct.*;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
@@ -13,6 +15,8 @@ import com.group4.DLS.domain.entity.Project;
 public interface ProjectMapper {
 
     ProjectResponse toProjectResponse(Project project);
+
+    List<ProjectResponse> toProjectResponse(List<Project> projects);
 
     @Mapping(target = "projectId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

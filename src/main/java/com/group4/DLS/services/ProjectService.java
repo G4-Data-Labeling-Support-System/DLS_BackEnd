@@ -8,8 +8,6 @@ import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.ProjectMember;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.entity.enums.ProjectStatus;
-import com.group4.DLS.domain.entity.enums.UserRole;
-import com.group4.DLS.domain.entity.enums.UserStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.ProjectMapper;
@@ -33,28 +31,17 @@ public class ProjectService {
     ProjectMemberRepository projectMemberRepository;
     CurrentUserProvider currentUserProvider;
 
-    // ================= GET ALL PROJECT =================
+    // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
     public List<ProjectResponse> getAllProjects() {
-        User currentUser = currentUserProvider.getCurrentUser();
-
-        if (currentUser.getStatus() != UserStatus.ACTIVE) {
-            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
-        }
-
-        // ADMIN: xem tất cả
-        if (currentUser.getUserRole() == UserRole.ADMIN) {
-            return projectRepository.findAll()
-                    .stream()
-                    .map(projectMapper::toProjectResponse)
-                    .toList();
-        }
-
-        // MANAGER / ANNOTATOR / REVIEWER: chỉ xem project mình tham gia
-        return projectMemberRepository.findByUser(currentUser)
-                .stream()
-                .map(ProjectMember::getProject)
-                .map(projectMapper::toProjectResponse)
-                .toList();
+        List<Project> projects = projectRepository.findByStatusIn(List.of(
+            ProjectStatus.ACTIVE,
+            ProjectStatus.CANCELLED,
+            ProjectStatus.COMPLETED,
+            ProjectStatus.IN_PROGRESS,
+            ProjectStatus.NOT_STARTED,
+            ProjectStatus.ON_HOLD
+        ));
+        return projectMapper.toProjectResponse(projects);
     }
 
     // ================= GET PROJECT BY ID =================
