@@ -1,6 +1,7 @@
 package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
+import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
@@ -25,7 +26,11 @@ public class ProjectController {
 
     private final ProjectService projectService;
 
-    // CREATE PROJECT
+    /*
+    * ================
+    * Create new project
+    * ===============
+    */
     @PostMapping
     @PreAuthorize("hasRole('MANAGER')")
     @Operation(
@@ -42,7 +47,11 @@ public class ProjectController {
                 .build();
     }
 
-    // UPDATE PROJECT
+    /*
+    * ================
+    * Update a project
+    * ===============
+    */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
     public ApiResponse<ProjectResponse> update(@PathVariable String id, @RequestBody ProjectUpdateRequest request) {
@@ -53,19 +62,42 @@ public class ProjectController {
                 .build();
     }
 
-    // DELETE PROJECT (soft / logic delete)
-    @PatchMapping("/{id}")
+    /*
+    * ================
+    * Update a project status
+    * ===============
+    */
+    @PutMapping("/{id}/status")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ApiResponse<ProjectResponse> updateProjectStatus(@PathVariable String id, @RequestBody ProjectStatusUpdateRequest request) {
+        return ApiResponse.<ProjectResponse>builder()
+                .code(200)
+                .message("Project status updated successfully")
+                .data(projectService.updateProjectStatus(id, request))
+                .build();
+    }
+
+    /*
+    * ================
+    * Remove a project
+    * ===============
+    */
+    @PatchMapping("/{id}/remove")
     @PreAuthorize("hasRole('MANAGER')")
     public ApiResponse<Void> delete(@PathVariable String id) {
         projectService.deleteProject(id);
 
         return ApiResponse.<Void>builder()
                 .code(200)
-                .message("Project deleted successfully")
+                .message("Project remove successfully")
                 .build();
     }
 
-    // GET PROJECT BY ID
+    /*
+    * ================
+    * Get project by id
+    * ===============
+    */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
@@ -80,7 +112,11 @@ public class ProjectController {
                 .build();
     }
 
-    // LIST ALL PROJECTS
+    /*
+    * ================
+    * List all projects
+    * ===============
+    */
     @GetMapping
     @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
