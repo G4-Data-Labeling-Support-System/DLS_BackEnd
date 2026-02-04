@@ -36,7 +36,8 @@ public enum ErrorCode {
     PASSWORD_CONFIRM_NOT_MATCH(400, "Confirm password not match"),
     INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment"),
     REQUIRE_PROJECT_ID(400, "Project Id is needed"),
-    GUIDELINE_EXISTS(400,"Exist Guideline Name" );
+    GUIDELINE_EXISTS(400,"Exist Guideline Name" ),
+    PROJECT_ALREADY_EXISTS(400, "Project already exists");
 
     final int code;
     final String message;

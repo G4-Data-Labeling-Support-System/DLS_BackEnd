@@ -34,19 +34,25 @@ public class ProjectService {
     // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
     public List<ProjectResponse> getAllProjects() {
         List<Project> projects = projectRepository.findByStatusIn(List.of(
-            ProjectStatus.ACTIVE,
-            ProjectStatus.CANCELLED,
-            ProjectStatus.COMPLETED,
-            ProjectStatus.IN_PROGRESS,
-            ProjectStatus.NOT_STARTED,
-            ProjectStatus.ON_HOLD
-        ));
+                ProjectStatus.ACTIVE,
+                ProjectStatus.CANCELLED,
+                ProjectStatus.COMPLETED,
+                ProjectStatus.IN_PROGRESS,
+                ProjectStatus.NOT_STARTED,
+                ProjectStatus.ON_HOLD));
         return projectMapper.toProjectResponse(projects);
     }
 
     // ================= GET PROJECT BY ID =================
     public ProjectResponse getProjectById(String projectId) {
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByProjectIdAndStatusIn(projectId,
+                List.of(
+                        ProjectStatus.ACTIVE,
+                        ProjectStatus.CANCELLED,
+                        ProjectStatus.COMPLETED,
+                        ProjectStatus.IN_PROGRESS,
+                        ProjectStatus.NOT_STARTED,
+                        ProjectStatus.ON_HOLD))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         return projectMapper.toProjectResponse(project);
@@ -57,43 +63,52 @@ public class ProjectService {
         User manager = currentUserProvider.getCurrentUser();
 
         Project project = projectMapper.createProjectFromRequest(request);
-        if (project != null) {
-            project = projectRepository.save(project);
 
-            // Manager auto là member của project
-            ProjectMember member = new ProjectMember();
-            member.setProject(project);
-            member.setUser(manager);
-            projectMemberRepository.save(member);
+        if (projectRepository.existsByProjectName(request.getProjectName())) {
+            throw new AppException(ErrorCode.PROJECT_ALREADY_EXISTS);
         }
+
+        project = projectRepository.save(project);
+
+        // Manager auto là member của project
+        ProjectMember member = new ProjectMember();
+        member.setProject(project);
+        member.setUser(manager);
+        projectMemberRepository.save(member);
 
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= UPDATE PROJECT =================
     public ProjectResponse updateProject(String projectId, ProjectUpdateRequest request) {
-        if (projectId == null) {
-            throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
-        }
-
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByProjectIdAndStatusIn(
+                projectId,
+                List.of(
+                        ProjectStatus.ACTIVE,
+                        ProjectStatus.CANCELLED,
+                        ProjectStatus.COMPLETED,
+                        ProjectStatus.IN_PROGRESS,
+                        ProjectStatus.NOT_STARTED,
+                        ProjectStatus.ON_HOLD))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        if (project != null) {
-            projectMapper.updateProjectFromRequest(request, project);
-            project = projectRepository.save(project);
-        }
-        
+        projectMapper.updateProjectFromRequest(request, project);
+        project = projectRepository.save(project);
+
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= UPDATE PROJECT STATUS =================
     public ProjectResponse updateProjectStatus(String projectId, ProjectStatusUpdateRequest request) {
-        if (projectId == null) {
-            throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
-        }
-
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByProjectIdAndStatusIn(
+                projectId,
+                List.of(
+                        ProjectStatus.ACTIVE,
+                        ProjectStatus.CANCELLED,
+                        ProjectStatus.COMPLETED,
+                        ProjectStatus.IN_PROGRESS,
+                        ProjectStatus.NOT_STARTED,
+                        ProjectStatus.ON_HOLD))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         if (project != null) {
@@ -106,7 +121,15 @@ public class ProjectService {
 
     // ================= DELETE PROJECT =================
     public void deleteProject(String projectId) {
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByProjectIdAndStatusIn(
+                projectId,
+                List.of(
+                        ProjectStatus.ACTIVE,
+                        ProjectStatus.CANCELLED,
+                        ProjectStatus.COMPLETED,
+                        ProjectStatus.IN_PROGRESS,
+                        ProjectStatus.NOT_STARTED,
+                        ProjectStatus.ON_HOLD))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         project.setStatus(ProjectStatus.INACTIVE);
