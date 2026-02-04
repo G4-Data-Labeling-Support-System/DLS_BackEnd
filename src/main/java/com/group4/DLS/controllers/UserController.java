@@ -20,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,10 +41,11 @@ public class UserController {
 
     /*
     * ================
-    * CRUD Operations
+    * Get All User
     * ===============
     */
     @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
         summary = "Get all users",
         description = "Retrieve a list of all registered users in the system"
@@ -58,7 +60,13 @@ public class UserController {
         return response;
     }
 
+    /*
+    * ================
+    * Get User by Id
+    * ===============
+    */
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
         summary = "Get user by ID",
         description = "Retrieve detailed information about a specific user"
@@ -73,7 +81,13 @@ public class UserController {
         return response;
     }
 
+    /*
+    * ================
+    * Create new user
+    * ===============
+    */
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(
         summary = "Create new user",
         description = "Register a new user in the system with role assignment"
@@ -88,7 +102,13 @@ public class UserController {
         return response;
     }
 
+    /*
+    * ================
+    * Update user by Id
+    * ===============
+    */
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
         summary = "Update user information",
         description = "Update user profile information (username, full name, email, etc.)"
@@ -103,7 +123,13 @@ public class UserController {
         return response;
     }
 
+    /*
+    * ================
+    * Update user password
+    * ===============
+    */
     @PutMapping("/update/password/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
         summary = "Change user password",
         description = "Update user password with old password verification"
@@ -117,7 +143,13 @@ public class UserController {
         return response;
     }
 
+    /*
+    * ================
+    * Deactivate user
+    * ===============
+    */
     @PatchMapping("/{id}/deactivate")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(
         summary = "Deactivate user",
         description = "Deactivate a user account (soft delete)"
@@ -132,7 +164,13 @@ public class UserController {
         return response;
     }
 
+    /*
+    * ================
+    * Activate user
+    * ===============
+    */
     @PatchMapping("/{id}/activate")
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Operation(
         summary = "Activate user",
         description = "Activate a user account"

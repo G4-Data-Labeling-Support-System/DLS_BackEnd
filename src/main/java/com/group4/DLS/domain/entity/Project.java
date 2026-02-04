@@ -54,6 +54,10 @@ public class Project {
     protected void onCreate() {
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();
+
+        if (status == null) {
+            this.status = ProjectStatus.NOT_STARTED;
+        }
     }
 
     @PreUpdate

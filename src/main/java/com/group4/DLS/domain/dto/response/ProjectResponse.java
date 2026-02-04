@@ -18,8 +18,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ProjectResponse {
+    String projectId;
     String projectName;
     String description;
     ProjectStatus status;
     LocalDate createdAt;
+    LocalDate updatedAt;
 }
