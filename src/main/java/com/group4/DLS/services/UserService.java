@@ -19,6 +19,8 @@ import com.group4.DLS.repositories.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    SeaweedFilerUploadService seaweedFilerUploadService;
 
     // Get all users
     public List<User> getAllUsers() {
@@ -113,5 +116,21 @@ public class UserService {
         user.setStatus(UserStatus.ACTIVE);
 
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public String uploadAvatar(String userId, MultipartFile file) throws Exception {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // 1️⃣ Upload lên SeaweedFS
+        String imageUrl = seaweedFilerUploadService.uploadImage(file, "avatars");
+
+        // 2️⃣ Lưu URL vào DB
+        user.setCoverImage(imageUrl);
+        userRepository.save(user);
+
+        return imageUrl;
     }
 }
