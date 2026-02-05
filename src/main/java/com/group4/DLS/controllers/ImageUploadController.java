@@ -21,7 +21,7 @@ public class ImageUploadController {
 
         String imageUrl = uploadfilerUploadService.uploadImage(file, "test");
 
-        // 👉 tại đây bạn lưu imageUrl vào DB
+        // tại đây bạn lưu imageUrl vào DB
         return ResponseEntity.ok(imageUrl);
     }
 }
