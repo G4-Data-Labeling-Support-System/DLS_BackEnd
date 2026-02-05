@@ -124,6 +124,10 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        if (file.getSize() > 10 * 1024 * 1024) {
+            throw new AppException(ErrorCode.OVER_SIZE_FILE);
+        }
+
         // 1️⃣ Upload lên SeaweedFS
         String imageUrl = seaweedFilerUploadService.uploadImage(file, "avatars");
 

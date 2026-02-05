@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.exceptions.enums.ErrorCode;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -71,6 +72,19 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(response);
+    }
+
+    public ResponseEntity<ApiResponse<String>> handleMaxUpload(MaxUploadSizeExceededException ex) {
+        ApiResponse<String> response = new ApiResponse<>();
+        ErrorCode errorCode = ErrorCode.OVER_SIZE_FILE;
+
+        response.setCode(errorCode.getCode());
+        response.setMessage(errorCode.getMessage());
+        response.setData(null);
+
+        return ResponseEntity
+                .status(HttpStatus.PAYLOAD_TOO_LARGE)
                 .body(response);
     }
 }

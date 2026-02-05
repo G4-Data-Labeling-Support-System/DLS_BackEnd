@@ -25,7 +25,7 @@ public class SeaweedFilerUploadService {
 
     public String uploadImage(MultipartFile file, String folder) throws IOException {
 
-        String filename = UUID.randomUUID() + "-" + file.getOriginalFilename();
+        String filename = file.getOriginalFilename();
 
         // URL upload vào Filer
         String uploadUrl = seaweedFSProperties.getFiler().getUrl()
