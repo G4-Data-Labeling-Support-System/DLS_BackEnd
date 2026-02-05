@@ -12,6 +12,8 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -25,7 +27,7 @@ public class SeaweedFilerUploadService {
 
     public String uploadImage(MultipartFile file, String folder) throws IOException {
 
-        String filename = file.getOriginalFilename();
+        String filename = UUID.randomUUID() + file.getOriginalFilename();
 
         // URL upload vào Filer
         String uploadUrl = seaweedFSProperties.getFiler().getUrl()
