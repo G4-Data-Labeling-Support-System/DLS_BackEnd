@@ -1,7 +1,7 @@
 package com.group4.DLS.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.group4.DLS.domain.dto.request.UserCreationRequest;
 import com.group4.DLS.domain.dto.request.UserPasswordChangeRequest;
@@ -21,13 +21,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -183,5 +177,15 @@ public class UserController {
         response.setData(userService.avtivateUser(id));
 
         return response;
+    }
+
+    @PostMapping("/{id}/avatar")
+    public ResponseEntity<String> uploadAvatar(
+            @PathVariable String id,
+            @RequestParam MultipartFile file) throws Exception {
+
+        String imageUrl = userService.uploadAvatar(id, file);
+
+        return ResponseEntity.ok(imageUrl);
     }
 }
