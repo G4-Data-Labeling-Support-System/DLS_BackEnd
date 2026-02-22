@@ -31,7 +31,16 @@ public class ActivityLog {
     String logId;
 
     @Column(nullable = false)
+    String username;
+
+    @Column(nullable = false)
     String action;
+
+    @Column(nullable = false)
+    String entityName;
+
+    @Column(nullable = false)
+    String entityId;
 
     @Column(nullable = false)
     LocalDate timestamp;
