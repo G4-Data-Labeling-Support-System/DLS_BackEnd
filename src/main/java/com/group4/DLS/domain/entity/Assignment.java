@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 
 import jakarta.persistence.CascadeType;
@@ -70,10 +71,12 @@ public class Assignment {
     // Many Assignment belongs to One Project
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectId" , nullable = false)
+    @JsonIgnore
     private Project project;
 
     // Many Assignment belongs to One Dataset
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "datasetId", nullable = false)
+    @JsonIgnore
     private Dataset dataset;
 }

@@ -4,6 +4,7 @@ import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
+import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.services.AssignmentService;
 
@@ -21,12 +22,14 @@ public class AssignmentController {
 
         // 1 Get all assignments
         @GetMapping
-        public ApiResponse<List<Assignment>> getAllAssignments() {
-                return ApiResponse.<List<Assignment>>builder()
-                                .code(200)
-                                .message("Get all assignments successfully")
-                                .data(assignmentService.getAllAssignments())
-                                .build();
+        public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
+                ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+
+                response.setCode(200);
+                response.setData(assignmentService.getAllAssignments());
+                response.setMessage("GuideLines retrieved successfully");
+
+                return response;
         }
 
         // 2 Create assignment
