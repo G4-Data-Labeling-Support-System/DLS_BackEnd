@@ -28,6 +28,7 @@ public class AssignmentService {
     AssignmentMapper assignmentMapper;
     ProjectRepository projectRepository;
     DatasetRepository datasetRepository;
+    ActivityLogService logService;
 
     public List<Assignment> getAllAssignments() {
         return assignmentRepository.findAll();
@@ -47,6 +48,10 @@ public class AssignmentService {
         assignment.setDataset(dataset);
 
         assignmentRepository.save(assignment);
+
+        // Log action
+        logService.log(null);
+
         return assignmentMapper.toResponse(assignment);
     }
 
