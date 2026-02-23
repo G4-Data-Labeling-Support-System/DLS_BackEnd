@@ -29,10 +29,13 @@ public class AssignmentService {
     ProjectRepository projectRepository;
     DatasetRepository datasetRepository;
 
+
+// ================= GET ALL ASSIGNMENTS =================
     public List<Assignment> getAllAssignments() {
         return assignmentRepository.findAll();
     }
 
+//Create Assignment
     public AssignmentResponse createAssignment(String projectId, String datasetId, AssignmentCreateRequest request) {
         if (assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
             throw new AppException(ErrorCode.ASSIGNMENT_EXISTS);
@@ -50,6 +53,7 @@ public class AssignmentService {
         return assignmentMapper.toResponse(assignment);
     }
 
+    //Update Assignment
     public AssignmentResponse updateAssignment(String assignmentId, AssignmentUpdateRequest request) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
@@ -72,6 +76,7 @@ public class AssignmentService {
         return assignmentMapper.toResponse(assignment);
     }
 
+    //Delete Assignment (soft delete by setting status to CANCELED)
     public void deleteAssignment(String assignmentId) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
