@@ -46,6 +46,7 @@ public class AssignmentService {
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
         Assignment assignment = assignmentMapper.toAssignment(request);
+        assignment.setAssignmentStatus(AssignmentStatus.OPEN);
         assignment.setProject(project);
         assignment.setDataset(dataset);
 
