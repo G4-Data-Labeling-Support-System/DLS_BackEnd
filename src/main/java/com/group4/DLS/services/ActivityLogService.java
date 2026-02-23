@@ -1,13 +1,12 @@
 package com.group4.DLS.services;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.group4.DLS.domain.entity.ActivityLog;
 import com.group4.DLS.domain.entity.User;
-import com.group4.DLS.exceptions.AppException;
-import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.repositories.ActivityLogRepository;
-import com.group4.DLS.repositories.UserRepository;
 import com.group4.DLS.security.CurrentUserProvider;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +22,11 @@ public class ActivityLogService {
     ActivityLogRepository activityLogRepository;
     HttpServletRequest httpServletRequest;
     CurrentUserProvider currentUserProvider;
+
+    // Get All Logs
+    public List<ActivityLog> getAllLogs() {
+        return activityLogRepository.findAll();
+    }
 
     public void log(String action,
                 String entityName,
