@@ -7,6 +7,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 
+import com.group4.DLS.domain.entity.enums.Status;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -45,6 +46,9 @@ public class Assignment {
     @Enumerated(EnumType.STRING)
     AssignmentStatus assignmentStatus;
 
+    @Enumerated(EnumType.STRING)
+    Status status;
+
     LocalDate createdAt;
 
     LocalDate updatedAt;
@@ -70,13 +74,13 @@ public class Assignment {
 
     // Many Assignment belongs to One Project
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId" , nullable = false)
+    @JoinColumn(name = "project_id" , nullable = false)
     @JsonIgnore
     private Project project;
 
     // Many Assignment belongs to One Dataset
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "datasetId", nullable = false)
+    @JoinColumn(name = "dataset_id", nullable = false)
     @JsonIgnore
     private Dataset dataset;
 }

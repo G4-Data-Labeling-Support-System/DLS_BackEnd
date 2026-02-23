@@ -7,6 +7,7 @@ import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.enums.AssignmentStatus;
+import com.group4.DLS.domain.entity.enums.Status;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -53,7 +55,8 @@ public class AssignmentService {
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
         Assignment assignment = assignmentMapper.toAssignment(request);
-        assignment.setAssignmentStatus(AssignmentStatus.OPEN);
+        assignment.setAssignmentStatus(AssignmentStatus.CREATED);
+        assignment.setStatus(Status.ACTIVE);
         assignment.setProject(project);
         assignment.setDataset(dataset);
 
@@ -79,6 +82,7 @@ public class AssignmentService {
                 throw new AppException(ErrorCode.INVALID_ASSIGNMENT_STATUS);
             }
         }
+        assignment.setUpdatedAt(LocalDate.now());
 
         assignmentRepository.save(assignment);
         return assignmentMapper.toResponse(assignment);
@@ -89,7 +93,7 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        assignment.setAssignmentStatus(AssignmentStatus.CANCELED);
+        assignment.setStatus(Status.DELETED);
         assignmentRepository.save(assignment);
     }
 

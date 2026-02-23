@@ -34,5 +34,5 @@ public interface AssignmentMapper {
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    Assignment updatAssignmentFromRequest(Assignment assignment);
+    Assignment updateAssignmentFromRequest(Assignment assignment);
 }
