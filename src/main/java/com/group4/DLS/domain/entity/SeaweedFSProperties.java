@@ -5,10 +5,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @ConfigurationProperties(prefix = "seaweedfs")
 @Data
 public class SeaweedFSProperties {
