@@ -19,21 +19,14 @@ public class SystemController {
     private final SeaweedMonitorService monitorService;
 
     @GetMapping("/storage-status")
-    public ApiResponse<Map<String, Object>> getStorageStatus() {
+     public ApiResponse<SeaweedClusterStatusResponse> getStorageStatus() {
+            ApiResponse<SeaweedClusterStatusResponse> response = new ApiResponse<>();
 
-        SeaweedClusterStatusResponse status = monitorService.getClusterStatus();
+            response.setCode(200);
+            response.setData(monitorService.getClusterStatus());
+            response.setMessage("Connect successfully");
 
-        Map<String, Object> data = new HashMap<>();
-        data.put("totalGB", FileSizeUtil.bytesToGB(status.getTotal()));
-        data.put("usedGB", FileSizeUtil.bytesToGB(status.getUsed()));
-        data.put("freeGB", FileSizeUtil.bytesToGB(status.getFree()));
-        data.put("volumeCount", status.getVolumeCount());
-
-        ApiResponse<Map<String, Object>> response = new ApiResponse<>();
-        response.setCode(200);
-        response.setMessage("SeaweedFS storage status");
-        response.setData(data);
-
-        return response;
+            return response;
     }
+
 }
