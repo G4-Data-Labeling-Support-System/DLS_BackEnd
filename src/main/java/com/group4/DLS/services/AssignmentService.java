@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.domain.dto.request.ActivityLogRequest;
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
@@ -13,7 +14,9 @@ import com.group4.DLS.mappers.AssignmentMapper;
 import com.group4.DLS.repositories.AssignmentRepository;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectRepository;
+import com.group4.DLS.security.CurrentUserProvider;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -49,8 +52,12 @@ public class AssignmentService {
 
         assignmentRepository.save(assignment);
 
-        // Log action
-        logService.log(null);
+         // Log action
+        logService.log(
+                "CREATE_ASSIGNMENT",
+                "ASSIGNMENT",
+                assignment.getAssignmentId(),
+                "Created assignment: " + assignment.getAssignmentName());
 
         return assignmentMapper.toResponse(assignment);
     }

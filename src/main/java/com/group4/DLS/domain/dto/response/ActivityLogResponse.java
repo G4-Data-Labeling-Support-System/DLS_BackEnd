@@ -1,6 +1,6 @@
 package com.group4.DLS.domain.dto.response;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,5 +20,7 @@ public class ActivityLogResponse {
     String action;
     String entityName;
     String entityId;
-    LocalDate timestamp;
+    String description;
+    String ipAddress;
+    LocalDateTime timestamp;
 }

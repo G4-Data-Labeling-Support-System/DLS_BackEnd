@@ -1,7 +1,5 @@
 package com.group4.DLS.domain.dto.request;
 
-import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -20,4 +18,6 @@ public class ActivityLogRequest {
     String action;
     String entityName;
     String entityId;
+    String description;
+    String ipAddress;
 }
