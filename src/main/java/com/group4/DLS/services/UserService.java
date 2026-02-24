@@ -29,6 +29,7 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+    ActivityLogService logService;
     SeaweedFilerUploadService seaweedFilerUploadService;
 
     // Get all users
@@ -55,7 +56,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    // Update user detailes
+    // Update user details
     public UserResponse updateUser(String id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -64,6 +65,13 @@ public class UserService {
             userMapper.updateUserFromRequest(request, user);
             return userMapper.toUserResponse(userRepository.save(user));
         }
+
+        // Log action
+        logService.log(
+                "UPDATE_USER_DETAILS",
+                "USER",
+                user.getId(),
+                "Updated user details: " + user.getFullName());
 
         return null;
     }
@@ -95,7 +103,15 @@ public class UserService {
 
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
+        // Log action
+        logService.log(
+                "UPDATE_USER_PASSWORD",
+                "USER",
+                user.getId(),
+                "Updated user details: " + user.getFullName());
+
         return userMapper.toUserResponse(userRepository.save(user));
+
     }
 
     // Deactivate user by ID
@@ -104,6 +120,13 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         
         user.setStatus(UserStatus.INACTIVE);
+
+        // Log action
+        logService.log(
+                "DEACTIVATE USER",
+                "USER",
+                user.getId(),
+                "Deactivated a user: " + user.getUsername());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }    
@@ -115,9 +138,17 @@ public class UserService {
         
         user.setStatus(UserStatus.ACTIVE);
 
+        // Log action
+        logService.log(
+                "ACTIVATE USER",
+                "USER",
+                user.getId(),
+                "Activated a user: " + user.getUsername());
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    // Upload avatar
     @Transactional
     public String uploadAvatar(String userId, MultipartFile file) throws Exception {
 
@@ -134,6 +165,13 @@ public class UserService {
         // 2️⃣ Lưu URL vào DB
         user.setCoverImage(imageUrl);
         userRepository.save(user);
+
+        // Log action
+        logService.log(
+                "UPLOAD AVATAR",
+                "USER",
+                user.getId(),
+                "Upload a user avatar: " + user.getCoverImage());
 
         return imageUrl;
     }
