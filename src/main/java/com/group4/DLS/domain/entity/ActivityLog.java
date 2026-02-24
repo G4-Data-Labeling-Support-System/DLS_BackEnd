@@ -4,12 +4,9 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -33,6 +30,9 @@ public class ActivityLog {
     String logId;
 
     @Column(nullable = false)
+    String username;
+
+    @Column(nullable = false)
     String action;
 
     @Column(nullable = false)
@@ -54,9 +54,4 @@ public class ActivityLog {
     protected void onAction() {
         this.timestamp = LocalDateTime.now();
     }
-
-    // Many Activity_Logs belongs to One User
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
 }
