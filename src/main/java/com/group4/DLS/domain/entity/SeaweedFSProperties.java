@@ -1,6 +1,6 @@
 package com.group4.DLS.domain.entity;
 
-import lombok.Data;
+import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
