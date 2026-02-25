@@ -24,4 +24,14 @@ public class ImageUploadController {
         // 👉 tại đây bạn lưu imageUrl vào DB
         return ResponseEntity.ok(imageUrl);
     }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteImage(
+            @RequestParam String url) throws Exception {
+
+        uploadfilerUploadService.deleteImageByUrl(url);
+
+        // 👉 tại đây bạn lưu imageUrl vào DB
+        return ResponseEntity.ok("oke");
+    }
 }

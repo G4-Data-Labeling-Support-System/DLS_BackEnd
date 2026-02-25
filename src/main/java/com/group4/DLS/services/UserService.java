@@ -119,7 +119,7 @@ public class UserService {
     }
 
     @Transactional
-    public String uploadAvatar(String userId, MultipartFile file) throws Exception {
+    public UserResponse uploadAvatar(String userId, MultipartFile file) throws Exception {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -128,13 +128,59 @@ public class UserService {
             throw new AppException(ErrorCode.OVER_SIZE_FILE);
         }
 
-        // 1️⃣ Upload lên SeaweedFS
+        //  Upload lên SeaweedFS
         String imageUrl = seaweedFilerUploadService.uploadImage(file, "avatars");
 
-        // 2️⃣ Lưu URL vào DB
+        // Lưu URL vào DB
         user.setCoverImage(imageUrl);
-        userRepository.save(user);
 
-        return imageUrl;
+        return userMapper.toUserResponse(userRepository.save(user));
+
+    }
+
+    @Transactional
+    public UserResponse editAvatar(String userId, MultipartFile file) throws Exception {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (file.getSize() > 10 * 1024 * 1024) {
+            throw new AppException(ErrorCode.OVER_SIZE_FILE);
+        }
+
+        // Lưu ảnh cũ
+        String oldImageUrl = user.getCoverImage();
+
+        // Upload ảnh mới
+        String newImageUrl = seaweedFilerUploadService.uploadImage(file, "avatars");
+
+        // Update DB
+        user.setCoverImage(newImageUrl);
+
+        // Xóa ảnh cũ (sau khi DB update thành công)
+        if (oldImageUrl != null && !oldImageUrl.isBlank()) {
+            try {
+                seaweedFilerUploadService.deleteImageByUrl(oldImageUrl);
+            } catch (Exception e) {
+                // log lại, không throw để tránh rollback transaction
+                System.out.println("Cannot delete old avatar: " + e.getMessage());
+            }
+        }
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public UserResponse deleteAvatar(String userId) throws Exception {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        seaweedFilerUploadService.deleteImageByUrl(user.getCoverImage());
+
+        user.setCoverImage(null);
+
+        return userMapper.toUserResponse(userRepository.save(user));
+
     }
 }
