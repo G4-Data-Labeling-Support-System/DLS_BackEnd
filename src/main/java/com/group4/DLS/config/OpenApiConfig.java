@@ -19,7 +19,7 @@ import org.springframework.context.annotation.Configuration;
             name = "Group 4",
             email = "support@dls.com"
         )
-    ),
+    )
     // servers = {
     //     @Server(
     //         description = "Development Server",
