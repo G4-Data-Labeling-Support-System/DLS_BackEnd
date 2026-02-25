@@ -20,12 +20,12 @@ import org.springframework.context.annotation.Configuration;
             email = "support@dls.com"
         )
     ),
-    servers = {
-        @Server(
-            description = "Development Server",
-            url = "http://localhost:8081"
-        )
-    }
+    // servers = {
+    //     @Server(
+    //         description = "Development Server",
+    //         url = "http://localhost:8081"
+    //     )
+    // }
 )
 @SecurityScheme(
     name = "Bearer Authentication",

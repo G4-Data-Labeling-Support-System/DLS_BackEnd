@@ -77,6 +77,14 @@ public class AssignmentService {
         }
 
         assignmentRepository.save(assignment);
+
+        // Log action
+        logService.log(
+                "UPDATE_ASSIGNMENT",
+                "ASSIGNMENT",
+                assignment.getAssignmentId(),
+                "Assignment updated: " + assignment.getAssignmentName());
+
         return assignmentMapper.toResponse(assignment);
     }
 
@@ -86,6 +94,12 @@ public class AssignmentService {
 
         assignment.setAssignmentStatus(AssignmentStatus.CANCELED);
         assignmentRepository.save(assignment);
-    }
 
+        // Log action
+        logService.log(
+                "REMOVE_ASSIGNMENT",
+                "ASSIGNMENT",
+                assignment.getAssignmentId(),
+                "Assignment removed: " + assignment.getAssignmentName());
+    }
 }
