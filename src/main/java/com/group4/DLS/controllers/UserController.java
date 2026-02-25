@@ -1,7 +1,7 @@
 package com.group4.DLS.controllers;
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import com.group4.DLS.domain.dto.request.UserCreationRequest;
 import com.group4.DLS.domain.dto.request.UserPasswordChangeRequest;
@@ -21,13 +21,7 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.PutMapping;
-
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -184,4 +178,39 @@ public class UserController {
 
         return response;
     }
+
+    @PutMapping("/{id}/avatar")
+    public ApiResponse<UserResponse> uploadAvatar(
+            @PathVariable String id,
+            @RequestParam MultipartFile file) throws Exception {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setMessage("Avatar user upload successfully");
+        response.setData(userService.uploadAvatar(id, file));
+        return response ;
+    }
+
+    @PutMapping("/{id}/avatar/edit")
+    public ApiResponse<UserResponse> editAvatar(
+            @PathVariable String id,
+            @RequestParam MultipartFile file) throws Exception {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setMessage("Avatar user edit successfully");
+        response.setData(userService.editAvatar(id, file));
+        return response ;
+    }
+
+    @DeleteMapping("/{id}/avatar/delete")
+    public ApiResponse<UserResponse> deleteAvatar(
+            @PathVariable String id) throws Exception {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setMessage("Avatar user delete successfully");
+        response.setData(userService.deleteAvatar(id));
+        return response ;
+    }
+
+
+
 }

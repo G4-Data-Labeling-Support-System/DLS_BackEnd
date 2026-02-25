@@ -37,7 +37,8 @@ public enum ErrorCode {
     INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment"),
     REQUIRE_PROJECT_ID(400, "Project Id is needed"),
     GUIDELINE_EXISTS(400,"Exist Guideline Name" ),
-    PROJECT_ALREADY_EXISTS(400, "Project already exists");
+    PROJECT_ALREADY_EXISTS(400, "Project already exists"),
+    OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB");
 
     final int code;
     final String message;
