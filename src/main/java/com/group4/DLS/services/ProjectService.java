@@ -14,6 +14,7 @@ import com.group4.DLS.mappers.ProjectMapper;
 import com.group4.DLS.repositories.ProjectMemberRepository;
 import com.group4.DLS.repositories.ProjectRepository;
 import com.group4.DLS.security.CurrentUserProvider;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,6 +31,8 @@ public class ProjectService {
     ProjectMapper projectMapper;
     ProjectMemberRepository projectMemberRepository;
     CurrentUserProvider currentUserProvider;
+
+    ActivityLogService logService;
 
     // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
     public List<ProjectResponse> getAllProjects() {
@@ -76,6 +79,13 @@ public class ProjectService {
         member.setUser(manager);
         projectMemberRepository.save(member);
 
+        // Log action
+        logService.log(
+                "CREATE_PROJECT",
+                "PROJECT",
+                project.getProjectId(),
+                "Created project: " + project.getProjectName());
+
         return projectMapper.toProjectResponse(project);
     }
 
@@ -94,6 +104,13 @@ public class ProjectService {
 
         projectMapper.updateProjectFromRequest(request, project);
         project = projectRepository.save(project);
+
+        // Log action
+        logService.log(
+                "UPDATE_PROJECT",
+                "PROJECT",
+                project.getProjectId(),
+                "Updated project: " + project.getProjectName());
 
         return projectMapper.toProjectResponse(project);
     }
@@ -114,6 +131,14 @@ public class ProjectService {
         if (project != null) {
             projectMapper.updateProjectStatusFromRequest(request, project);
             project = projectRepository.save(project);
+
+            // Log action
+            logService.log(
+                "UPDATE_PROJECT_STATUS",
+                "PROJECT",
+                project.getProjectId(),
+                "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
+            );
         }
 
         return projectMapper.toProjectResponse(project);
@@ -134,5 +159,12 @@ public class ProjectService {
 
         project.setStatus(ProjectStatus.INACTIVE);
         projectRepository.save(project);
+
+        // Log action
+        logService.log(
+                "REMOVE_PROJECT",
+                "PROJECT",
+                project.getProjectId(),
+                "Project removed: " + project.getProjectName());
     }
 }

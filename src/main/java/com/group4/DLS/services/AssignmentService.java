@@ -13,7 +13,6 @@ import com.group4.DLS.mappers.AssignmentMapper;
 import com.group4.DLS.repositories.AssignmentRepository;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -28,6 +27,7 @@ public class AssignmentService {
     AssignmentMapper assignmentMapper;
     ProjectRepository projectRepository;
     DatasetRepository datasetRepository;
+    ActivityLogService logService;
 
     public List<Assignment> getAllAssignments() {
         return assignmentRepository.findAll();
@@ -47,6 +47,14 @@ public class AssignmentService {
         assignment.setDataset(dataset);
 
         assignmentRepository.save(assignment);
+
+         // Log action
+        logService.log(
+                "CREATE_ASSIGNMENT",
+                "ASSIGNMENT",
+                assignment.getAssignmentId(),
+                "Created assignment: " + assignment.getAssignmentName());
+
         return assignmentMapper.toResponse(assignment);
     }
 
