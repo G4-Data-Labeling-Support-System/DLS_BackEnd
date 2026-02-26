@@ -48,7 +48,7 @@ public class JwtService {
                 .compact();
     }
 
-    public String extractEmail(String token) {
+    public String extractUserId(String token) {
         return Jwts.parser()
                 .verifyWith(getSignKey())
                 .build()
