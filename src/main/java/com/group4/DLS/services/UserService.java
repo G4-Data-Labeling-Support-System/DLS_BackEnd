@@ -179,8 +179,8 @@ public class UserService {
             throw new AppException(ErrorCode.OVER_SIZE_FILE);
         }
 
-        // Lưu ảnh cũ
-        String oldImageUrl = user.getCoverImage();
+//        // Lưu ảnh cũ
+//        String oldImageUrl = user.getCoverImage();
 
         // Upload ảnh mới
         String newImageUrl = seaweedFilerUploadService.uploadImage(file, "avatars");
@@ -188,15 +188,15 @@ public class UserService {
         // Update DB
         user.setCoverImage(newImageUrl);
 
-        // Xóa ảnh cũ (sau khi DB update thành công)
-        if (oldImageUrl != null && !oldImageUrl.isBlank()) {
-            try {
-                seaweedFilerUploadService.deleteImageByUrl(oldImageUrl);
-            } catch (Exception e) {
-                // log lại, không throw để tránh rollback transaction
-                System.out.println("Cannot delete old avatar: " + e.getMessage());
-            }
-        }
+//        // Xóa ảnh cũ (sau khi DB update thành công)
+//        if (oldImageUrl != null && !oldImageUrl.isBlank()) {
+//            try {
+//                seaweedFilerUploadService.deleteImageByUrl(oldImageUrl);
+//            } catch (Exception e) {
+//                // log lại, không throw để tránh rollback transaction
+//                System.out.println("Cannot delete old avatar: " + e.getMessage());
+//            }
+//        }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
