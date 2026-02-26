@@ -207,8 +207,6 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        seaweedFilerUploadService.deleteImageByUrl(user.getCoverImage());
-
         user.setCoverImage(null);
 
         return userMapper.toUserResponse(userRepository.save(user));

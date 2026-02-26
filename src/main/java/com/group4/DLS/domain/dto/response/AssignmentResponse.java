@@ -24,4 +24,6 @@ public class AssignmentResponse {
     LocalDate createdAt;
     LocalDate updatedAt;
     Status status;
+    ProjectResponse project;
+    DatasetResponse dataset;
 }

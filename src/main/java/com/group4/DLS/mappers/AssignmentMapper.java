@@ -25,6 +25,8 @@ public interface AssignmentMapper {
     // ===== RESPONSE =====
     @Mapping(target = "projectId", source = "project.projectId")
     @Mapping(target = "datasetId", source = "dataset.datasetId")
+    @Mapping(target = "project", source = "project")
+    @Mapping(target = "dataset", source = "dataset")
     AssignmentResponse toResponse(Assignment assignment);
 
     @Mapping(target = "assignmentId", ignore = true)

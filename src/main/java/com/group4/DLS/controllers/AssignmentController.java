@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/assignments")
+@RequestMapping("/api/v1/assignments")
 @RequiredArgsConstructor
 @Tag(name = "Assignments", description = "Assignment management endpoints")
 @SecurityRequirement(name = "Bearer Authentication")
