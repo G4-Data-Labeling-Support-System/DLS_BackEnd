@@ -1,6 +1,5 @@
 package com.group4.DLS.controllers;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.group4.DLS.domain.dto.request.UserCreationRequest;

@@ -14,7 +14,6 @@ public class DatasetResponse {
     private String datasetName;
     private int version;
     private DatasetStorageType storageType;
-    private String projectId;
     private LocalDate createdAt;
     private LocalDate updatedAt;
 
