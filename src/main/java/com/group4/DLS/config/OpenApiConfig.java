@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @OpenAPIDefinition(
     info = @Info(
         title = "Data Labeling System (DLS) API",
-        version = "1.0.0",
+        version = "1.0.36",
         description = "Backend API for managing data annotation projects, assignments, datasets, and labeling workflows",
         contact = @Contact(
             name = "Group 4",
@@ -23,7 +23,11 @@ import org.springframework.context.annotation.Configuration;
     servers = {
         @Server(
             description = "Development Server",
-            url = "http://localhost:8081"
+            url = "http://localhost:8081/"
+        ),
+        @Server(
+            description = "Prod Server",
+            url = "https://dls-beta.hikarimoon.pro/"
         )
     }
 )

@@ -1,5 +1,6 @@
 package com.group4.DLS.domain.dto.response;
 
+import com.group4.DLS.domain.entity.enums.Status;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -22,4 +23,7 @@ public class AssignmentResponse {
     String datasetId;
     LocalDate createdAt;
     LocalDate updatedAt;
+    Status status;
+    ProjectResponse project;
+    DatasetResponse dataset;
 }

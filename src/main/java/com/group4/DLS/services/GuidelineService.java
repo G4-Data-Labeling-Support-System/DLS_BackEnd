@@ -28,6 +28,7 @@ public class GuidelineService {
     GuidelineRepository guidelineRepository;
     ProjectRepository projectRepository;
     GuidelineMapper guidelineMapper;
+    ActivityLogService logService;
 
     public GuidelineResponse create(String projectId, GuidelineCreateRequest request) {
 
@@ -45,6 +46,13 @@ public class GuidelineService {
         guideline.setVersion(1);
 
         guidelineRepository.save(guideline);
+
+        // Log action
+        logService.log(
+                "CREATE_GUIDELINE",
+                "GUIDELINE",
+                guideline.getGuideId(),
+                "Guideline created: " + guideline.getGuideName());
 
         return guidelineMapper.toResponse(guideline);
     }
@@ -75,6 +83,13 @@ public class GuidelineService {
 
         guidelineRepository.save(guideline);
 
+        // Log action
+        logService.log(
+                "UPDATE_GUIDELINE",
+                "GUIDELINE",
+                guideline.getGuideId(),
+                "Guideline updated: " + guideline.getGuideName());
+
         return guidelineMapper.toResponse(guideline);
     }
 
@@ -94,6 +109,14 @@ public class GuidelineService {
                 .orElseThrow(() -> new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
         guideline.setStatus(GuidelineStatus.INACTIVE);
         guidelineRepository.save(guideline);
+
+        // Log action
+        logService.log(
+                "REMOVE_GUIDELINE",
+                "GUIDELINE",
+                guideline.getGuideId(),
+                "Guideline removed: " + guideline.getGuideName());
+
         return guidelineMapper.toResponse(guideline);
     }
 }

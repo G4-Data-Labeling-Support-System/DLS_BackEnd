@@ -63,15 +63,16 @@ public class UserService {
 
         if (user != null && user.getStatus().equals(UserStatus.ACTIVE)) {
             userMapper.updateUserFromRequest(request, user);
+
+            // Log action
+            logService.log(
+                    "UPDATE_USER_DETAILS",
+                    "USER",
+                    user.getId(),
+                    "Updated user details: " + user.getFullName());
+
             return userMapper.toUserResponse(userRepository.save(user));
         }
-
-        // Log action
-        logService.log(
-                "UPDATE_USER_DETAILS",
-                "USER",
-                user.getId(),
-                "Updated user details: " + user.getFullName());
 
         return null;
     }
@@ -205,8 +206,6 @@ public class UserService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
-
-        seaweedFilerUploadService.deleteImageByUrl(user.getCoverImage());
 
         user.setCoverImage(null);
 
