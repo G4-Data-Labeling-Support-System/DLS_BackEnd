@@ -23,6 +23,10 @@ import org.springframework.context.annotation.Configuration;
     servers = {
         @Server(
             description = "Development Server",
+            url = "http://localhost:8081/"
+        ),
+        @Server(
+            description = "Prod Server",
             url = "https://dls-beta.hikarimoon.pro/"
         )
     }
