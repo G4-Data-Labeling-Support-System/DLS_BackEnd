@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/system")
+@RequestMapping("/api/v1/seaweedfs_system")
 @RequiredArgsConstructor
 public class SystemController {
     private final SeaweedMonitorService monitorService;
