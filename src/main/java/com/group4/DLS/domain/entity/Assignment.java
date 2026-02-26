@@ -46,7 +46,7 @@ public class Assignment {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    AssignmentStatus assignmentStatus = AssignmentStatus.OPEN;
+    AssignmentStatus assignmentStatus = AssignmentStatus.CREATED;
 
     @Enumerated(EnumType.STRING)
     Status status;
@@ -61,7 +61,7 @@ public class Assignment {
         this.updatedAt = LocalDate.now();
 
         if (assignmentStatus == null) {
-            this.assignmentStatus = AssignmentStatus.OPEN;
+            this.assignmentStatus = AssignmentStatus.CREATED;
         }
     }
 
