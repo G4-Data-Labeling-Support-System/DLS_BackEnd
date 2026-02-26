@@ -19,13 +19,13 @@ import org.springframework.context.annotation.Configuration;
             name = "Group 4",
             email = "support@dls.com"
         )
-    )
-    // servers = {
-    //     @Server(
-    //         description = "Development Server",
-    //         url = "http://localhost:8081"
-    //     )
-    // }
+    ),
+    servers = {
+        @Server(
+            description = "Development Server",
+            url = "https://dls-beta.hikarimoon.pro/"
+        )
+    }
 )
 @SecurityScheme(
     name = "Bearer Authentication",
