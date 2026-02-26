@@ -67,6 +67,14 @@ public class User {
     protected void onCreate() {
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();
+        
+        if (this.status == null) {
+            this.status = UserStatus.ACTIVE;
+        }
+
+        if (this.userRole == null) {
+            this.userRole = UserRole.ANNOTATOR;
+        }
     }
 
     @PreUpdate
@@ -75,10 +83,10 @@ public class User {
     }
 
     // One user has Many Activity_Logs
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<ActivityLog> activityLogs = new ArrayList<>();
+    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    // private List<ActivityLog> activityLogs = new ArrayList<>();
 
-    // One user has Many Activity_Logs
+    // One user has Many Task
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
 

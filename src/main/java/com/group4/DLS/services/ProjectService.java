@@ -1,20 +1,20 @@
 package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
+import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.ProjectMember;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.entity.enums.ProjectStatus;
-import com.group4.DLS.domain.entity.enums.UserRole;
-import com.group4.DLS.domain.entity.enums.UserStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.ProjectMapper;
 import com.group4.DLS.repositories.ProjectMemberRepository;
 import com.group4.DLS.repositories.ProjectRepository;
 import com.group4.DLS.security.CurrentUserProvider;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -32,33 +32,30 @@ public class ProjectService {
     ProjectMemberRepository projectMemberRepository;
     CurrentUserProvider currentUserProvider;
 
-    // ================= GET ALL PROJECT =================
+    ActivityLogService logService;
+
+    // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
     public List<ProjectResponse> getAllProjects() {
-        User currentUser = currentUserProvider.getCurrentUser();
-
-        if (currentUser.getStatus() != UserStatus.ACTIVE) {
-            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
-        }
-
-        // ADMIN: xem tất cả
-        if (currentUser.getUserRole() == UserRole.ADMIN) {
-            return projectRepository.findAll()
-                    .stream()
-                    .map(projectMapper::toProjectResponse)
-                    .toList();
-        }
-
-        // MANAGER / ANNOTATOR / REVIEWER: chỉ xem project mình tham gia
-        return projectMemberRepository.findByUser(currentUser)
-                .stream()
-                .map(ProjectMember::getProject)
-                .map(projectMapper::toProjectResponse)
-                .toList();
+        List<Project> projects = projectRepository.findByStatusIn(List.of(
+                ProjectStatus.ACTIVE,
+                ProjectStatus.CANCELLED,
+                ProjectStatus.COMPLETED,
+                ProjectStatus.IN_PROGRESS,
+                ProjectStatus.NOT_STARTED,
+                ProjectStatus.ON_HOLD));
+        return projectMapper.toProjectResponse(projects);
     }
 
     // ================= GET PROJECT BY ID =================
     public ProjectResponse getProjectById(String projectId) {
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByProjectIdAndStatusIn(projectId,
+                List.of(
+                        ProjectStatus.ACTIVE,
+                        ProjectStatus.CANCELLED,
+                        ProjectStatus.COMPLETED,
+                        ProjectStatus.IN_PROGRESS,
+                        ProjectStatus.NOT_STARTED,
+                        ProjectStatus.ON_HOLD))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         return projectMapper.toProjectResponse(project);
@@ -68,11 +65,12 @@ public class ProjectService {
     public ProjectResponse createProject(ProjectCreationRequest request) {
         User manager = currentUserProvider.getCurrentUser();
 
-        if (manager.getStatus() != UserStatus.ACTIVE) {
-            throw new AppException(ErrorCode.USER_NOT_ACTIVE);
+        Project project = projectMapper.createProjectFromRequest(request);
+
+        if (projectRepository.existsByProjectName(request.getProjectName())) {
+            throw new AppException(ErrorCode.PROJECT_ALREADY_EXISTS);
         }
 
-        Project project = projectMapper.createProjectFromRequest(request);
         project = projectRepository.save(project);
 
         // Manager auto là member của project
@@ -81,38 +79,92 @@ public class ProjectService {
         member.setUser(manager);
         projectMemberRepository.save(member);
 
+        // Log action
+        logService.log(
+                "CREATE_PROJECT",
+                "PROJECT",
+                project.getProjectId(),
+                "Created project: " + project.getProjectName());
+
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= UPDATE PROJECT =================
     public ProjectResponse updateProject(String projectId, ProjectUpdateRequest request) {
-        User currentUser = currentUserProvider.getCurrentUser();
-
-        if (currentUser.getUserRole() != UserRole.MANAGER) {
-            throw new AppException(ErrorCode.FORBIDDEN);
-        }
-
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByProjectIdAndStatusIn(
+                projectId,
+                List.of(
+                        ProjectStatus.ACTIVE,
+                        ProjectStatus.CANCELLED,
+                        ProjectStatus.COMPLETED,
+                        ProjectStatus.IN_PROGRESS,
+                        ProjectStatus.NOT_STARTED,
+                        ProjectStatus.ON_HOLD))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         projectMapper.updateProjectFromRequest(request, project);
-        return projectMapper.toProjectResponse(projectRepository.save(project));
+        project = projectRepository.save(project);
+
+        // Log action
+        logService.log(
+                "UPDATE_PROJECT",
+                "PROJECT",
+                project.getProjectId(),
+                "Updated project: " + project.getProjectName());
+
+        return projectMapper.toProjectResponse(project);
+    }
+
+    // ================= UPDATE PROJECT STATUS =================
+    public ProjectResponse updateProjectStatus(String projectId, ProjectStatusUpdateRequest request) {
+        Project project = projectRepository.findByProjectIdAndStatusIn(
+                projectId,
+                List.of(
+                        ProjectStatus.ACTIVE,
+                        ProjectStatus.CANCELLED,
+                        ProjectStatus.COMPLETED,
+                        ProjectStatus.IN_PROGRESS,
+                        ProjectStatus.NOT_STARTED,
+                        ProjectStatus.ON_HOLD))
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+        if (project != null) {
+            projectMapper.updateProjectStatusFromRequest(request, project);
+            project = projectRepository.save(project);
+
+            // Log action
+            logService.log(
+                "UPDATE_PROJECT_STATUS",
+                "PROJECT",
+                project.getProjectId(),
+                "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
+            );
+        }
+
+        return projectMapper.toProjectResponse(project);
     }
 
     // ================= DELETE PROJECT =================
     public void deleteProject(String projectId) {
-        User currentUser = currentUserProvider.getCurrentUser();
-
-        if (currentUser.getUserRole() != UserRole.MANAGER) {
-            throw new AppException(ErrorCode.FORBIDDEN);
-        }
-
-        Project project = projectRepository.findById(projectId)
+        Project project = projectRepository.findByProjectIdAndStatusIn(
+                projectId,
+                List.of(
+                        ProjectStatus.ACTIVE,
+                        ProjectStatus.CANCELLED,
+                        ProjectStatus.COMPLETED,
+                        ProjectStatus.IN_PROGRESS,
+                        ProjectStatus.NOT_STARTED,
+                        ProjectStatus.ON_HOLD))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        project.setStatus(ProjectStatus.CANCELLED);
+        project.setStatus(ProjectStatus.INACTIVE);
         projectRepository.save(project);
+
+        // Log action
+        logService.log(
+                "REMOVE_PROJECT",
+                "PROJECT",
+                project.getProjectId(),
+                "Project removed: " + project.getProjectName());
     }
 }
-
-

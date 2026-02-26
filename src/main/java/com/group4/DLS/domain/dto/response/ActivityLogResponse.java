@@ -1,8 +1,6 @@
 package com.group4.DLS.domain.dto.response;
 
-import java.time.LocalDate;
-
-import com.group4.DLS.domain.entity.enums.ProjectStatus;
+import java.time.LocalDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,11 +15,12 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class ProjectResponse {
-    String projectId;
-    String projectName;
+public class ActivityLogResponse {
+    String username;
+    String action;
+    String entityName;
+    String entityId;
     String description;
-    ProjectStatus status;
-    LocalDate createdAt;
-    LocalDate updatedAt;
+    String ipAddress;
+    LocalDateTime timestamp;
 }

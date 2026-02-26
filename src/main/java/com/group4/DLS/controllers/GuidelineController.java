@@ -3,9 +3,11 @@ package com.group4.DLS.controllers;
 import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
-import com.group4.DLS.domain.entity.Guideline;
 import com.group4.DLS.services.GuidelineService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +19,8 @@ import java.util.List;
 @RequestMapping("/api/v1/guidelines")
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Guidelines", description = "Guideline management endpoints")
+@SecurityRequirement(name = "Bearer Authentication")
 public class GuidelineController {
 
     GuidelineService guidelineService;
@@ -27,6 +31,10 @@ public class GuidelineController {
      * ======================
      */
     @PostMapping("/project/{projectId}")
+    @Operation(
+        summary = "Create new guideline",
+        description = "Create a new guideline for a project"
+    )
     public ApiResponse<GuidelineResponse> createGuideline(
             @PathVariable String projectId,
             @RequestBody @Valid GuidelineCreateRequest request
@@ -44,6 +52,10 @@ public class GuidelineController {
      * ======================
      */
     @PutMapping("/{guidelineId}")
+    @Operation(
+        summary = "Update guideline",
+        description = "Update an existing guideline by its ID"
+    )
     public ApiResponse<GuidelineResponse> updateGuideline(
             @PathVariable String guidelineId,
             @RequestBody @Valid GuidelineCreateRequest request
@@ -61,6 +73,10 @@ public class GuidelineController {
      * ======================
      */
     @GetMapping("/project/{projectId}")
+    @Operation(
+        summary = "Get all guidelines by project",
+        description = "Retrieve all guidelines associated with a specific project"
+    )
     public ApiResponse<List<GuidelineResponse>> getAllGuidelinesByProject(
             @PathVariable String projectId
     ) {

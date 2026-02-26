@@ -9,6 +9,7 @@ import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 
 import com.group4.DLS.domain.entity.enums.Status;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -43,8 +44,9 @@ public class Assignment {
 
     String descriptionAssignment;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    AssignmentStatus assignmentStatus;
+    AssignmentStatus assignmentStatus = AssignmentStatus.OPEN;
 
     @Enumerated(EnumType.STRING)
     Status status;
@@ -57,6 +59,10 @@ public class Assignment {
     protected void onCreate() {
         this.createdAt = LocalDate.now();
         this.updatedAt = LocalDate.now();
+
+        if (assignmentStatus == null) {
+            this.assignmentStatus = AssignmentStatus.OPEN;
+        }
     }
 
     @PreUpdate
