@@ -25,6 +25,10 @@ public class DatasetService {
     // ===== LIST ALL DATASET FOR TARGET PROJECT =====
     public List<DatasetResponse> getAllDatasetForProject(String projectId) {
         try {
+            if (projectId == null) {
+                throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
+            }
+
             Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
@@ -44,7 +48,11 @@ public class DatasetService {
 
         Dataset dataset = datasetMapper.createDatasetFromRequest(request);
 
-        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+        if (dataset != null) {
+            return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+        }
+
+        return null;
     }
 
     // ===== UPDATE DATASET =====
