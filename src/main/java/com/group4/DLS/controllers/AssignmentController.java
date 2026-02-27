@@ -69,7 +69,7 @@ public class AssignmentController {
     }
 
     // 4️ Delete assignment
-    @DeleteMapping("/{assignmentId}")
+    @PatchMapping("/{assignmentId}")
     @Operation(
         summary = "Delete assignment",
         description = "Delete an assignment by its ID")
