@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
@@ -36,13 +37,15 @@ public class DatasetService {
     }
 
     // ===== CREATE DATASET =====
-    // public DatasetResponse createDataset(DatasetCreationRequest request) {
-    //     Project project = projectRepository.findById(request.getProjectId())
-    //             .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+    public DatasetResponse createDataset(DatasetCreationRequest request) {
+        if (datasetRepository.findByDatasetName(request.getDatasetName()) != null) {
+            throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
+        }
 
-    //     Dataset dataset = datasetMapper.toDataset(request, project);
-    //     return datasetMapper.toResponse(datasetRepository.save(dataset));
-    // }
+        Dataset dataset = datasetMapper.createDatasetFromRequest(request);
+
+        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+    }
 
     // ===== UPDATE DATASET =====
     // public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request) {

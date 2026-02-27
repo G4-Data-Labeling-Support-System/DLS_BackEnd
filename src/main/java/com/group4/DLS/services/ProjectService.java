@@ -64,12 +64,12 @@ public class ProjectService {
     // ================= CREATE PROJECT =================
     public ProjectResponse createProject(ProjectCreationRequest request) {
         User manager = currentUserProvider.getCurrentUser();
-
-        Project project = projectMapper.createProjectFromRequest(request);
-
+        
         if (projectRepository.existsByProjectName(request.getProjectName())) {
             throw new AppException(ErrorCode.PROJECT_ALREADY_EXISTS);
         }
+
+        Project project = projectMapper.createProjectFromRequest(request);
 
         project = projectRepository.save(project);
 

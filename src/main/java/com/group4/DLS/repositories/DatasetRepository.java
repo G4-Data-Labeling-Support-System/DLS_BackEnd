@@ -10,5 +10,11 @@ import com.group4.DLS.domain.entity.Dataset;
 
 @Repository
 public interface DatasetRepository extends JpaRepository<Dataset, String> {
-    List<Dataset> findByProject_ProjectId(String projectId);
+    Dataset findByDatasetName(
+        String datasetName
+    );
+
+    List<Dataset> findByProject_ProjectId(
+        String projectId
+    );
 }

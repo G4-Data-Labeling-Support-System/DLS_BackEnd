@@ -37,7 +37,7 @@ public class ProjectController {
         summary = "Create new project",
         description = "Create a new data labeling project. Requires MANAGER role."
     )
-    public ApiResponse<ProjectResponse> create(
+    public ApiResponse<ProjectResponse> createApiResponse(
             @RequestBody ProjectCreationRequest request) {
 
         return ApiResponse.<ProjectResponse>builder()
@@ -54,7 +54,7 @@ public class ProjectController {
     */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('MANAGER')")
-    public ApiResponse<ProjectResponse> update(@PathVariable String id, @RequestBody ProjectUpdateRequest request) {
+    public ApiResponse<ProjectResponse> updateApiResponse(@PathVariable String id, @RequestBody ProjectUpdateRequest request) {
         return ApiResponse.<ProjectResponse>builder()
                 .code(200)
                 .message("Project updated successfully")
@@ -69,7 +69,7 @@ public class ProjectController {
     */
     @PutMapping("/{id}/status")
     @PreAuthorize("hasRole('MANAGER')")
-    public ApiResponse<ProjectResponse> updateProjectStatus(@PathVariable String id, @RequestBody ProjectStatusUpdateRequest request) {
+    public ApiResponse<ProjectResponse> updateProjectStatusApiResponse(@PathVariable String id, @RequestBody ProjectStatusUpdateRequest request) {
         return ApiResponse.<ProjectResponse>builder()
                 .code(200)
                 .message("Project status updated successfully")
@@ -84,7 +84,7 @@ public class ProjectController {
     */
     @PatchMapping("/{id}/remove")
     @PreAuthorize("hasRole('MANAGER')")
-    public ApiResponse<Void> delete(@PathVariable String id) {
+    public ApiResponse<Void> deleteApiResponse(@PathVariable String id) {
         projectService.deleteProject(id);
 
         return ApiResponse.<Void>builder()
@@ -104,7 +104,7 @@ public class ProjectController {
         summary = "Get project by ID",
         description = "Retrieve detailed information about a specific project"
     )
-    public ApiResponse<ProjectResponse> getById(@PathVariable String id) {
+    public ApiResponse<ProjectResponse> getByIdApiResponse(@PathVariable String id) {
         return ApiResponse.<ProjectResponse>builder()
                 .code(200)
                 .message("Get project successfully")
@@ -123,7 +123,7 @@ public class ProjectController {
         summary = "List all projects",
         description = "Retrieve a list of all data labeling projects"
     )
-    public ApiResponse<List<ProjectResponse>> getAllProjects() {
+    public ApiResponse<List<ProjectResponse>> getAllProjectsApiResponse() {
         return ApiResponse.<List<ProjectResponse>>builder()
                 .code(200)
                 .message("Get all projects successfully")

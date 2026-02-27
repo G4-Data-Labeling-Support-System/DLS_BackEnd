@@ -2,6 +2,7 @@ package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
+import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.services.DatasetService;
 
@@ -35,7 +36,7 @@ public class DatasetController {
         summary = "Get datasets by project",
         description = "Retrieve all datasets belonging to a specific project"
     )
-    public List<DatasetResponse> getAllByProject(
+    public List<DatasetResponse> getAllByProjectDatasetResponses(
             @PathVariable String projectId) {
         return datasetService.getAllDatasetForProject(projectId);
     }
@@ -45,15 +46,20 @@ public class DatasetController {
     * Create new dataset
     * ==================
     */
-    // @PostMapping
-    // @Operation(
-    //     summary = "Create new dataset",
-    //     description = "Create a new dataset for a project"
-    // )
-    // public ResponseEntity<DatasetResponse> create(
-    //         @RequestBody DatasetCreationRequest request) {
-    //     return ResponseEntity.ok(datasetService.createDataset(request));
-    // }
+    @PostMapping
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+        summary = "Create new dataset",
+        description = "Create a new dataset for a project"
+    )
+    public ApiResponse<DatasetResponse> createDatasetApiResponse(
+            @RequestBody DatasetCreationRequest request) {
+        return ApiResponse.<DatasetResponse>builder()
+                .code(200)
+                .message("Dataset created successfully")
+                .data(datasetService.createDataset(request))
+                .build();
+    }
 
     /*
     * ================
