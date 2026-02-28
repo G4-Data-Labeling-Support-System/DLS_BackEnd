@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.entity.enums.AnnotationConfidence;
 import com.group4.DLS.domain.entity.enums.AnnotationStatus;
+import com.group4.DLS.domain.entity.enums.AnnotationType;
+import com.group4.DLS.domain.entity.enums.ReviewStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -38,11 +41,27 @@ public class Annotation {
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
     String annotationId;
 
-    @Column(nullable = false, unique = true)
-    int version;
+    @Enumerated(EnumType.STRING)
+    AnnotationConfidence annotationConfidence;
+
+    String comment;
+
+    @Enumerated(EnumType.STRING)
+    AnnotationType annotationType;
+
+    @Column(name = "annotation_data", columnDefinition = "JSON")
+    String annotationData;
+
+    boolean flagForReview;
+
+    @Enumerated(EnumType.STRING)
+    ReviewStatus reviewStatus;
 
     @Enumerated(EnumType.STRING)
     AnnotationStatus annotationStatus;
+
+    @Column(nullable = false, unique = true)
+    int version;
 
     LocalDate createdAt;
 
@@ -62,10 +81,6 @@ public class Annotation {
     // One Annotation has Many Review
     @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
-
-    // One Annotation has Many Annotation Object
-    @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AnnotationObject> annotationObjects = new ArrayList<>();
 
     // Many Annotation belongs to One Task
     @ManyToOne(fetch = FetchType.LAZY)

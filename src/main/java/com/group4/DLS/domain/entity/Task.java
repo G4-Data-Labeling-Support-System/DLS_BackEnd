@@ -1,6 +1,7 @@
 package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +20,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -42,22 +42,16 @@ public class Task {
     @Enumerated(EnumType.STRING)
     TaskType taskType;
 
+    int completedCount;
+
     @Enumerated(EnumType.STRING)
     TaskStatus taskStatus;
 
-    LocalDate createdAt;
-
-    LocalDate updatedAt;
+    LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     // One task has One Dataitem

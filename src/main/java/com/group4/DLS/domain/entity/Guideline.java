@@ -1,9 +1,7 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.group4.DLS.domain.entity.enums.GuidelineStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -25,7 +23,7 @@ public class Guideline {
     String guideId;
 
     @Column(nullable = false)
-    String guideName;
+    String title;
 
     @Column(nullable = false)
     String content;
@@ -33,22 +31,14 @@ public class Guideline {
     @Column(nullable = false)
     int version;
 
-    LocalDate createdAt;
-
-    LocalDate updatedAt;
+    LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     GuidelineStatus status;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     // Many Guideline belongs to One Project

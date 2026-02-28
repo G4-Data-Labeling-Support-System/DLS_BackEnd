@@ -1,16 +1,12 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -18,7 +14,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -41,25 +36,15 @@ public class Dataset {
     @Column(nullable = false)
     String datasetName;
 
-    @Column(nullable = false, unique = true)
-    int version;
+    String description;
 
-    @Enumerated(EnumType.STRING)
-    DatasetStorageType storageType;
+    int totalItems;
 
-    LocalDate createdAt;
-
-    LocalDate updatedAt;
+    LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     // One Dataset has Many Dataitem
@@ -70,9 +55,4 @@ public class Dataset {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "projectId", nullable = true)
     private Project project;
-
-    // Many Dataset belongs to One Assignemnt
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignmentId", nullable = true)
-    private Assignment assignment;
 }

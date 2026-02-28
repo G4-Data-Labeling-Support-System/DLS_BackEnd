@@ -1,17 +1,20 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import com.group4.DLS.domain.entity.enums.DataType;
+import com.group4.DLS.domain.entity.enums.FileFormat;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -29,41 +32,33 @@ import lombok.experimental.FieldDefaults;
 public class Dataitem {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
-    String dataitemId;
+    String itemId;
 
     @Column(nullable = false, unique = true)
-    String dataitemName;
-
-    @Column(nullable = true)
-    String dataType;
+    String fileName;
 
     @Column(nullable = false)
-    String uri;
+    String url;
 
-    LocalDate createdAt;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    FileFormat fileFormat;
 
-    LocalDate updatedAt;
+    int fileSize;
+
+    int width;
+
+    int height;
+
+    @Column(nullable = true)
+    DataType dataType;
+
+    LocalDateTime uploadedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.uploadedAt = LocalDateTime.now();
     }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
-    }
-
-    // One Profile belongs to One User
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taskId", unique = true)  // Foreign Key with unique constraint
-    private Task task;
-
-    // Many Dataitem belongs to One Project
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId", nullable = false)
-    private Project project;
 
     // Many Dataitem belongs to One Dataset
     @ManyToOne(fetch = FetchType.LAZY)

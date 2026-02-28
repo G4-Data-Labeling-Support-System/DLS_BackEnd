@@ -80,8 +80,4 @@ public class Project {
     // One project has Many Dataset
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Dataitem> dataitems = new ArrayList<>();
-
-    // One project has Many Label Schema
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<LabelSchema> schemas = new ArrayList<>();
 }

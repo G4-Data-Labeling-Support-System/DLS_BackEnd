@@ -1,6 +1,6 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -12,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -39,25 +38,17 @@ public class Label {
 
     String description;
 
-    LocalDate createdAt;
-
-    LocalDate updatedAt;
+    LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     // Many Labels belongs to One Label_Schema
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "schemaId", nullable = false)
-    private LabelSchema labelSchema;
+    // @ManyToOne(fetch = FetchType.LAZY)
+    // @JoinColumn(name = "schemaId", nullable = false)
+    // private LabelSchema labelSchema;
 
     // Many Labels belongs to One Annotation_Object
     @ManyToOne(fetch = FetchType.LAZY)

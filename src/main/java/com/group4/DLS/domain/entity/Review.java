@@ -1,8 +1,8 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
-import com.group4.DLS.domain.entity.enums.ReviewDecision;
+import com.group4.DLS.domain.entity.enums.ReviewStatus;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -13,7 +13,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,32 +33,24 @@ public class Review {
     String reviewId;
 
     @Enumerated(EnumType.STRING)
-    ReviewDecision reviewDecision;
+    ReviewStatus reviewStatus;
 
     String comment;
 
-    LocalDate reviewedAt;
-
-    LocalDate updatedAt;
+    LocalDateTime reviewedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.reviewedAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.reviewedAt = LocalDateTime.now();
     }
 
     // Many Review belongs to One User
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
+    @JoinColumn(name = "reviewer_id", nullable = false)
     private User user;
 
     // Many Review belongs to One Annotation
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "annotationId", nullable = false)
+    @JoinColumn(name = "annotation_id", nullable = false)
     private Annotation annotation;
 }

@@ -1,6 +1,7 @@
 package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,32 +43,27 @@ public class Assignment {
 
     String assignmentName;
 
-    String descriptionAssignment;
+    int totalItems;
+
+    int completedItems;
+
+    String description;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     AssignmentStatus assignmentStatus = AssignmentStatus.CREATED;
 
-    @Enumerated(EnumType.STRING)
-    Status status;
+    LocalDateTime dueDate;
 
-    LocalDate createdAt;
-
-    LocalDate updatedAt;
+    LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
 
         if (assignmentStatus == null) {
             this.assignmentStatus = AssignmentStatus.CREATED;
         }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
     }
 
     // One project has Many Dataset

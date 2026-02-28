@@ -3,6 +3,8 @@ package com.group4.DLS.domain.entity.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum AssignmentStatus {
+
+    INACTIVE,
     CREATED, //Assignment vừa được tạo
     ASSIGNED, //Assignment đã được giao cho annotator
     IN_PROGRESS, //Annotator đang thực hiện annotation trên assignment
