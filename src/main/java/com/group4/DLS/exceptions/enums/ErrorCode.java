@@ -25,6 +25,9 @@ public enum ErrorCode {
     // 409 errors
     USER_EXISTS(409, "User already exists"),
     ASSIGNMENT_EXISTS(409,"Assignment name already exists" ),
+    GUIDELINE_EXISTS(409,"Exist Guideline Name" ),
+    PROJECT_ALREADY_EXISTS(409, "Project already exists"),
+    DATASET_ALREADY_EXISTS(409, "Dataset already exists"),
 
     // 400 errors
     INVALID_USERNAME_LENGTH(400, "Invalid username length"),
@@ -36,8 +39,6 @@ public enum ErrorCode {
     PASSWORD_CONFIRM_NOT_MATCH(400, "Confirm password not match"),
     INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment"),
     REQUIRE_PROJECT_ID(400, "Project Id is needed"),
-    GUIDELINE_EXISTS(400,"Exist Guideline Name" ),
-    PROJECT_ALREADY_EXISTS(400, "Project already exists"),
     OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB");
 
     final int code;

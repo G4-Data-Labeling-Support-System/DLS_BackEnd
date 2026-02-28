@@ -68,7 +68,7 @@ public class Dataset {
 
     // Many Dataset belongs to One Prject
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId", nullable = false)
+    @JoinColumn(name = "projectId", nullable = true)
     private Project project;
 
     // Many Dataset belongs to One Assignemnt

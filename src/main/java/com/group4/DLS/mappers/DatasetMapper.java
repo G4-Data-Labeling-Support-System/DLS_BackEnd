@@ -1,39 +1,42 @@
 package com.group4.DLS.mappers;
 
-import org.springframework.stereotype.Component;
+import java.util.List;
+
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.entity.Dataset;
-import com.group4.DLS.domain.entity.Project;
 
-@Component
-public class DatasetMapper {
+@Mapper(componentModel = "spring")
+public interface DatasetMapper {
 
-    public Dataset toDataset(DatasetCreationRequest request, Project project) {
-        Dataset dataset = new Dataset();
-        dataset.setDatasetName(request.getDatasetName());
-        dataset.setVersion(request.getVersion());
-        dataset.setStorageType(request.getStorageType());
-        dataset.setProject(project);
-        return dataset;
-    }
+    @Mapping(target = "assignmentId", source = "assignment.assignmentId")
+    DatasetResponse toDatasetResponse(Dataset dataset);
 
-    public void updateDataset(DatasetUpdateRequest request, Dataset dataset) {
-        dataset.setDatasetName(request.getDatasetName());
-        dataset.setStorageType(request.getStorageType());
-    }
+    @Mapping(target = "assignmentId", source = "assignment.assignmentId")
+    List<DatasetResponse> toDatasetResponse(List<Dataset> datasets);
 
-    public DatasetResponse toResponse(Dataset dataset) {
-        return DatasetResponse.builder()
-                .datasetId(dataset.getDatasetId())
-                .datasetName(dataset.getDatasetName())
-                .version(dataset.getVersion())
-                .storageType(dataset.getStorageType())
-                .projectId(dataset.getProject().getProjectId())
-                .createdAt(dataset.getCreatedAt())
-                .updatedAt(dataset.getUpdatedAt())
-                .build();
-    }
+    @Mapping(target = "datasetId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "dataitems", ignore = true)
+    Dataset createDatasetFromRequest(
+        DatasetCreationRequest request
+    );
+
+    @Mapping(target = "datasetId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "dataitems", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateDatasetFromRequest(
+        DatasetUpdateRequest request,
+        @MappingTarget Dataset dataset
+    );
 }
