@@ -16,10 +16,8 @@ public interface AssignmentMapper {
     @Mapping(target = "project", ignore = true)
     @Mapping(target = "dataset", ignore = true)
     @Mapping(target = "assignmentStatus", ignore = true)
-    @Mapping(target = "datasets", ignore = true)
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     Assignment toAssignment(AssignmentCreateRequest request);
 
     // ===== RESPONSE =====
@@ -32,9 +30,7 @@ public interface AssignmentMapper {
     @Mapping(target = "assignmentId", ignore = true)
     @Mapping(target = "project", ignore = true)
     @Mapping(target = "dataset", ignore = true)
-    @Mapping(target = "datasets", ignore = true)
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     Assignment updateAssignmentFromRequest(Assignment assignment);
 }

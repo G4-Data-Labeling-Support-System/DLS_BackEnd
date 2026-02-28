@@ -24,8 +24,6 @@ public interface ProjectMapper {
     @Mapping(target = "assignments", ignore = true)
     @Mapping(target = "guidelines", ignore = true)
     @Mapping(target = "datasets", ignore = true)
-    @Mapping(target = "dataitems", ignore = true)
-    @Mapping(target = "schemas", ignore = true)
     Project createProjectFromRequest(
         ProjectCreationRequest request
     );
@@ -37,8 +35,6 @@ public interface ProjectMapper {
     @Mapping(target = "assignments", ignore = true)
     @Mapping(target = "guidelines", ignore = true)
     @Mapping(target = "datasets", ignore = true)
-    @Mapping(target = "dataitems", ignore = true)
-    @Mapping(target = "schemas", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateProjectFromRequest(
         ProjectUpdateRequest request, 

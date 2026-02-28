@@ -90,7 +90,11 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Annotation> annotations = new ArrayList<>();
 
-    // One user has One Assignment
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Assignment assignment;
+    // Assignments this user created
+    @OneToMany(mappedBy = "assignedBy", fetch = FetchType.LAZY)
+    private List<Assignment> createdAssignments = new ArrayList<>();
+
+    // Assignments assigned to this user
+    @OneToMany(mappedBy = "assignedTo", fetch = FetchType.LAZY)
+    private List<Assignment> receivedAssignments = new ArrayList<>();
 }

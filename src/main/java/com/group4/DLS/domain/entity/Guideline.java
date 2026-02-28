@@ -19,21 +19,24 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Guideline {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "guide_id")
     String guideId;
 
-    @Column(nullable = false)
+    @Column(name = "title", nullable = false)
     String title;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     String content;
 
-    @Column(nullable = false)
+    @Column(name = "version", nullable = false)
     int version;
 
+    @Column(name = "created_at")
     LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     GuidelineStatus status;
 
     @PrePersist
@@ -43,6 +46,6 @@ public class Guideline {
 
     // Many Guideline belongs to One Project
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId", nullable = false)
+    @JoinColumn(name = "project_id", nullable = false)
     private Project project;
 }

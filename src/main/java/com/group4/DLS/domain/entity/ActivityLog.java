@@ -30,27 +30,25 @@ import lombok.experimental.FieldDefaults;
 public class ActivityLog {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "log_id")
     String logId;
 
-    @Column(nullable = false)
-    String username;
-
-    @Column(nullable = false)
+    @Column(name = "action", nullable = false)
     String action;
 
-    @Column(nullable = false)
+    @Column(name = "entity_name", nullable = false)
     String entityName;
 
-    @Column(nullable = false)
+    @Column(name = "entity_id", nullable = false)
     String entityId;
 
-    @Column(nullable = false)
+    @Column(name = "description", nullable = false)
     String description;
 
-    @Column(nullable = false)
+    @Column(name = "ip_address", nullable = false)
     String ipAddress;
 
-    @Column(nullable = false)
+    @Column(name = "timestamp", nullable = false)
     LocalDateTime timestamp;
 
     @PrePersist

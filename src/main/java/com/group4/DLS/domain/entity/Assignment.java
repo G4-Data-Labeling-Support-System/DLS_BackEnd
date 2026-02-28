@@ -16,6 +16,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -38,23 +39,30 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Assignment {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "assignment_id")
     String assignmentId;
 
+    @Column(name = "assignment_name")
     String assignmentName;
 
+    @Column(name = "total_items")
     int totalItems;
 
+    @Column(name = "completed_items")
     int completedItems;
 
+    @Column(name = "description")
     String description;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    AssignmentStatus assignmentStatus = AssignmentStatus.CREATED;
+    @Column(name = "assignment_status", nullable = false)
+    AssignmentStatus assignmentStatus;
 
+    @Column(name = "due_date")
     LocalDateTime dueDate;
 
+    @Column(name = "created_at")
     LocalDateTime createdAt;
 
     @PrePersist
@@ -66,17 +74,9 @@ public class Assignment {
         }
     }
 
-    // One project has Many Dataset
-    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Dataset> datasets = new ArrayList<>();
-
-    // One project has Many Task
-    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Task> tasks = new ArrayList<>();
-
     // Many Assignment belongs to One Project
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id" , nullable = false)
+    @JoinColumn(name = "project_id", nullable = false)
     @JsonIgnore
     private Project project;
 
@@ -85,4 +85,19 @@ public class Assignment {
     @JoinColumn(name = "dataset_id", nullable = false)
     @JsonIgnore
     private Dataset dataset;
+
+    // Who created the assignment
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_by", nullable = false)
+    private User assignedBy;
+
+    // Who is assigned to do it
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_to", nullable = false)
+    private User assignedTo;
+
+    // One project has Many Task
+    @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Task> tasks = new ArrayList<>();
+
 }
