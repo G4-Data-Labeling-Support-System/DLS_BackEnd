@@ -1,6 +1,7 @@
 package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
+import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
@@ -56,20 +57,13 @@ public class DatasetService {
     }
 
     // ===== UPDATE DATASET =====
-    // public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request) {
+    public DatasetResponse updateDatasetResponse(String datasetId, DatasetUpdateRequest request) {
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-    //     User currentUser = currentUserProvider.getCurrentUser();
-
-    //     if (currentUser.getUserRole() != UserRole.MANAGER) {
-    //         throw new AppException(ErrorCode.FORBIDDEN);
-    //     }
-
-    //     Dataset dataset = datasetRepository.findById(datasetId)
-    //             .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
-
-    //     datasetMapper.updateDataset(request, dataset);
-    //     return datasetMapper.toResponse(datasetRepository.save(dataset));
-    // }
+        datasetMapper.updateDatasetFromRequest(request, dataset);
+        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+    }
 
     // ===== DELETE DATASET =====
     // public void deleteDataset(String datasetId) {

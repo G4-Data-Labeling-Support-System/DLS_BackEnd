@@ -1,6 +1,5 @@
 package com.group4.DLS.repositories;
 
-
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;

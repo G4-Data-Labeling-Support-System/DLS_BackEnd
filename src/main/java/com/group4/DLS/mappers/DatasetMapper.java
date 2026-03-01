@@ -18,19 +18,28 @@ public interface DatasetMapper {
 
     DatasetResponse toDatasetResponse(Dataset dataset);
 
-    @Mapping(target = "assignmentId", source = "assignment.assignmentId")
     List<DatasetResponse> toDatasetResponse(List<Dataset> datasets);
 
     @Mapping(target = "datasetId", ignore = true)
+    @Mapping(target = "datasetName", ignore = false)
+    @Mapping(target = "description", ignore = false)
+    @Mapping(target = "totalItems", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "dataitems", ignore = true)
+    @Mapping(target = "project", ignore = true)
+    @Mapping(target = "labels", ignore = true)
     Dataset createDatasetFromRequest(
         DatasetCreationRequest request
     );
 
     @Mapping(target = "datasetId", ignore = true)
+    @Mapping(target = "datasetName", ignore = false)
+    @Mapping(target = "description", ignore = false)
+    @Mapping(target = "totalItems", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "dataitems", ignore = true)
+    @Mapping(target = "project", ignore = true)
+    @Mapping(target = "labels", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateDatasetFromRequest(
         DatasetUpdateRequest request,

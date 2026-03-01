@@ -1,7 +1,5 @@
 package com.group4.DLS.domain.dto.request;
 
-import com.group4.DLS.domain.entity.enums.DatasetStorageType;
-
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +17,7 @@ import lombok.experimental.FieldDefaults;
 public class DatasetCreationRequest {
     @Size(min = 3, max = 100, message = "INVALID_DATASET_NAME_LENGTH")
     String datasetName;
-
-    int version;
-    DatasetStorageType storageType;
-    String projectId;
+    
+    @Size(max = 500, message = "INVALID_DATASET_DESCRIPTION_LENGTH")
+    String description;
 }

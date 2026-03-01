@@ -37,6 +37,8 @@ public enum ErrorCode {
     INVALID_EMAIL_FORMAT(400, "Invalid email format"),
     INVALID_PASSWORD_LENGTH(400, "Password must be 8-16 characters"),
     INVALID_OLD_PASSWORD(400, "Invalid old password"),
+    INVALID_DATASET_NAME_LENGTH(400, "Dataset Name must be in range 3-100 characters"),
+    INVALID_DATASET_DESCRIPTION_LENGTH(400, "Dataset Description must in range 0-500 characters"),
     NEW_PASSWORD_SAME_AS_OLD(400, "New password same as old"),
     PASSWORD_CONFIRM_NOT_MATCH(400, "Confirm password not match"),
     INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment"),
