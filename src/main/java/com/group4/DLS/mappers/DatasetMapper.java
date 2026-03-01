@@ -16,7 +16,6 @@ import com.group4.DLS.domain.entity.Dataset;
 @Mapper(componentModel = "spring")
 public interface DatasetMapper {
 
-    @Mapping(target = "assignmentId", source = "assignment.assignmentId")
     DatasetResponse toDatasetResponse(Dataset dataset);
 
     @Mapping(target = "assignmentId", source = "assignment.assignmentId")
@@ -24,7 +23,6 @@ public interface DatasetMapper {
 
     @Mapping(target = "datasetId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "dataitems", ignore = true)
     Dataset createDatasetFromRequest(
         DatasetCreationRequest request
@@ -32,7 +30,6 @@ public interface DatasetMapper {
 
     @Mapping(target = "datasetId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "dataitems", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateDatasetFromRequest(

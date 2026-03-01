@@ -19,6 +19,8 @@ public enum ErrorCode {
 
     // 403 errors
     USER_NOT_ACTIVE(403, "User is not active"),
+    USER_ALREADY_ACTIVE(403, "User already active"),
+    USER_ALREADY_INACTIVE(403, "User already InActive"),
     FORBIDDEN(403, "Access denied"),
     INVALID_CREDENTIALS(403, "Invalid credentials"),
 

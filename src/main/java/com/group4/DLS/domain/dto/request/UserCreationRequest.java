@@ -22,18 +22,17 @@ public class UserCreationRequest {
     @Size(min = 3, max = 50, message = "INVALID_USERNAME_LENGTH")
     String username;
 
-    @Size(min = 3, max = 100, message = "INVALID_FULLNAME_LENGTH")
-    String fullName;
-
     @Email(message = "INVALID_EMAIL_FORMAT")
     String email;
     
     @Size(min = 8, message = "INVALID_PASSWORD_LENGTH")
     String password;
 
-    UserRole userRole;
-    
     String coverImage;
 
-    UserStatus status;
+    String specialization;
+    
+    UserRole role;
+
+    UserStatus userStatus;
 }

@@ -1,24 +1,20 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -35,44 +31,38 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Dataset {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "dataset_id")
     String datasetId;
 
-    @Column(nullable = false)
+    @Column(name = "dataset_name", nullable = false)
     String datasetName;
 
-    @Column(nullable = false, unique = true)
-    int version;
+    @Column(name = "description")
+    String description;
 
-    @Enumerated(EnumType.STRING)
-    DatasetStorageType storageType;
+    @Column(name = "total_items")
+    int totalItems;
 
-    LocalDate createdAt;
-
-    LocalDate updatedAt;
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
-    }
-
+    // Many Dataset belongs to One Prject
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = true)
+    private Project project;
+    
     // One Dataset has Many Dataitem
     @OneToMany(mappedBy = "dataset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Dataitem> dataitems = new ArrayList<>();
 
-    // Many Dataset belongs to One Prject
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "projectId", nullable = true)
-    private Project project;
+    // One Dataset has Many Labels
+    @OneToMany(mappedBy = "dataset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Label> labels = new ArrayList<>();
 
-    // Many Dataset belongs to One Assignemnt
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assignmentId", nullable = true)
-    private Assignment assignment;
 }
