@@ -4,7 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.entity.enums.AnnotationConfidence;
 import com.group4.DLS.domain.entity.enums.AnnotationStatus;
+import com.group4.DLS.domain.entity.enums.AnnotationType;
+import com.group4.DLS.domain.entity.enums.ReviewStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -13,6 +16,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -35,17 +39,42 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Annotation {
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "annotation_id")
     String annotationId;
 
-    @Column(nullable = false, unique = true)
-    int version;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "annotation_confidence")
+    AnnotationConfidence annotationConfidence;
+
+    @Column(name = "comment")
+    String comment;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "annotation_type")
+    AnnotationType annotationType;
+
+    @Column(name = "annotation_data", columnDefinition = "JSON")
+    String annotationData;
+
+    @Column(name = "flag_for_review")
+    boolean flagForReview;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "review_status")
+    ReviewStatus reviewStatus;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "annotation_status")
     AnnotationStatus annotationStatus;
 
+    @Column(name = "version", nullable = false, unique = true)
+    int version;
+
+    @Column(name = "created_at")
     LocalDate createdAt;
 
+    @Column(name = "updated_at")
     LocalDate updatedAt;
 
     @PrePersist
@@ -58,17 +87,29 @@ public class Annotation {
     protected void onUpdate() {
         this.updatedAt = LocalDate.now();
     }
+    
+    // Many Annotation belongs to One Task
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id", nullable = false)
+    private Task task;
+
+    // Many Annotation belongs to One DataItem
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", nullable = false)
+    private Dataitem dataitem;
+
+    // Many Annotation belongs to One User
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    // Many Annotation belongs to One Label
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "label_id", nullable = false)
+    private Label label;
 
     // One Annotation has Many Review
     @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
-
-    // One Annotation has Many Annotation Object
-    @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<AnnotationObject> annotationObjects = new ArrayList<>();
-
-    // Many Annotation belongs to One Task
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "taskId", nullable = false)
-    private Task task;
+    
 }

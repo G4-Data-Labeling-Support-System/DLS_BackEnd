@@ -1,6 +1,6 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +18,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -36,61 +35,65 @@ import lombok.experimental.FieldDefaults;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    @Column(name = "user_id")
+    String userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "username", nullable = false)
     String username;
 
-    String fullName;
-
-    @Column(nullable = false)
-    String password;
-
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     String email;
 
+    @Column(name = "password", nullable = false)
+    String password;
+
+    @Column(name = "cover_image")
     String coverImage;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    UserRole userRole = UserRole.ANNOTATOR;
+    @Column(name = "role", nullable = false)
+    UserRole role = UserRole.ANNOTATOR;
 
-    @Column(nullable = false)
+    @Column(name = "specialization")
+    String specialization;
+
     @Enumerated(EnumType.STRING)
-    UserStatus status = UserStatus.ACTIVE;
+    @Column(name = "user_status", nullable = false)
+    UserStatus userStatus = UserStatus.ACTIVE;
 
-    LocalDate createdAt;
-
-    LocalDate updatedAt;
+    @Column(name = "created_at", nullable = false)
+    LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
         
-        if (this.status == null) {
-            this.status = UserStatus.ACTIVE;
+        if (this.userStatus == null) {
+            this.userStatus = UserStatus.ACTIVE;
         }
 
-        if (this.userRole == null) {
-            this.userRole = UserRole.ANNOTATOR;
+        if (this.role == null) {
+            this.role = UserRole.ANNOTATOR;
         }
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
     }
 
     // One user has Many Activity_Logs
-    // @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // private List<ActivityLog> activityLogs = new ArrayList<>();
-
-    // One user has Many Task
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Task> tasks = new ArrayList<>();
+    private List<ActivityLog> activityLogs = new ArrayList<>();
 
     // One user has Many Review
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
+
+    // One user has Many Annotation
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Annotation> annotations = new ArrayList<>();
+
+    // Assignments this user created
+    @OneToMany(mappedBy = "assignedBy", fetch = FetchType.LAZY)
+    private List<Assignment> createdAssignments = new ArrayList<>();
+
+    // Assignments assigned to this user
+    @OneToMany(mappedBy = "assignedTo", fetch = FetchType.LAZY)
+    private List<Assignment> receivedAssignments = new ArrayList<>();
 }
