@@ -56,7 +56,7 @@ public class AssignmentService {
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
         Assignment assignment = assignmentMapper.toAssignment(request);
         assignment.setAssignmentStatus(AssignmentStatus.CREATED);
-        assignment.setStatus(Status.ACTIVE);
+        assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
         assignment.setProject(project);
         assignment.setDataset(dataset);
 
@@ -90,7 +90,6 @@ public class AssignmentService {
                 throw new AppException(ErrorCode.INVALID_ASSIGNMENT_STATUS);
             }
         }
-        assignment.setUpdatedAt(LocalDate.now());
 
         assignmentRepository.save(assignment);
 
@@ -109,7 +108,7 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        assignment.setStatus(Status.DELETED);
+        assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);
         assignmentRepository.save(assignment);
 
         // Log action

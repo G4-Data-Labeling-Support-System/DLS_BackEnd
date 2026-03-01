@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/assignments")
+@RequestMapping("/api/v1/assignments")
 @RequiredArgsConstructor
 @Tag(name = "Assignments", description = "Assignment management endpoints")
 @SecurityRequirement(name = "Bearer Authentication")
@@ -69,7 +69,7 @@ public class AssignmentController {
     }
 
     // 4️ Delete assignment
-    @DeleteMapping("/{assignmentId}")
+    @PatchMapping("/{assignmentId}")
     @Operation(
         summary = "Delete assignment",
         description = "Delete an assignment by its ID")

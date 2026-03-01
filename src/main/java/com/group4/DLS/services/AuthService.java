@@ -29,11 +29,11 @@ public class AuthService {
         }
 
         String token = jwtService.generateToken(
-                        user.getId(),
+                        user.getUserId(),
                         user.getEmail(), 
                         user.getUsername(), 
                         user.getCoverImage(), 
-                        user.getUserRole());
+                        user.getRole());
 
         return AuthResponse.builder()
                 .authenticate(true)
