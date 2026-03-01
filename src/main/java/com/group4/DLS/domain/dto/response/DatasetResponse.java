@@ -22,5 +22,6 @@ public class DatasetResponse {
     String description;
     int totalItems;
     LocalDateTime createdAt;
+    ProjectResponse project;
     List<DataItemResponse> dataitems;
 }

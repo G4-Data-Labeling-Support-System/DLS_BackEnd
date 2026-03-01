@@ -20,4 +20,6 @@ public class DatasetCreationRequest {
     
     @Size(max = 500, message = "INVALID_DATASET_DESCRIPTION_LENGTH")
     String description;
+
+    String projectId;
 }
