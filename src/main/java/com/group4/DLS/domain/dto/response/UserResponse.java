@@ -19,12 +19,12 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class UserResponse {
+    String userId;
     String username;
-    String fullName;
     String email;
     String coverImage;
-    UserRole userRole;
-    UserStatus status;
+    String specialization;
+    UserRole role;
+    UserStatus userStatus;
     LocalDate createdAt;
-    LocalDate updatedAt;
 }

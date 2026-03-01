@@ -65,11 +65,11 @@ public class UserService {
             userMapper.updateUserFromRequest(request, user);
 
             // Log action
-            logService.log(
-                    "UPDATE_USER_DETAILS",
-                    "USER",
-                    user.getUserId(),
-                    "Updated user details: " + user.getUsername());
+            // logService.log(
+            //         "UPDATE_USER_DETAILS",
+            //         "USER",
+            //         user.getUserId(),
+            //         "Updated user details: " + user.getUsername());
 
             return userMapper.toUserResponse(userRepository.save(user));
         }
@@ -105,11 +105,11 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         // Log action
-        logService.log(
-                "UPDATE_USER_PASSWORD",
-                "USER",
-                user.getUserId(),
-                "Updated user details: " + user.getUsername());
+        // logService.log(
+        //         "UPDATE_USER_PASSWORD",
+        //         "USER",
+        //         user.getUserId(),
+        //         "Updated user details: " + user.getUsername());
 
         return userMapper.toUserResponse(userRepository.save(user));
 
@@ -119,15 +119,19 @@ public class UserService {
     public UserResponse deactivateUser(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getUserStatus() == UserStatus.INACTIVE) {
+            throw new AppException(ErrorCode.USER_ALREADY_ACTIVE);
+        }
         
         user.setUserStatus(UserStatus.INACTIVE);
 
         // Log action
-        logService.log(
-                "DEACTIVATE USER",
-                "USER",
-                user.getUserId(),
-                "Deactivated a user: " + user.getUsername());
+        // logService.log(
+        //         "DEACTIVATE USER",
+        //         "USER",
+        //         user.getUserId(),
+        //         "Deactivated a user: " + user.getUsername());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }    
@@ -137,14 +141,18 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         
+        if (user.getUserStatus() == UserStatus.ACTIVE) {
+            throw new AppException(ErrorCode.USER_ALREADY_ACTIVE);
+        }
+
         user.setUserStatus(UserStatus.ACTIVE);
 
         // Log action
-        logService.log(
-                "ACTIVATE USER",
-                "USER",
-                user.getUserId(),
-                "Activated a user: " + user.getUsername());
+        // logService.log(
+        //         "ACTIVATE USER",
+        //         "USER",
+        //         user.getUserId(),
+        //         "Activated a user: " + user.getUsername());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
