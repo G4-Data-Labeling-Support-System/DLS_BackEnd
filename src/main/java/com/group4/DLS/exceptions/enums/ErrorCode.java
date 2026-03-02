@@ -43,6 +43,8 @@ public enum ErrorCode {
     PASSWORD_CONFIRM_NOT_MATCH(400, "Confirm password not match"),
     INVALID_ASSIGNMENT_STATUS(400, "Invalid status assignment"),
     REQUIRE_PROJECT_ID(400, "Project Id is needed"),
+    DATASETNAME_CANNOT_BE_NULL(400, "Dataset name cannot be null"),
+    DATASETNAME_ALREADY_EXSITS(400, "Dataset name already exists"),
     OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB");
 
     final int code;

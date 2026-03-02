@@ -33,7 +33,7 @@ public class DatasetService {
             Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-            List<Dataset> datasets = datasetRepository.findByProject_ProjectId(project.getProjectId());
+            List<Dataset> datasets = datasetRepository.findByProjectId(project.getProjectId());
 
             return datasetMapper.toDatasetResponse(datasets);
         } catch (AppException ex) {
@@ -43,17 +43,24 @@ public class DatasetService {
 
     // ===== CREATE DATASET =====
     public DatasetResponse createDataset(DatasetCreationRequest request) {
-        if (datasetRepository.findByDatasetName(request.getDatasetName()) != null) {
+
+        // Validate project exist
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+        // Check if this dataset name exist inside this project
+        if (datasetRepository.existsByProjectIdAndDatasetName(project.getProjectId(), request.getDatasetName())) {    
             throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 
+        // Map request -> entity
         Dataset dataset = datasetMapper.createDatasetFromRequest(request);
 
-        if (dataset != null) {
-            return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
-        }
+        // Set project relationship
+        dataset.setProject(project);
 
-        return null;
+        // Save and return response
+        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
     }
 
     // ===== UPDATE DATASET =====
@@ -61,7 +68,19 @@ public class DatasetService {
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
+        // Check duplicate name (If name change)
+        if (request.getDatasetName() != null && !request.getDatasetName().equals(dataset.getDatasetName())) {
+            throw new AppException(ErrorCode.DATASETNAME_ALREADY_EXSITS);
+        }
+
+        // Capture old values for logging
+        String oldName = dataset.getDatasetName();
+        String oldDescription = dataset.getDescription();
+
+        // Update entity
         datasetMapper.updateDatasetFromRequest(request, dataset);
+
+        // Save and return response
         return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
     }
 

@@ -15,11 +15,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DatasetUpdateRequest {
-    @Size(min = 3, max = 100, message = "INVALID_DATASET_NAME_LENGTH")
+    @Size(min = 3, max = 255, message = "INVALID_DATASET_NAME_LENGTH")
     String datasetName;
     
-    @Size(max = 500, message = "INVALID_DATASET_DESCRIPTION_LENGTH")
+    @Size(max = 1000, message = "INVALID_DATASET_DESCRIPTION_LENGTH")
     String description;
-
-    String projectId;
 }
