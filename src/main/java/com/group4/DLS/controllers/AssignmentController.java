@@ -27,8 +27,8 @@ public class AssignmentController {
 
         // 1 Get all assignments
         @GetMapping
-        public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
-                ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+        public ApiResponse<List<Assignment>> getAllAssignments() {
+                ApiResponse<List<Assignment>> response = new ApiResponse<>();
 
                 response.setCode(200);
                 response.setData(assignmentService.getAllAssignments());

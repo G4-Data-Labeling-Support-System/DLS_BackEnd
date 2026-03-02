@@ -33,15 +33,15 @@ public class AssignmentService {
 
 
 // ================= GET ALL ASSIGNMENTS =================
-    public List<AssignmentResponse> getAllAssignments() {
-        List<AssignmentResponse> assignments = assignmentRepository.findAll()
-                .stream()
-                .map(assignmentMapper::toResponse)
-                .toList();
-        if(assignments.isEmpty()){
-            throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
-        }
-        return assignments;
+    public List<Assignment> getAllAssignments() {
+//        List<AssignmentResponse> assignments = assignmentRepository.findAll()
+//                .stream()
+//                .map(assignmentMapper::toResponse)
+//                .toList();
+//        if(assignments.isEmpty()){
+//            throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
+//        }
+        return assignmentRepository.findAll();
     }
 
 //Create Assignment
