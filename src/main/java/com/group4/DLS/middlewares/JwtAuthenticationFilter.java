@@ -54,11 +54,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String email = jwtService.extractEmail(token);
+        String userId = jwtService.extractUserId(token);
 
-        userRepository.findByEmail(email).ifPresent(user -> {
+        userRepository.findById(userId).ifPresent(user -> {
             var authorities = List.of(
-                    new SimpleGrantedAuthority("ROLE_" + user.getUserRole().name()));
+                    new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
 
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                     user, null, authorities);

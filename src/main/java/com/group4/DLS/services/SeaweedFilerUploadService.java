@@ -27,7 +27,7 @@ public class SeaweedFilerUploadService {
 
     public String uploadImage(MultipartFile file, String folder) throws IOException {
 
-        String filename = UUID.randomUUID() + file.getOriginalFilename();
+        String filename = UUID.randomUUID() + file.getOriginalFilename().replaceAll("\\s+", "_");;
 
         // URL upload vào Filer
         String uploadUrl = seaweedFSProperties.getFiler().getUrl()
@@ -52,5 +52,14 @@ public class SeaweedFilerUploadService {
         // URL public để lưu DB
         return seaweedFSProperties.getFiler().getUrl()
                 + "/" + folder + "/" + filename;
+    }
+
+    public void deleteImageByUrl(String relativePath) {
+        try {
+            restTemplate.delete(relativePath);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 }

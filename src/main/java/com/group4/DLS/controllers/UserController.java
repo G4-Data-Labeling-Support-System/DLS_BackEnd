@@ -1,6 +1,5 @@
 package com.group4.DLS.controllers;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.group4.DLS.domain.dto.request.UserCreationRequest;
@@ -179,13 +178,38 @@ public class UserController {
         return response;
     }
 
-    @PostMapping("/{id}/avatar")
-    public ResponseEntity<String> uploadAvatar(
+    @PutMapping("/{id}/avatar")
+    public ApiResponse<UserResponse> uploadAvatar(
             @PathVariable String id,
             @RequestParam MultipartFile file) throws Exception {
-
-        String imageUrl = userService.uploadAvatar(id, file);
-
-        return ResponseEntity.ok(imageUrl);
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setMessage("Avatar user upload successfully");
+        response.setData(userService.uploadAvatar(id, file));
+        return response ;
     }
+
+    @PutMapping("/{id}/avatar/edit")
+    public ApiResponse<UserResponse> editAvatar(
+            @PathVariable String id,
+            @RequestParam MultipartFile file) throws Exception {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setMessage("Avatar user edit successfully");
+        response.setData(userService.editAvatar(id, file));
+        return response ;
+    }
+
+    @DeleteMapping("/{id}/avatar/delete")
+    public ApiResponse<UserResponse> deleteAvatar(
+            @PathVariable String id) throws Exception {
+        ApiResponse<UserResponse> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setMessage("Avatar user delete successfully");
+        response.setData(userService.deleteAvatar(id));
+        return response ;
+    }
+
+
+
 }

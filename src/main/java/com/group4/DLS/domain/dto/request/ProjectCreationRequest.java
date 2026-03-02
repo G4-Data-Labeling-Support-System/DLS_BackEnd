@@ -1,7 +1,5 @@
 package com.group4.DLS.domain.dto.request;
 
-import com.group4.DLS.domain.entity.enums.ProjectStatus;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -18,7 +16,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ProjectCreationRequest {
-    @NotBlank(message = "PROJECT_NAME_REQUIRED")
     @Size(min = 3, max = 100, message = "INVALID_PROJECT_NAME_LENGTH")
     String projectName;
 

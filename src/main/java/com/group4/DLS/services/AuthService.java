@@ -28,7 +28,12 @@ public class AuthService {
             throw new AppException(ErrorCode.INVALID_CREDENTIALS);
         }
 
-        String token = jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(
+                        user.getUserId(),
+                        user.getEmail(), 
+                        user.getUsername(), 
+                        user.getCoverImage(), 
+                        user.getRole());
 
         return AuthResponse.builder()
                 .authenticate(true)

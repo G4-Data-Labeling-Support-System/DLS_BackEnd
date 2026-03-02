@@ -61,15 +61,15 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        if (user != null && user.getStatus().equals(UserStatus.ACTIVE)) {
+        if (user != null && user.getUserStatus().equals(UserStatus.ACTIVE)) {
             userMapper.updateUserFromRequest(request, user);
 
             // Log action
-            logService.log(
-                    "UPDATE_USER_DETAILS",
-                    "USER",
-                    user.getId(),
-                    "Updated user details: " + user.getFullName());
+            // logService.log(
+            //         "UPDATE_USER_DETAILS",
+            //         "USER",
+            //         user.getUserId(),
+            //         "Updated user details: " + user.getUsername());
 
             return userMapper.toUserResponse(userRepository.save(user));
         }
@@ -83,7 +83,7 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         // Check if user active or not
-        if (user.getStatus() != UserStatus.ACTIVE) {
+        if (user.getUserStatus() != UserStatus.ACTIVE) {
             throw new AppException(ErrorCode.USER_NOT_ACTIVE);
         }
 
@@ -105,11 +105,11 @@ public class UserService {
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
 
         // Log action
-        logService.log(
-                "UPDATE_USER_PASSWORD",
-                "USER",
-                user.getId(),
-                "Updated user details: " + user.getFullName());
+        // logService.log(
+        //         "UPDATE_USER_PASSWORD",
+        //         "USER",
+        //         user.getUserId(),
+        //         "Updated user details: " + user.getUsername());
 
         return userMapper.toUserResponse(userRepository.save(user));
 
@@ -119,15 +119,19 @@ public class UserService {
     public UserResponse deactivateUser(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getUserStatus() == UserStatus.INACTIVE) {
+            throw new AppException(ErrorCode.USER_ALREADY_ACTIVE);
+        }
         
-        user.setStatus(UserStatus.INACTIVE);
+        user.setUserStatus(UserStatus.INACTIVE);
 
         // Log action
-        logService.log(
-                "DEACTIVATE USER",
-                "USER",
-                user.getId(),
-                "Deactivated a user: " + user.getUsername());
+        // logService.log(
+        //         "DEACTIVATE USER",
+        //         "USER",
+        //         user.getUserId(),
+        //         "Deactivated a user: " + user.getUsername());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }    
@@ -137,21 +141,24 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
         
-        user.setStatus(UserStatus.ACTIVE);
+        if (user.getUserStatus() == UserStatus.ACTIVE) {
+            throw new AppException(ErrorCode.USER_ALREADY_ACTIVE);
+        }
+
+        user.setUserStatus(UserStatus.ACTIVE);
 
         // Log action
-        logService.log(
-                "ACTIVATE USER",
-                "USER",
-                user.getId(),
-                "Activated a user: " + user.getUsername());
+        // logService.log(
+        //         "ACTIVATE USER",
+        //         "USER",
+        //         user.getUserId(),
+        //         "Activated a user: " + user.getUsername());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    // Upload avatar
     @Transactional
-    public String uploadAvatar(String userId, MultipartFile file) throws Exception {
+    public UserResponse uploadAvatar(String userId, MultipartFile file) throws Exception {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
@@ -160,20 +167,57 @@ public class UserService {
             throw new AppException(ErrorCode.OVER_SIZE_FILE);
         }
 
-        // 1️⃣ Upload lên SeaweedFS
+        //  Upload lên SeaweedFS
         String imageUrl = seaweedFilerUploadService.uploadImage(file, "avatars");
 
-        // 2️⃣ Lưu URL vào DB
+        // Lưu URL vào DB
         user.setCoverImage(imageUrl);
-        userRepository.save(user);
 
-        // Log action
-        logService.log(
-                "UPLOAD AVATAR",
-                "USER",
-                user.getId(),
-                "Upload a user avatar: " + user.getCoverImage());
+        return userMapper.toUserResponse(userRepository.save(user));
 
-        return imageUrl;
+    }
+
+    @Transactional
+    public UserResponse editAvatar(String userId, MultipartFile file) throws Exception {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (file.getSize() > 10 * 1024 * 1024) {
+            throw new AppException(ErrorCode.OVER_SIZE_FILE);
+        }
+
+//        // Lưu ảnh cũ
+//        String oldImageUrl = user.getCoverImage();
+
+        // Upload ảnh mới
+        String newImageUrl = seaweedFilerUploadService.uploadImage(file, "avatars");
+
+        // Update DB
+        user.setCoverImage(newImageUrl);
+
+//        // Xóa ảnh cũ (sau khi DB update thành công)
+//        if (oldImageUrl != null && !oldImageUrl.isBlank()) {
+//            try {
+//                seaweedFilerUploadService.deleteImageByUrl(oldImageUrl);
+//            } catch (Exception e) {
+//                // log lại, không throw để tránh rollback transaction
+//                System.out.println("Cannot delete old avatar: " + e.getMessage());
+//            }
+//        }
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Transactional
+    public UserResponse deleteAvatar(String userId) throws Exception {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setCoverImage(null);
+
+        return userMapper.toUserResponse(userRepository.save(user));
+
     }
 }
