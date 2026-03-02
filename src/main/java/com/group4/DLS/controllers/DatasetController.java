@@ -66,12 +66,21 @@ public class DatasetController {
     * Update a dataset
     * ================
     */
-    // @PutMapping("/{id}")
-    // public ResponseEntity<DatasetResponse> update(
-    //         @PathVariable String id,
-    //         @RequestBody DatasetUpdateRequest request) {
-    //     return ResponseEntity.ok(datasetService.updateDataset(id, request));
-    // }
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+        summary = "Update current dataset",
+        description = "Update dataset"
+    )
+    public ApiResponse<DatasetResponse> update(@PathVariable String id, @RequestBody DatasetUpdateRequest request) {
+        ApiResponse<DatasetResponse> response = new ApiResponse<>();
+
+        response.setCode(200);
+        response.setData(datasetService.updateDatasetResponse(id, request));
+        response.setMessage("Dataset updated successfully");
+
+        return response;
+    }
 
     /*
     * ================
