@@ -67,7 +67,8 @@ public class Assignment {
     private Project project;
 
     // One Dataset has One Assignment
-    @OneToOne(mappedBy = "assignment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne
+    @JoinColumn(name = "dataset_id", unique = true)
     private Dataset dataset;
 
     // Who created the assignment
