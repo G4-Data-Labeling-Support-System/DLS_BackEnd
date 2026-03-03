@@ -16,13 +16,13 @@ public interface DatasetRepository extends JpaRepository<Dataset, String> {
     );
 
     // Check exists by projectId + name
-    boolean existsByProjectIdAndDatasetName(
+    boolean existsByProject_ProjectIdAndDatasetName(
         String projectId, 
         String datasetName
     );
 
     // Find all dataset in 1 project
-    List<Dataset> findByProjectId(
+    List<Dataset> findByProject_ProjectId(
         String projectId
     );
 }
