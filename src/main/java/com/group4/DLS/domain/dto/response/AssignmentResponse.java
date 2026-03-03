@@ -19,11 +19,12 @@ public class AssignmentResponse {
     String assignmentName;
     String descriptionAssignment;
     AssignmentStatus assignmentStatus;
+    String assignedBy;
+    String assignedTo;
     String projectId;
     String datasetId;
     LocalDate createdAt;
     LocalDate updatedAt;
-    Status status;
     ProjectResponse project;
     DatasetResponse dataset;
 }
