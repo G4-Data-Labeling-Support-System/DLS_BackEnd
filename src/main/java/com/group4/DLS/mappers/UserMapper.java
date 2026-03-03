@@ -1,5 +1,7 @@
 package com.group4.DLS.mappers;
 
+import java.util.List;
+
 import org.mapstruct.BeanMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -15,6 +17,7 @@ import com.group4.DLS.domain.entity.User;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     UserResponse toUserResponse(User user);
+    List<UserResponse> toUserResponse(List<User> user);
 
     @Mapping(target = "userId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
