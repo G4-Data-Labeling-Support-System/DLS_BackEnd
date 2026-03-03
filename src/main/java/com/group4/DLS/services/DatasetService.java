@@ -33,7 +33,7 @@ public class DatasetService {
             Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-            List<Dataset> datasets = datasetRepository.findByProjectId(project.getProjectId());
+            List<Dataset> datasets = datasetRepository.findByProject_ProjectId(project.getProjectId());
 
             return datasetMapper.toDatasetResponse(datasets);
         } catch (AppException ex) {
