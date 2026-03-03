@@ -1,19 +1,22 @@
 package com.group4.DLS.domain.dto.request;
 
-import jakarta.validation.constraints.Size;
+import com.group4.DLS.domain.entity.enums.AssignmentStatus;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
+@Data
 @Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AssignmentUpdateRequest {
-    @Size(max = 100, message = "ASSIGNMENT_NAME_TOO_LONG")
+
     String assignmentName;
-    @Size(max = 100, message = "ASSIGNMENT_NAME_TOO_LONG")
-    String descriptionAssignment;
+
+    String description;
+
     String assignmentStatus;
 }

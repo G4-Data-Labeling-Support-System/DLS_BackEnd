@@ -17,13 +17,14 @@ import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 public class AssignmentResponse {
     String assignmentId;
     String assignmentName;
-    String descriptionAssignment;
+    String description;
     AssignmentStatus assignmentStatus;
+    String assignedBy;
+    String assignedTo;
     String projectId;
     String datasetId;
     LocalDate createdAt;
     LocalDate updatedAt;
-    Status status;
     ProjectResponse project;
     DatasetResponse dataset;
 }
