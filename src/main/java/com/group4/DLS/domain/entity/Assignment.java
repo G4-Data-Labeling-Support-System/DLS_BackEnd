@@ -9,21 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 
 import com.group4.DLS.domain.entity.enums.Status;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -80,10 +66,8 @@ public class Assignment {
     @JsonIgnore
     private Project project;
 
-    // Many Assignment belongs to One Dataset
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dataset_id", nullable = false)
-    @JsonIgnore
+    // One Dataset has One Assignment
+    @OneToOne(mappedBy = "assignment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Dataset dataset;
 
     // Who created the assignment

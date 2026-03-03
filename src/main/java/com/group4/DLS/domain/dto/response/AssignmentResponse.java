@@ -17,7 +17,7 @@ import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 public class AssignmentResponse {
     String assignmentId;
     String assignmentName;
-    String descriptionAssignment;
+    String description;
     AssignmentStatus assignmentStatus;
     String assignedBy;
     String assignedTo;

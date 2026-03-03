@@ -18,7 +18,5 @@ public class AssignmentUpdateRequest {
 
     String description;
 
-    LocalDateTime dueDate;
-
     String assignmentStatus;
 }

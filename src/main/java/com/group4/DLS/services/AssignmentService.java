@@ -2,6 +2,7 @@ package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
+import com.group4.DLS.domain.dto.request.AuthRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
@@ -19,6 +20,7 @@ import com.group4.DLS.repositories.UserRepository;
 import com.group4.DLS.security.CurrentUserProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -34,7 +36,6 @@ public class AssignmentService {
     ProjectRepository projectRepository;
     DatasetRepository datasetRepository;
     ActivityLogService logService;
-    CurrentUserProvider currentUserProvider;
     UserRepository userRepository;
 
 
@@ -53,8 +54,9 @@ public class AssignmentService {
 //Create Assignment
     public AssignmentResponse createAssignment(String projectId, String datasetId, AssignmentCreateRequest request) {
 
-        // Lấy user hiện tại
-        User manager = currentUserProvider.getCurrentUser();
+    User manager = userRepository.findById(request.getAssignedBy())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));

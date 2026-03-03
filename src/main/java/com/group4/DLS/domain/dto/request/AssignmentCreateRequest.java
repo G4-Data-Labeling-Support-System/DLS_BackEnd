@@ -22,5 +22,8 @@ public class AssignmentCreateRequest {
     @NotNull(message = "Assigned To is required")
     String assignedTo;
 
+    @NotNull(message = "Assigned By is required")
+    String assignedBy;
+
     String description;
 }
