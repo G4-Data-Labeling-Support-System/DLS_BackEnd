@@ -52,7 +52,8 @@ public class Dataset {
 
 
     // One Dataset has One Assignment
-    @OneToOne(mappedBy = "dataset", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne
+    @JoinColumn(name = "assignment_id", unique = true, nullable = true)
     private Assignment assignment;
 
     // One Dataset has Many Labels

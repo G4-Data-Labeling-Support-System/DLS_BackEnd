@@ -1,8 +1,8 @@
 package com.group4.DLS.domain.dto.response;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+import com.group4.DLS.domain.entity.enums.DataType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,12 +14,17 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ApiResponse<T> {
-    int code;
-    String message;
-    T data;
+public class DataItemResponse {
+    String itemId;
+    String fileName;
+    String url;
+    String fileFormat;
+    int fileSize;
+    int width;
+    int height;
+    DataType dataType;
+    LocalDateTime uploadedAt;
 }

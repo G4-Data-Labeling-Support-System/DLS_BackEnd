@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class GuidelineUpdateRequest {
     @Size(max = 50, message = "GUIDELINE_NAME_TOO_LONG")
-    String guideName;
+    String title;
     @Size(max = 500, message = "GUIDELINE_CONTENT_TOO_LONG")
     String content;
 }

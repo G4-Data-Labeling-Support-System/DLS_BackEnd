@@ -7,11 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
-
-import com.group4.DLS.domain.entity.Dataitem;
-import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 
 @Builder
 @Getter
@@ -20,12 +17,13 @@ import com.group4.DLS.domain.entity.enums.DatasetStorageType;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DatasetResponse {
+
     String datasetId;
-    String assignmentId;
     String datasetName;
-    int version;
-    DatasetStorageType storageType;
-    LocalDate createdAt;
-    LocalDate updatedAt;
-    List<Dataitem> dataitems;
+    String description;
+    int totalItems;
+    LocalDateTime createdAt;
+    ProjectResponse project;
+    // List all dataItems
+    List<DataItemResponse> dataitems;
 }

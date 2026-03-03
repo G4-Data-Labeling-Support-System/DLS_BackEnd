@@ -1,6 +1,7 @@
 package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
+import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
@@ -42,34 +43,46 @@ public class DatasetService {
 
     // ===== CREATE DATASET =====
     public DatasetResponse createDataset(DatasetCreationRequest request) {
-        if (datasetRepository.findByDatasetName(request.getDatasetName()) != null) {
+
+        // Validate project exist
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+        // Check if this dataset name exist inside this project
+        if (datasetRepository.existsByProject_ProjectIdAndDatasetName(project.getProjectId(), request.getDatasetName())) {    
             throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 
+        // Map request -> entity
         Dataset dataset = datasetMapper.createDatasetFromRequest(request);
 
-        if (dataset != null) {
-            return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
-        }
+        // Set project relationship
+        dataset.setProject(project);
 
-        return null;
+        // Save and return response
+        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
     }
 
     // ===== UPDATE DATASET =====
-    // public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request) {
+    public DatasetResponse updateDatasetResponse(String datasetId, DatasetUpdateRequest request) {
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-    //     User currentUser = currentUserProvider.getCurrentUser();
+        // Check duplicate name (If name change)
+        if (request.getDatasetName() != null && !request.getDatasetName().equals(dataset.getDatasetName())) {
+            throw new AppException(ErrorCode.DATASETNAME_ALREADY_EXSITS);
+        }
 
-    //     if (currentUser.getUserRole() != UserRole.MANAGER) {
-    //         throw new AppException(ErrorCode.FORBIDDEN);
-    //     }
+        // Capture old values for logging
+        String oldName = dataset.getDatasetName();
+        String oldDescription = dataset.getDescription();
 
-    //     Dataset dataset = datasetRepository.findById(datasetId)
-    //             .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        // Update entity
+        datasetMapper.updateDatasetFromRequest(request, dataset);
 
-    //     datasetMapper.updateDataset(request, dataset);
-    //     return datasetMapper.toResponse(datasetRepository.save(dataset));
-    // }
+        // Save and return response
+        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+    }
 
     // ===== DELETE DATASET =====
     // public void deleteDataset(String datasetId) {
