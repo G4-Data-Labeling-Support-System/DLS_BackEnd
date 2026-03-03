@@ -33,8 +33,10 @@ public class UserService {
     SeaweedFilerUploadService seaweedFilerUploadService;
 
     // Get all users
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return userMapper.toUserResponse(users);
     }
 
     // Get user by ID
