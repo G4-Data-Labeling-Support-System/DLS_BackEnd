@@ -15,7 +15,7 @@ import java.time.LocalDate;
 public class GuidelineResponse {
     String guideId;
     String projectId;
-    String guideName;
+    String title;
     String content;
     int version;
     GuidelineStatus status;
