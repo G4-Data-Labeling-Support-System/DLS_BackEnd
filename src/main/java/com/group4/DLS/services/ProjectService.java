@@ -80,11 +80,11 @@ public class ProjectService {
         projectMemberRepository.save(member);
 
         // Log action
-        logService.log(
-                "CREATE_PROJECT",
-                "PROJECT",
-                project.getProjectId(),
-                "Created project: " + project.getProjectName());
+        // logService.log(
+        //         "CREATE_PROJECT",
+        //         "PROJECT",
+        //         project.getProjectId(),
+        //         "Created project: " + project.getProjectName());
 
         return projectMapper.toProjectResponse(project);
     }
@@ -106,11 +106,11 @@ public class ProjectService {
         project = projectRepository.save(project);
 
         // Log action
-        logService.log(
-                "UPDATE_PROJECT",
-                "PROJECT",
-                project.getProjectId(),
-                "Updated project: " + project.getProjectName());
+        // logService.log(
+        //         "UPDATE_PROJECT",
+        //         "PROJECT",
+        //         project.getProjectId(),
+        //         "Updated project: " + project.getProjectName());
 
         return projectMapper.toProjectResponse(project);
     }
@@ -133,12 +133,12 @@ public class ProjectService {
             project = projectRepository.save(project);
 
             // Log action
-            logService.log(
-                "UPDATE_PROJECT_STATUS",
-                "PROJECT",
-                project.getProjectId(),
-                "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
-            );
+        //     logService.log(
+        //         "UPDATE_PROJECT_STATUS",
+        //         "PROJECT",
+        //         project.getProjectId(),
+        //         "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
+        //     );
         }
 
         return projectMapper.toProjectResponse(project);
@@ -161,10 +161,10 @@ public class ProjectService {
         projectRepository.save(project);
 
         // Log action
-        logService.log(
-                "REMOVE_PROJECT",
-                "PROJECT",
-                project.getProjectId(),
-                "Project removed: " + project.getProjectName());
+        // logService.log(
+        //         "REMOVE_PROJECT",
+        //         "PROJECT",
+        //         project.getProjectId(),
+        //         "Project removed: " + project.getProjectName());
     }
 }
