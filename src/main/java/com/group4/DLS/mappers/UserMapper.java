@@ -1,0 +1,41 @@
+package com.group4.DLS.mappers;
+
+import java.util.List;
+
+import org.mapstruct.BeanMapping;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+
+import com.group4.DLS.domain.dto.request.UserCreationRequest;
+import com.group4.DLS.domain.dto.request.UserPasswordChangeRequest;
+import com.group4.DLS.domain.dto.request.UserUpdateRequest;
+import com.group4.DLS.domain.dto.response.UserResponse;
+import com.group4.DLS.domain.entity.User;
+
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+    UserResponse toUserResponse(User user);
+    List<UserResponse> toUserResponse(List<User> user);
+
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    User toUser(UserCreationRequest request);
+
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "password", ignore = true)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateUserFromRequest(UserUpdateRequest request, @MappingTarget User user);
+
+    @Mapping(target = "userId", ignore = true)
+    @Mapping(target = "username", ignore = true)
+    @Mapping(target = "email", ignore = true)
+    @Mapping(target = "coverImage", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "userStatus", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
+    void updateUserPasswordFromRequest(UserPasswordChangeRequest request, @MappingTarget User user);
+}

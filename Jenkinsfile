@@ -3,15 +3,19 @@ pipeline {
 
     environment {
 
-        // Project info
-        APP_NAME = 'DLS-be'
-        RELEASE = '1'
+        // Maven info
+        MAVEN_HOME = tool 'maven'
+        PATH = "${MAVEN_HOME}/bin:${env.PATH}"
+
+        // Project infof
+        APP_NAME = 'data-labeling-be'
+        RELEASE = '1.1'
         GITHUB_URL = 'https://github.com/G4-Data-Labeling-Support-System/DLS_BackEnd.git'
-        GIT_MANIFEST_FILE = "https://github.com/G4-Data-Labeling-Support-System/Infrastructure.git"
+        GIT_MANIFEST_REPO = "https://github.com/G4-Data-Labeling-Support-System/Infrastructure.git"
 
         // Sonar Scanner info
-        // SCANNER_HOME = tool 'sonarqube-scanner'
-        // SONAR_HOST_URL = 'https://sonarqube.hikarimoon.pro'
+        SCANNER_HOME = tool 'sonarqube-scanner'
+        SONAR_HOST_URL = 'https://sonarqube.hikarimoon.pro'
 
         // Docker info
         DOCKER_USER = 'fleeforezz'
@@ -57,19 +61,28 @@ pipeline {
             }
         }
 
-        // stage('SonarQube Analysis') {
-        //     steps {
-        //         withSonarQubeEnv('SonarQube') {
-        //             echo "#====================== Sonar Scan for (${env.BRANCH_NAME}) ======================#"
-        //             sh """
-        //                 $SCANNER_HOME/bin/sonar-scanner \
-        //                 -Dsonar.projectKey=${APP_NAME}-${env.BRANCH_NAME} \
-        //                 -Dsonar.projectName="${APP_NAME} (${ENVIRONMENT})" \
-        //                 -Dsonar.host.url=${SONAR_HOST_URL}
-        //             """
-        //         }
-        //     }
-        // }
+        stage('Maven Build') {
+            steps {
+                echo "#====================== Maven Build ======================#"
+                sh '''
+                    mvn clean package -DskipTests
+                '''
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    echo "#====================== Sonar Scan for (${env.BRANCH_NAME}) ======================#"
+                    sh """
+                        mvn sonar:sonar \
+                        -Dsonar.projectKey=${APP_NAME}-${env.BRANCH_NAME} \
+                        -Dsonar.projectName="${APP_NAME} (${ENVIRONMENT})" \
+                        -Dsonar.host.url=${SONAR_HOST_URL}
+                    """
+                }
+            }
+        }
 
         // stage('Quality Gate') {
         //     steps {
@@ -150,18 +163,31 @@ pipeline {
                 echo "#====================== Docker Test ======================#"
                 script {
                     def containerName = "test-${APP_NAME}-${env.BUILD_NUMBER}"
-                    def testPort = env.BRANCH_NAME == 'main' ? '8080' : '8080'
+                    def testPort = env.BRANCH_NAME == 'main' ? '8081' : '8081'
 
                     // Test docker in background
                     sh """
-                        # Start container in background
                         docker run -d --name ${containerName} \
                         -p ${testPort}:${testPort} ${env.IMAGE_TAGGED}
-                        # Wait for container to start
-                        sleep 10
-                        # Test if the container respone
-                        curl -f http://localhost:${testPort}/ || exit 1
-                        # Clean up
+
+                        echo "⏳ Waiting for Spring Boot to be healthy..."
+
+                        ATTEMPTS=40
+                        SLEEP=3
+
+                        for i in \$(seq 1 \$ATTEMPTS); do
+                        if curl -fs http://localhost:${testPort}/actuator/health > /dev/null; then
+                            echo "App is UP (after \$((i*SLEEP))s)"
+                            break
+                        fi
+
+                        echo "⏱ Attempt \$i/\$ATTEMPTS – not ready yet"
+                        sleep \$SLEEP
+                        done
+
+                        echo "🔍 Final health check"
+                        curl -f http://localhost:${testPort}/actuator/health
+
                         docker stop ${containerName}
                         docker rm ${containerName}
                     """
@@ -173,7 +199,7 @@ pipeline {
             steps {
                 echo "#====================== Trivy Docker Image Scan ======================#"
                 script {
-                    def securityLevel = env.BRANCH_NAME == 'master' ? 'HIGH,CRITICAL' : 'CRITICAL'
+                    def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
 
                     sh "trivy image --no-progress --exit-code 1 --format json --severity UNKNOWN,HIGH,CRITICAL ${env.IMAGE_TAGGED} > trivyimage.txt || true"
 
@@ -213,60 +239,91 @@ pipeline {
             }
         }
 
-        stage("Checkout Manifest Repository"){
-            steps{
+        stage('Checkout Manifest Repository') {
+            steps {
                 script {
                     echo "#====================== Checkout Manifest Repository ======================#"
-                    // def currentBranch = env.BRANCH_NAME == 'main' ? 'prod' : 'dev'
-
-                    sh 'rm -rf infrastructure || true' // Clean up old dir if exists
-                    sh "git clone -b ${currentBranch} ${GIT_MANIFEST_FILE} infrastructure"
+                    
+                    sh """
+                        rm -rf infrastructure || true
+                        git clone ${GIT_MANIFEST_REPO} infrastructure
+                    """
                 }
             }
         }
 
-        stage("Update Manifest Files") {
+        stage('Update Manifest Files') {
             steps {
                 echo "#====================== Update Kubernetes Manifest Files ======================#"
-                dir('manifest') {
+                dir('infrastructure') {
                     script {
+                        def deploymentPath = env.BRANCH_NAME == 'main' ? 
+                            'k8s-gitops/overlays/prod/patch-deployment.yaml' : 
+                            'k8s-gitops/overlays/dev/patch-deployment.yaml'
+                        
                         sh """
-                            echo "Updating ${APP_NAME} image to ${env.IMAGE_TAGGED} in manifest.yml"
-                            sed -i 's|image: .*${APP_NAME}:.*|image: ${env.IMAGE_TAGGED}|g' manifest.yml
-                            echo "Updated manifest.yml:"
-                            cat manifest.yml | grep -A 2 -B 2 "image:"
+                            echo "Current deployment file:"
+                            cat ${deploymentPath}
+                            
+                            echo ""
+                            echo "Updating image to: ${env.IMAGE_TAGGED}"
+                            
+                            # Update the image tag using yq (more reliable than sed for YAML)
+                            # If yq is not available, fall back to sed
+                            if command -v yq &> /dev/null; then
+                                yq eval '.spec.template.spec.containers[0].image = "${env.IMAGE_TAGGED}"' -i ${deploymentPath}
+                            else
+                                # Using sed with more precise matching
+                                sed -i 's|image: fleeforezz/data-labeling-be:.*|image: ${env.IMAGE_TAGGED}|g' ${deploymentPath}
+                            fi
+                            
+                            echo ""
+                            echo "Updated deployment file:"
+                            cat ${deploymentPath}
                         """
                     }
                 }
             }
         }
 
-        stage("Commit and Push Manifest Changes") {
+        stage('Commit and Push Manifest Changes') {
             steps {
                 echo "#====================== Commit and Push Manifest Changes ======================#"
-                dir('manifest') {
+                dir('infrastructure') {
                     script {
-                        sshagent(['guests-ssh']) {
-                            // def currentBranch = env.BRANCH_NAME == 'master' ? 'prod' : 'dev'
-
+                        withCredentials([sshUserPrivateKey(credentialsId: 'guests-ssh', keyFileVariable: 'SSH_KEY')]) {
                             sh """
-                            # Add Github to known hosts
-                            mkdir -p ~/.ssh
-                            ssh-keyscan github.com >> ~/.ssh/known_hosts
-                            # Configure git
-                            git config --global user.email "fleeforezz@gmail.com"
-                            git config --global user.name "fleeforezz"
+                                # Setup SSH
+                                mkdir -p ~/.ssh
+                                ssh-keyscan github.com >> ~/.ssh/known_hosts
                                 
-                            # Add changes
-                            git add .
+                                # Configure Git
+                                git config user.email "fleeforezz@gmail.com"
+                                git config user.name "fleeforezz"
                                 
-                            # Commit with descriptive message
-                            git commit -m "🚀 Update ${APP_NAME} to ${env.IMAGE_TAGGED} [skip ci]" || echo "No changes to commit"
+                                # Set SSH URL for push
+                                git remote set-url origin git@github.com:G4-Data-Labeling-Support-System/Infrastructure.git
                                 
-                            # Use SSH
-                            git remote set-url origin git@github.com:NguyenThinhNe/BE_Manifest.git
-                            # Push changes
-                            git push origin ${currentBranch}
+                                # Setup SSH agent
+                                eval \$(ssh-agent -s)
+                                ssh-add ${SSH_KEY}
+                                
+                                # Check for changes
+                                git status
+                                
+                                # Add and commit changes
+                                git add .
+                                
+                                # Commit with skip ci flag to avoid triggering another build
+                                git commit -m "🚀 [${ENVIRONMENT}] Update ${APP_NAME} to ${env.IMAGE_TAG_SHORT} - Build #${env.BUILD_NUMBER} [skip ci]" || {
+                                    echo "No changes to commit"
+                                    exit 0
+                                }
+                                
+                                # Push changes
+                                git push origin main
+                                
+                                echo "✅ Successfully pushed manifest updates"
                             """
                         }
                     }
@@ -318,6 +375,8 @@ pipeline {
         cleanup {
             sh """
                 echo "🧹 Cleaning up Docker resources..."
+                docker stop test-${APP_NAME}-${env.BUILD_NUMBER} || true
+                docker rm test-${APP_NAME}-${env.BUILD_NUMBER} || true
                 docker rmi ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION} || true
                 docker rmi ${env.IMAGE_TAGGED} || true
                 docker system prune -f || true
