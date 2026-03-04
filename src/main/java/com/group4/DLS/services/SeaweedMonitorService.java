@@ -30,18 +30,30 @@ public class SeaweedMonitorService {
             JsonNode json = objectMapper.readTree(response.getBody());
 
             int volumeSizeMb = json.path("VolumeSizeLimitMB").asInt(1024);
-            int freeVolumes = json.path("Topology").path("Free").asInt();
-            int maxVolumes = json.path("Topology").path("Max").asInt();
 
-            long freeStorageMb = (long) freeVolumes * volumeSizeMb;
+            long totalMaxVolumes = 0;
+
+            JsonNode dataCenters = json.path("Topology").path("DataCenters");
+
+            for (JsonNode dc : dataCenters) {
+                for (JsonNode rack : dc.path("Racks")) {
+                    for (JsonNode node : rack.path("DataNodes")) {
+                        totalMaxVolumes += node.path("Max").asInt(0);
+                    }
+                }
+            }
+
+            int freeVolumes = json.path("Topology").path("Free").asInt(0);
+            int maxVolumes = json.path("Topology").path("Max").asInt(0);
             long totalStorageMb = (long) maxVolumes * volumeSizeMb;
+            long freeStorageMb = (long) freeVolumes * volumeSizeMb;
             long usedStorageMb = totalStorageMb - freeStorageMb;
 
             return SeaweedClusterStatusResponse.builder()
-                    .Total(totalStorageMb * 1024L * 1024L)
-                    .Used(usedStorageMb * 1024L * 1024L)
-                    .Free(freeStorageMb * 1024L * 1024L)
-                    .VolumeCount(maxVolumes)
+                    .Total(totalStorageMb)     // MB
+                    .Used(usedStorageMb)       // MB
+                    .Free(freeStorageMb)       // MB
+                    .VolumeCount((int) totalMaxVolumes)
                     .build();
 
         } catch (Exception e) {
