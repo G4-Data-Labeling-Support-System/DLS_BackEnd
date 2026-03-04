@@ -46,6 +46,10 @@ public enum ErrorCode {
     REQUIRE_PROJECT_ID(400, "Project Id is needed"),
     DATASETNAME_CANNOT_BE_NULL(400, "Dataset name cannot be null"),
     DATASETNAME_ALREADY_EXSITS(400, "Dataset name already exists"),
+
+    LABEL_NOT_FOUND(3001, "Label not found"),
+    LABEL_ALREADY_EXISTS(3002, "Label already exists in this dataset"),
+    LABEL_HAS_ANNOTATIONS(3003, "Cannot delete label because it is used in annotations"),
     OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB");
 
     final int code;
