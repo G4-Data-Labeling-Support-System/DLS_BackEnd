@@ -23,6 +23,16 @@ public class DatasetService {
     private final ProjectRepository projectRepository;
     private final DatasetMapper datasetMapper;
 
+
+    //List all dataset
+    public List<DatasetResponse> getAllDatasets() {
+        List<Dataset> datasets = datasetRepository.findAll();
+        if (datasets.isEmpty()) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
+        return datasetMapper.toDatasetResponse(datasets);
+    }
+
     // ===== LIST ALL DATASET FOR TARGET PROJECT =====
     public List<DatasetResponse> getAllDatasetForProject(String projectId) {
         try {
@@ -31,7 +41,7 @@ public class DatasetService {
             }
 
             Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+                    .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
             List<Dataset> datasets = datasetRepository.findByProject_ProjectId(project.getProjectId());
 
@@ -49,7 +59,7 @@ public class DatasetService {
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         // Check if this dataset name exist inside this project
-        if (datasetRepository.existsByProject_ProjectIdAndDatasetName(project.getProjectId(), request.getDatasetName())) {    
+        if (datasetRepository.existsByProject_ProjectIdAndDatasetName(project.getProjectId(), request.getDatasetName())) {
             throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 

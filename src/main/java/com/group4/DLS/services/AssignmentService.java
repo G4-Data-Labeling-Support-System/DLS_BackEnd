@@ -52,35 +52,28 @@ public class AssignmentService {
     }
 
 //Create Assignment
-    public AssignmentResponse createAssignment(String projectId, String datasetId, AssignmentCreateRequest request) {
+    public AssignmentResponse createAssignment(String projectId, AssignmentCreateRequest request) {
 
-    User manager = userRepository.findById(request.getAssignedBy())
+    User manager = userRepository.findById(request.getAssignedBy().getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        Dataset dataset = datasetRepository.findById(datasetId)
+        Dataset dataset = datasetRepository.findById(request.getDatasetId().getDatasetId())
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-        User assignedTo = userRepository.findById(request.getAssignedTo())
+        User assignedTo = userRepository.findById(request.getAssignedTo().getUserId())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         Assignment assignment = new Assignment();
-        assignment.setAssignmentName(request.getAssignmentName());
-        assignment.setDescription(request.getDescription());
-        assignment.setDueDate(LocalDateTime.now());
-
         assignment.setProject(project);
-        assignment.setDataset(dataset);
-        dataset.setAssignment(assignment);
-
-
         assignment.setAssignedBy(manager);
-        assignment.setAssignedTo(assignedTo);
-      
-        datasetRepository.save(dataset);
+        dataset.setAssignment(assignment);
+        assignment =assignmentMapper.toAssignment(request);
+
+
         assignmentRepository.save(assignment);
          // Log action
         logService.log(
@@ -99,16 +92,7 @@ public class AssignmentService {
 
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
-            assignment.setAssignmentName(request.getAssignmentName());
-        }
-
-        if (request.getAssignmentStatus() != null) {
-            try {
-                AssignmentStatus status = AssignmentStatus.valueOf(request.getAssignmentStatus());
-                assignment.setAssignmentStatus(status);
-            } catch (IllegalArgumentException e) {
-                throw new AppException(ErrorCode.INVALID_ASSIGNMENT_STATUS);
-            }
+            assignment = assignmentMapper.updateAssignmentFromRequest(request);
         }
 
         assignmentRepository.save(assignment);

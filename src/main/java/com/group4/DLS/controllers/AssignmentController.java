@@ -38,18 +38,17 @@ public class AssignmentController {
         }
 
     // 2 Create assignment
-    @PostMapping("/projects/{projectId}/datasets/{datasetId}")
+    @PostMapping("/projects/{projectId}")
     @Operation(
         summary = "Create new assignment",
         description = "Create a new assignment linking a project with a dataset")
     public ApiResponse<AssignmentResponse> createAssignment(
             @PathVariable String projectId,
-            @PathVariable String datasetId,
             @RequestBody AssignmentCreateRequest request) {
         return ApiResponse.<AssignmentResponse>builder()
                 .code(201)
                 .message("Create assignment successfully")
-                .data(assignmentService.createAssignment(projectId, datasetId, request))
+                .data(assignmentService.createAssignment(projectId, request))
                 .build();
     }
 

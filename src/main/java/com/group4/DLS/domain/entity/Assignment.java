@@ -68,7 +68,7 @@ public class Assignment {
 
     // One Dataset has One Assignment
     @OneToOne
-    @JoinColumn(name = "dataset_id", unique = true)
+    @JoinColumn(name = "dataset_id", nullable = true)
     private Dataset dataset;
 
     // Who created the assignment

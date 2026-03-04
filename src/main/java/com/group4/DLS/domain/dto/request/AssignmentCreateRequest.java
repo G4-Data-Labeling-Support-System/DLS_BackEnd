@@ -1,5 +1,6 @@
 package com.group4.DLS.domain.dto.request;
 
+import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,10 +21,14 @@ public class AssignmentCreateRequest {
     String assignmentName;
 
     @NotNull(message = "Assigned To is required")
-    String assignedTo;
+    User assignedTo;
 
     @NotNull(message = "Assigned By is required")
-    String assignedBy;
+    User assignedBy;
 
     String description;
+
+    LocalDateTime dueDate;
+
+    Dataset datasetId;
 }
