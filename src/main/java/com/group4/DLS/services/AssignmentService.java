@@ -2,14 +2,12 @@ package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
-import com.group4.DLS.domain.dto.request.AuthRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.entity.enums.AssignmentStatus;
-import com.group4.DLS.domain.entity.enums.Status;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
@@ -17,13 +15,11 @@ import com.group4.DLS.repositories.AssignmentRepository;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectRepository;
 import com.group4.DLS.repositories.UserRepository;
-import com.group4.DLS.security.CurrentUserProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -52,11 +48,11 @@ public class AssignmentService {
     }
 
 //Create Assignment
-    public AssignmentResponse createAssignment(String projectId, AssignmentCreateRequest request) {
+    public AssignmentResponse createAssignment(String projectId,@RequestBody AssignmentCreateRequest request) {
 
     User manager = userRepository.findById(request.getAssignedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-    if(!manager.getRole().equals("MANAGER")) {
+    if(!"MANAGER".equalsIgnoreCase(manager.getRole().toString())) {
         throw new AppException(ErrorCode.USER_NOT_MANAGER);
     }
 
@@ -66,13 +62,24 @@ public class AssignmentService {
 
         Dataset dataset = datasetRepository.findById(request.getDatasetId())
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        // Optional: kiểm tra dataset có thuộc project không
+        if (dataset.getProject() == null ||
+                !dataset.getProject().getProjectId().equals(projectId)) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
 
         User assignedTo = userRepository.findById(request.getAssignedTo())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Assignment assignment = assignmentMapper.toAssignment(request);
-        assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
+        Assignment assignment = new Assignment();
+        assignment.setAssignedTo(assignedTo);
+        assignment.setAssignedBy(manager);
+        assignment.setAssignmentName(request.getAssignmentName());
+        assignment.setDescription(request.getDescription());
+        assignment.setDataset(dataset);
         assignment.setProject(project);
+        assignment.setDueDate(request.getDueDate());
+        assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
         assignment.setTotalItems(dataset.getTotalItems());
         dataset.setAssignment(assignment);
 
@@ -82,7 +89,7 @@ public class AssignmentService {
       
         datasetRepository.save(dataset);
         assignmentRepository.save(assignment);
-        datasetRepository.save(dataset);
+
          // Log action
         logService.log(
                 "CREATE_ASSIGNMENT",
