@@ -30,5 +30,6 @@ public class AssignmentCreateRequest {
 
     LocalDateTime dueDate;
 
+    @NotBlank(message = "Dataset is required")
     String datasetId;
 }
