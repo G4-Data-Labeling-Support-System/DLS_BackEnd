@@ -77,7 +77,10 @@ public class AssignmentService {
         dataset.setAssignment(assignment);
 
 
-
+        assignment.setAssignedBy(manager);
+        assignment.setAssignedTo(assignedTo);
+      
+        datasetRepository.save(dataset);
         assignmentRepository.save(assignment);
         datasetRepository.save(dataset);
          // Log action
