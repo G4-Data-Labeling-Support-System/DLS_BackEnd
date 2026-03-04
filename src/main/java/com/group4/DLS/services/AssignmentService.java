@@ -56,7 +56,7 @@ public class AssignmentService {
 
     User manager = userRepository.findById(request.getAssignedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-    if(!manager.getRole().equals("MANAGER")) {
+    if(!"MANAGER".equalsIgnoreCase(manager.getRole().toString())) {
         throw new AppException(ErrorCode.USER_NOT_MANAGER);
     }
 
@@ -71,15 +71,18 @@ public class AssignmentService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         Assignment assignment = assignmentMapper.toAssignment(request);
+        assignment.setAssignedTo(assignedTo);
+        assignment.setAssignedBy(manager);
         assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
         assignment.setProject(project);
+        assignment.setDataset(dataset);
         assignment.setTotalItems(dataset.getTotalItems());
         dataset.setAssignment(assignment);
 
 
 
         assignmentRepository.save(assignment);
-        datasetRepository.save(dataset);
+
          // Log action
         logService.log(
                 "CREATE_ASSIGNMENT",
