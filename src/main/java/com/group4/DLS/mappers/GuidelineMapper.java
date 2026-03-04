@@ -1,7 +1,5 @@
 package com.group4.DLS.mappers;
 
-import com.group4.DLS.domain.dto.response.ProjectResponse;
-import com.group4.DLS.domain.entity.Project;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -26,6 +24,5 @@ public interface GuidelineMapper {
     @Mapping(target = "project", ignore = true)
     @Mapping(target = "version", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     Guideline toEntity(GuidelineCreateRequest request);
 }

@@ -2,7 +2,7 @@ package com.group4.DLS.domain.entity;
 
 import jakarta.persistence.GeneratedValue;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,25 +35,29 @@ import lombok.experimental.FieldDefaults;
 public class Project {
     @Id
     @GeneratedValue(strategy = jakarta.persistence.GenerationType.UUID)
+    @Column(name = "project_id", nullable = false)
     String projectId;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "project_name", nullable = false, unique = true)
     String projectName;
 
+    @Column(name = "description", nullable = true)
     String description;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "project_status", nullable = false)
     ProjectStatus status = ProjectStatus.NOT_STARTED;
 
-    LocalDate createdAt;
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
 
-    LocalDate updatedAt;
+    @Column(name = "updated_at")
+    LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
 
         if (status == null) {
             this.status = ProjectStatus.NOT_STARTED;
@@ -62,7 +66,7 @@ public class Project {
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     // One project has Many Assignment
@@ -76,12 +80,4 @@ public class Project {
     // One project has Many Dataset
     @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Dataset> datasets = new ArrayList<>();
-
-    // One project has Many Dataset
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Dataitem> dataitems = new ArrayList<>();
-
-    // One project has Many Label Schema
-    @OneToMany(mappedBy = "project", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<LabelSchema> schemas = new ArrayList<>();
 }

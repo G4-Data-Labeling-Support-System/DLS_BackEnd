@@ -25,31 +25,39 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
 
-        // 1 Get all assignments
-        @GetMapping
-        public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
-                ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+    //find Assignment for project
+    @GetMapping("/projects/{projectId}")
+    public ApiResponse<List<AssignmentResponse>> getAssignmentsForProject( @PathVariable String projectId) {
+        ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
-                response.setCode(200);
-                response.setData(assignmentService.getAllAssignments());
-                response.setMessage("Get all assignment successfully");
+        response.setCode(200);
+        response.setData(assignmentService.getAssignmentForProject(projectId));
+        response.setMessage("Get all assignment for project successfully");
+        return response;
+    }
+    // 1 Get all assignments
+    @GetMapping
+    public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
+        ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
-                return response;
-        }
+        response.setCode(200);
+        response.setData(assignmentService.getAllAssignments());
+        response.setMessage("Get all assignment successfully");
+        return response;
+    }
 
     // 2 Create assignment
-    @PostMapping("/projects/{projectId}/datasets/{datasetId}")
+    @PostMapping("/projects/{projectId}")
     @Operation(
         summary = "Create new assignment",
         description = "Create a new assignment linking a project with a dataset")
     public ApiResponse<AssignmentResponse> createAssignment(
             @PathVariable String projectId,
-            @PathVariable String datasetId,
             @RequestBody AssignmentCreateRequest request) {
         return ApiResponse.<AssignmentResponse>builder()
                 .code(201)
                 .message("Create assignment successfully")
-                .data(assignmentService.createAssignment(projectId, datasetId, request))
+                .data(assignmentService.createAssignment(projectId, request))
                 .build();
     }
 
@@ -69,7 +77,7 @@ public class AssignmentController {
     }
 
     // 4️ Delete assignment
-    @DeleteMapping("/{assignmentId}")
+    @PatchMapping("/{assignmentId}")
     @Operation(
         summary = "Delete assignment",
         description = "Delete an assignment by its ID")

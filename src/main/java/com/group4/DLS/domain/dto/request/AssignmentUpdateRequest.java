@@ -1,19 +1,31 @@
 package com.group4.DLS.domain.dto.request;
 
-import jakarta.validation.constraints.Size;
+import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.entity.enums.AssignmentStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
+@Data
 @Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AssignmentUpdateRequest {
-    @Size(max = 100, message = "ASSIGNMENT_NAME_TOO_LONG")
+
+    @NotBlank(message = "Assignment name is required")
     String assignmentName;
-    @Size(max = 100, message = "ASSIGNMENT_NAME_TOO_LONG")
-    String descriptionAssignment;
-    String assignmentStatus;
+
+    @NotNull(message = "Assigned To is required")
+    User assignedTo;
+
+    String description;
+
+    LocalDateTime dueDate;
+
+    AssignmentStatus assignmentStatus;
 }

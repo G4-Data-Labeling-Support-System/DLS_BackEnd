@@ -1,6 +1,5 @@
 package com.group4.DLS.controllers;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.group4.DLS.domain.dto.request.UserCreationRequest;
@@ -44,14 +43,12 @@ public class UserController {
         summary = "Get all users",
         description = "Retrieve a list of all registered users in the system"
     )
-    public ApiResponse<List<User>> getAllUsers() {
-        ApiResponse<List<User>> response = new ApiResponse<>();
-        
-        response.setCode(200);
-        response.setData(userService.getAllUsers());
-        response.setMessage("Users retrieved successfully");
-
-        return response;
+    public ApiResponse<List<UserResponse>> getAllUsersApiResponse() {
+        return ApiResponse.<List<UserResponse>>builder()
+                    .code(200)
+                    .message("Get all users successfully")
+                    .data(userService.getAllUsers())
+                    .build();
     }
 
     /*

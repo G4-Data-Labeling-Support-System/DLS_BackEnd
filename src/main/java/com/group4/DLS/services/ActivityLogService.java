@@ -37,7 +37,7 @@ public class ActivityLogService {
         String ip = httpServletRequest.getRemoteAddr();
 
         ActivityLog log = ActivityLog.builder()
-                .username(user.getUsername())
+                // .username(user.getUsername())
                 .action(action)
                 .entityName(entityName)
                 .entityId(entityId)

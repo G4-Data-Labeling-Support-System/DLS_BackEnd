@@ -35,7 +35,7 @@ public class GuidelineService {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        if (guidelineRepository.existsByGuideNameAndProject_ProjectId(request.getGuideName(), projectId)) {
+        if (guidelineRepository.existsByTitleAndProject_ProjectId(request.getTitle(), projectId)) {
             throw new AppException(ErrorCode.GUIDELINE_EXISTS);
         }
 
@@ -52,7 +52,7 @@ public class GuidelineService {
                 "CREATE_GUIDELINE",
                 "GUIDELINE",
                 guideline.getGuideId(),
-                "Guideline created: " + guideline.getGuideName());
+                "Guideline created: " + guideline.getTitle());
 
         return guidelineMapper.toResponse(guideline);
     }
@@ -71,14 +71,13 @@ public class GuidelineService {
         Guideline guideline = guidelineRepository.findById(guidelineId)
                 .orElseThrow(() -> new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
 
-        if (guidelineRepository.existsByGuideNameAndProject_ProjectIdAndGuideIdNot(request.getGuideName(), guideline.getProject().getProjectId(), guidelineId)) {
+        if (guidelineRepository.existsByTitleAndProject_ProjectIdAndGuideIdNot(request.getTitle(), guideline.getProject().getProjectId(), guidelineId)) {
             throw new AppException(ErrorCode.GUIDELINE_EXISTS);
         }
 
         // update field, KHÔNG tạo entity mới
-        guideline.setGuideName(request.getGuideName());
+        guideline.setTitle(request.getTitle());
         guideline.setContent(request.getContent());
-        guideline.setUpdatedAt(LocalDate.now());
         guideline.setVersion(guideline.getVersion() + 1);
 
         guidelineRepository.save(guideline);
@@ -88,7 +87,7 @@ public class GuidelineService {
                 "UPDATE_GUIDELINE",
                 "GUIDELINE",
                 guideline.getGuideId(),
-                "Guideline updated: " + guideline.getGuideName());
+                "Guideline updated: " + guideline.getTitle());
 
         return guidelineMapper.toResponse(guideline);
     }
@@ -115,7 +114,7 @@ public class GuidelineService {
                 "REMOVE_GUIDELINE",
                 "GUIDELINE",
                 guideline.getGuideId(),
-                "Guideline removed: " + guideline.getGuideName());
+                "Guideline removed: " + guideline.getTitle());
 
         return guidelineMapper.toResponse(guideline);
     }
