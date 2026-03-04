@@ -47,6 +47,18 @@ public class AssignmentService {
         return assignments;
     }
 
+    //get assignments for project
+    public List<AssignmentResponse> getAssignmentForProject(String projectId){
+        List<AssignmentResponse> assignments = assignmentRepository.findByProject_ProjectId(projectId)
+                .stream()
+                .map(assignmentMapper::toResponse)
+                .toList();
+        if(assignments.isEmpty()){
+            throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
+        }
+        return assignments;
+    }
+
 //Create Assignment
     public AssignmentResponse createAssignment(String projectId,@RequestBody AssignmentCreateRequest request) {
 
@@ -87,8 +99,9 @@ public class AssignmentService {
         assignment.setAssignedBy(manager);
         assignment.setAssignedTo(assignedTo);
       
-        datasetRepository.save(dataset);
+
         assignmentRepository.save(assignment);
+        datasetRepository.save(dataset);
 
          // Log action
         logService.log(
@@ -105,6 +118,7 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
+        //check name is null or exists
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
             assignment = assignmentMapper.updateAssignmentFromRequest(request);
