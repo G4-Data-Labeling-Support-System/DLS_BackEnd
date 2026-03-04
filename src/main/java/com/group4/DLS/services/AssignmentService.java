@@ -54,27 +54,32 @@ public class AssignmentService {
 //Create Assignment
     public AssignmentResponse createAssignment(String projectId, AssignmentCreateRequest request) {
 
-    User manager = userRepository.findById(request.getAssignedBy().getUserId())
+    User manager = userRepository.findById(request.getAssignedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+    if(!manager.getRole().equals("MANAGER")) {
+        throw new AppException(ErrorCode.USER_NOT_MANAGER);
+    }
 
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        Dataset dataset = datasetRepository.findById(request.getDatasetId().getDatasetId())
+        Dataset dataset = datasetRepository.findById(request.getDatasetId())
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-        User assignedTo = userRepository.findById(request.getAssignedTo().getUserId())
+        User assignedTo = userRepository.findById(request.getAssignedTo())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Assignment assignment = new Assignment();
+        Assignment assignment = assignmentMapper.toAssignment(request);
+        assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
         assignment.setProject(project);
-        assignment.setAssignedBy(manager);
+        assignment.setTotalItems(dataset.getTotalItems());
         dataset.setAssignment(assignment);
-        assignment =assignmentMapper.toAssignment(request);
+
 
 
         assignmentRepository.save(assignment);
+        datasetRepository.save(dataset);
          // Log action
         logService.log(
                 "CREATE_ASSIGNMENT",
@@ -93,6 +98,7 @@ public class AssignmentService {
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
             assignment = assignmentMapper.updateAssignmentFromRequest(request);
+            assignment.setUpdateAt(LocalDateTime.now());
         }
 
         assignmentRepository.save(assignment);

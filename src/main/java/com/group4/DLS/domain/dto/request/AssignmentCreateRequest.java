@@ -21,14 +21,14 @@ public class AssignmentCreateRequest {
     String assignmentName;
 
     @NotNull(message = "Assigned To is required")
-    User assignedTo;
+    String assignedTo;
 
     @NotNull(message = "Assigned By is required")
-    User assignedBy;
+    String assignedBy;
 
     String description;
 
     LocalDateTime dueDate;
 
-    Dataset datasetId;
+    String datasetId;
 }

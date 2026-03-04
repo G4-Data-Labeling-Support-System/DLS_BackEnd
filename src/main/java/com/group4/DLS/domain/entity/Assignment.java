@@ -51,12 +51,15 @@ public class Assignment {
     @Column(name = "created_at")
     LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    LocalDateTime updateAt;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
 
         if (assignmentStatus == null) {
-            this.assignmentStatus = AssignmentStatus.CREATED;
+            this.assignmentStatus = AssignmentStatus.ASSIGNED;
         }
     }
 

@@ -15,9 +15,13 @@ public interface AssignmentMapper {
     // ===== CREATE =====
     @Mapping(target = "assignmentId", ignore = true)
     @Mapping(target = "project", ignore = true)
+    @Mapping(target = "dataset", ignore = true)
+    @Mapping(target = "assignedBy", ignore = true)
+    @Mapping(target = "assignedTo", ignore = true)
     @Mapping(target = "assignmentStatus", ignore = true)
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updateAt", ignore = true)
     Assignment toAssignment(AssignmentCreateRequest request);
 
     // ===== RESPONSE =====

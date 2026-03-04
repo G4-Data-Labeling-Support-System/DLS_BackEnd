@@ -23,6 +23,7 @@ public enum ErrorCode {
     USER_ALREADY_INACTIVE(403, "User already InActive"),
     FORBIDDEN(403, "Access denied"),
     INVALID_CREDENTIALS(403, "Invalid credentials"),
+    USER_NOT_MANAGER(403, "User is not a manager"),
 
     // 409 errors
     USER_EXISTS(409, "User already exists"),
