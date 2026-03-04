@@ -19,13 +19,11 @@ import java.util.List;
 public class DatasetResponse {
 
     String datasetId;
-    String projectId;
-    String projectName;
     String datasetName;
     String description;
     int totalItems;
     LocalDateTime createdAt;
-
+    ProjectResponse project;
     // List all dataItems
     List<DataItemResponse> dataitems;
 }
