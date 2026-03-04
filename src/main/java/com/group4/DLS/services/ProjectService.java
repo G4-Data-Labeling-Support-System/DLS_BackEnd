@@ -37,6 +37,7 @@ public class ProjectService {
     // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
     public List<ProjectResponse> getAllProjects() {
         List<Project> projects = projectRepository.findByStatusIn(List.of(
+                ProjectStatus.INACTIVE,
                 ProjectStatus.ACTIVE,
                 ProjectStatus.CANCELLED,
                 ProjectStatus.COMPLETED,
