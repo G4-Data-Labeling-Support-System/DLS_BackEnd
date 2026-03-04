@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 
@@ -21,10 +22,9 @@ public class AssignmentResponse {
     AssignmentStatus assignmentStatus;
     String assignedBy;
     String assignedTo;
-    String projectId;
-    String datasetId;
-    LocalDate createdAt;
-    LocalDate updatedAt;
+    LocalDateTime dueDate;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
     ProjectResponse project;
     DatasetResponse dataset;
 }

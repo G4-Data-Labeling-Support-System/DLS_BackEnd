@@ -51,12 +51,15 @@ public class Assignment {
     @Column(name = "created_at")
     LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
+    LocalDateTime updateAt;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
 
         if (assignmentStatus == null) {
-            this.assignmentStatus = AssignmentStatus.CREATED;
+            this.assignmentStatus = AssignmentStatus.ASSIGNED;
         }
     }
 
@@ -68,7 +71,7 @@ public class Assignment {
 
     // One Dataset has One Assignment
     @OneToOne
-    @JoinColumn(name = "dataset_id", unique = true)
+    @JoinColumn(name = "dataset_id", nullable = true)
     private Dataset dataset;
 
     // Who created the assignment

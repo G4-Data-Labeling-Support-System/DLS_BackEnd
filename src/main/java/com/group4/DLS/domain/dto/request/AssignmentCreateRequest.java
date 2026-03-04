@@ -1,5 +1,6 @@
 package com.group4.DLS.domain.dto.request;
 
+import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.User;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,4 +27,8 @@ public class AssignmentCreateRequest {
     String assignedBy;
 
     String description;
+
+    LocalDateTime dueDate;
+
+    String datasetId;
 }

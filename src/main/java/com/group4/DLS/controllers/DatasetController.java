@@ -26,8 +26,23 @@ public class DatasetController {
     private final DatasetService datasetService;
 
     /*
+     * ==============================
+     * Get all dataset
+     * ==============================
+     */
+    @GetMapping
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+            summary = "Get all datasets",
+            description = "Retrieve all datasets"
+    )
+    public List<DatasetResponse> getAllDataset() {
+        return datasetService.getAllDatasets();
+    }
+
+    /*
     * ==============================
-    * Get dataset for target project
+    * Get datasets for target project
     * ==============================
     */
     @GetMapping("/project/{projectId}")

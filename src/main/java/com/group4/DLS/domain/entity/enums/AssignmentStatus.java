@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public enum AssignmentStatus {
 
 
-    CREATED, //Assignment vừa được tạo
+
     ASSIGNED, //Assignment đã được giao cho annotator
     IN_PROGRESS, //Annotator đang thực hiện annotation trên assignment
     REVIEWING, //Assignment đã được annotator hoàn thành và đang chờ reviewer đánh giá
