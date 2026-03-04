@@ -24,6 +24,7 @@ public class DatasetResponse {
     int totalItems;
     LocalDateTime createdAt;
     ProjectResponse project;
+    String assignmentId;
     // List all dataItems
     List<DataItemResponse> dataitems;
 }
