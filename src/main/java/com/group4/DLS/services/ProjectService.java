@@ -51,6 +51,7 @@ public class ProjectService {
     public ProjectResponse getProjectById(String projectId) {
         Project project = projectRepository.findByProjectIdAndStatusIn(projectId,
                 List.of(
+                        ProjectStatus.INACTIVE,
                         ProjectStatus.ACTIVE,
                         ProjectStatus.CANCELLED,
                         ProjectStatus.COMPLETED,
@@ -121,6 +122,7 @@ public class ProjectService {
         Project project = projectRepository.findByProjectIdAndStatusIn(
                 projectId,
                 List.of(
+                        ProjectStatus.INACTIVE,
                         ProjectStatus.ACTIVE,
                         ProjectStatus.CANCELLED,
                         ProjectStatus.COMPLETED,
