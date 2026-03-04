@@ -52,7 +52,7 @@ public class LabelService {
 
     /*
      * ======================
-     * GET ALL BY DATASET
+     * GET ALL LABEL BY DATASET
      * ======================
      */
     @Transactional(readOnly = true)
