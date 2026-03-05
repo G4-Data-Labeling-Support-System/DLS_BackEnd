@@ -25,6 +25,16 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
 
+    //find Assignment for Annnotator
+    @GetMapping("/annotators/{annotatorId}")
+    public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
+        ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(assignmentService.getAssignmentForAnnotator(annotatorId));
+        response.setMessage("Get all assignment for annotator successfully");
+        return response;
+    }
+
     //find Assignment for project
     @GetMapping("/projects/{projectId}")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForProject( @PathVariable String projectId) {
