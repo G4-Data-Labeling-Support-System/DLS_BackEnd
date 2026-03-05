@@ -28,5 +28,4 @@ public class DataItemResponse {
     int height;
     DataType dataType;
     LocalDateTime uploadedAt;
-    DatasetResponse dataset;
 }

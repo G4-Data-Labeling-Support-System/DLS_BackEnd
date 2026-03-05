@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 
@@ -77,11 +78,13 @@ public class Assignment {
     // Who created the assignment
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_by", nullable = false)
+    @JsonBackReference
     private User assignedBy;
 
     // Who is assigned to do it
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "assigned_to", nullable = false)
+    @JsonBackReference
     private User assignedTo;
 
     // One project has Many Task
