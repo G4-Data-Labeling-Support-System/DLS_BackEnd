@@ -63,6 +63,22 @@ public class LabelController {
 
     /*
      * ==============================
+     * GET ALL LABELS
+     * ==============================
+     */
+    @GetMapping("/api/v1/labels")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+            summary = "Get all labels",
+            description = "Retrieve all labels in system"
+    )
+    public List<LabelResponse> getAllLabels() {
+
+        return labelService.getAllLabels();
+    }
+
+    /*
+     * ==============================
      * GET LABEL BY ID
      * ==============================
      */
@@ -119,4 +135,5 @@ public class LabelController {
                 .message("Label deleted successfully")
                 .build();
     }
+
 }
