@@ -41,7 +41,7 @@ public class Dataitem {
     @Column(name = "item_id")
     String itemId;
 
-    @Column(name = "file_name", nullable = false, unique = true)
+    @Column(name = "file_name", nullable = false)
     String fileName;
 
     @Column(name = "url", nullable = false)
