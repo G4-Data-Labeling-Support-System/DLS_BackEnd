@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -64,7 +65,7 @@ public class DataitemService {
 
             // 2 tạo Dataitem
             Dataitem item = new Dataitem();
-            item.setFileName(file.getOriginalFilename());
+            item.setFileName(UUID.randomUUID()+"-"+file.getOriginalFilename());
             item.setUrl(fileUrl);
             item.setFileSize((int) file.getSize());
             item.setWidth(width);
