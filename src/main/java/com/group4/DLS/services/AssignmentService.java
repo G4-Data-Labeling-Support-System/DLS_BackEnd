@@ -47,8 +47,30 @@ public class AssignmentService {
         return assignments;
     }
 
+    //get assignment by annotatorId
+    public List<AssignmentResponse> getAssignmentForAnnotator(String annotatorId){
+        //check user exist
+        if(!userRepository.existsById(annotatorId)){
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        //get assignment by annotatorId
+        List<AssignmentResponse> assignments = assignmentRepository.findByAssignedTo_UserId(annotatorId)
+                .stream()
+                .map(assignmentMapper::toResponse)
+                .toList();
+        //check if empty
+        if(assignments.isEmpty()){
+            throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
+        }
+        return assignments;
+    }
+
     //get assignments for project
     public List<AssignmentResponse> getAssignmentForProject(String projectId){
+        //check project exist
+        if(!projectRepository.existsById(projectId)){
+            throw new AppException(ErrorCode.PROJECT_NOT_FOUND);
+        }
         List<AssignmentResponse> assignments = assignmentRepository.findByProject_ProjectId(projectId)
                 .stream()
                 .map(assignmentMapper::toResponse)

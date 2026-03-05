@@ -12,4 +12,5 @@ import java.util.List;
 public interface AssignmentRepository extends JpaRepository<Assignment, String> {
     boolean existsByAssignmentName(String assignmentName);
     List<Assignment> findByProject_ProjectId(String projectId);
+    List<Assignment> findByAssignedTo_UserId(String userId);
 }
