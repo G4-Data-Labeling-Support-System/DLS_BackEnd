@@ -49,6 +49,20 @@ public class LabelService {
 
         return labelMapper.toLabelResponse(saved);
     }
+    /*
+     * ======================
+     * GET ALL LABEL KHONG THEO GI
+     * ======================
+     */
+
+    @Transactional(readOnly = true)
+    public List<LabelResponse> getAllLabels() {
+
+        return labelRepository.findAll()
+                .stream()
+                .map(labelMapper::toLabelResponse)
+                .toList();
+    }
 
     /*
      * ======================
