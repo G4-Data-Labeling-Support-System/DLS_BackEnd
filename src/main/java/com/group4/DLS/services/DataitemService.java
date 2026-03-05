@@ -3,6 +3,8 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Dataset;
+import com.group4.DLS.domain.entity.enums.DataType;
+import com.group4.DLS.domain.entity.enums.FileFormat;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DataItemMapper;
@@ -54,6 +56,7 @@ public class DataitemService {
 
             int width = image.getWidth();
             int height = image.getHeight();
+            String fileFormat = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1).toUpperCase();
 
 
             // 1 upload file lên SeaweedFS
@@ -66,6 +69,8 @@ public class DataitemService {
             item.setFileSize((int) file.getSize());
             item.setWidth(width);
             item.setHeight(height);
+            item.setFileFormat(FileFormat.valueOf(fileFormat));
+            item.setDataType(DataType.IMAGE);
             item.setDataset(dataset);
 
             dataitemRepository.save(item);
