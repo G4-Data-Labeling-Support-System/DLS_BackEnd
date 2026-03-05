@@ -8,15 +8,28 @@ import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DataItemMapper;
 import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.DatasetRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class DataitemService {
-    DataItemRepository dataitemRepository;
-    DatasetRepository datasetRepository;
+    private final DatasetRepository datasetRepository;
+
+    private final DataItemRepository dataitemRepository;
+
+    private final SeaweedFilerUploadService seaweedFilerUploadService;
     DataItemMapper dataItemMapper;
+
 
     //get all dataitem for dataset
     public List<DataItemResponse> getAllDataitemForDataset(String datasetId) {
@@ -26,5 +39,36 @@ public class DataitemService {
         List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
 
         return dataItemMapper.toDataItemResponse(dataitems);
+    }
+
+    //create dataitem for dataset
+    @Transactional
+    public void createDataitem(String datasetId, List<MultipartFile> files) throws IOException {
+        //check dataset exist
+        Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+
+        for (MultipartFile file : files) {
+
+            // đọc ảnh
+            BufferedImage image = ImageIO.read(file.getInputStream());
+
+            int width = image.getWidth();
+            int height = image.getHeight();
+
+
+            // 1 upload file lên SeaweedFS
+            String fileUrl = seaweedFilerUploadService.uploadImage(file, "dataset-" + datasetId);
+
+            // 2 tạo Dataitem
+            Dataitem item = new Dataitem();
+            item.setFileName(file.getOriginalFilename());
+            item.setUrl(fileUrl);
+            item.setFileSize((int) file.getSize());
+            item.setWidth(width);
+            item.setHeight(height);
+            item.setDataset(dataset);
+
+            dataitemRepository.save(item);
+        }
     }
 }

@@ -13,6 +13,7 @@ import com.group4.DLS.repositories.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -22,6 +23,7 @@ public class DatasetService {
     private final DatasetRepository datasetRepository;
     private final ProjectRepository projectRepository;
     private final DatasetMapper datasetMapper;
+    private final DataitemService dataitemService;
 
 
     //List all dataset
@@ -52,7 +54,7 @@ public class DatasetService {
     }
 
     // ===== CREATE DATASET =====
-    public DatasetResponse createDataset(DatasetCreationRequest request) {
+    public DatasetResponse createDataset(DatasetCreationRequest request) throws IOException {
 
         // Validate project exist
         Project project = projectRepository.findById(request.getProjectId())
@@ -65,12 +67,13 @@ public class DatasetService {
 
         // Map request -> entity
         Dataset dataset = datasetMapper.createDatasetFromRequest(request);
-
         // Set project relationship
         dataset.setProject(project);
+        datasetRepository.save(dataset);
 
+        dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles());
         // Save and return response
-        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+        return datasetMapper.toDatasetResponse(dataset);
     }
 
     // ===== UPDATE DATASET =====

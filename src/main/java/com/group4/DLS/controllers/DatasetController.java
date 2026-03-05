@@ -11,9 +11,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -61,14 +63,14 @@ public class DatasetController {
     * Create new dataset
     * ==================
     */
-    @PostMapping
+    @PostMapping (value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('MANAGER')")
     @Operation(
         summary = "Create new dataset",
         description = "Create a new dataset for a project"
     )
     public ApiResponse<DatasetResponse> createDatasetApiResponse(
-            @RequestBody DatasetCreationRequest request) {
+            @ModelAttribute DatasetCreationRequest request) throws IOException {
         return ApiResponse.<DatasetResponse>builder()
                 .code(200)
                 .message("Dataset created successfully")
