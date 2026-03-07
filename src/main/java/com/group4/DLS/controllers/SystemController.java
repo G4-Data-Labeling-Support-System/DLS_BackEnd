@@ -20,10 +20,11 @@ public class SystemController {
     private final SeaweedMonitorService monitorService;
 
     @GetMapping("/storage-status")
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
      public ApiResponse<SeaweedClusterStatusResponse> getStorageStatus() {
             ApiResponse<SeaweedClusterStatusResponse> response = new ApiResponse<>();
 
+            System.out.println("API CALLED");
             response.setCode(200);
             response.setData(monitorService.getClusterStatus());
             response.setMessage("Connect successfully");
