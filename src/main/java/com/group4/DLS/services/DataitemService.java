@@ -46,10 +46,11 @@ public class DataitemService {
 
     //create dataitem for dataset
     @Transactional
-    public void createDataitem(String datasetId, List<MultipartFile> files) throws IOException {
+    public int createDataitem(String datasetId, List<MultipartFile> files) throws IOException {
         //check dataset exist
         Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
+        int count = 0;
         for (MultipartFile file : files) {
 
             // đọc ảnh
@@ -73,8 +74,9 @@ public class DataitemService {
             item.setFileFormat(FileFormat.valueOf(fileFormat));
             item.setDataType(DataType.IMAGE);
             item.setDataset(dataset);
-
+            count++;
             dataitemRepository.save(item);
         }
+        return count;
     }
 }
