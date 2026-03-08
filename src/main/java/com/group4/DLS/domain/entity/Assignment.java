@@ -87,6 +87,12 @@ public class Assignment {
     @JsonBackReference
     private User assignedTo;
 
+    // Who is review to do it
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reviewed_by", nullable = false)
+    @JsonBackReference
+    private User reviewedBy;
+
     // One project has Many Task
     @OneToMany(mappedBy = "assignment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Task> tasks = new ArrayList<>();
