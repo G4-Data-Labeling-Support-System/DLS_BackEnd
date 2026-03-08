@@ -71,7 +71,7 @@ public class DatasetService {
         dataset.setProject(project);
         datasetRepository.save(dataset);
 
-        dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles());
+        dataset.setTotalItems(dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles()));
         // Save and return response
         return datasetMapper.toDatasetResponse(dataset);
     }
