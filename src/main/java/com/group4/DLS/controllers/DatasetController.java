@@ -48,7 +48,7 @@ public class DatasetController {
     * ==============================
     */
     @GetMapping("/project/{projectId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR')")
     @Operation(
         summary = "Get datasets by project",
         description = "Retrieve all datasets belonging to a specific project"
