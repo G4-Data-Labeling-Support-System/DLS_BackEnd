@@ -26,13 +26,12 @@ pipeline {
         // Server info
         SERVER_USERNAME = "jso"
         SERVER_IP = "10.0.1.74"
-        SERVER_CONNECTION = "${SERVER_USERNAME}" + " " + "${SERVER_IP}" // SSH Connection:jso 10.0.1.74
+        SERVER_CONNECTION = "${SERVER_USERNAME}@${SERVER_IP}" // SSH Connection:jso 10.0.1.74
 
         // Environment-specific variable
         ENVIRONMENT = "${env.BRANCH_NAME == 'main' ? 'production' : 'development'}"
         K8S_NAMESPACE = "${env.BRANCH_NAME == 'main' ? 'prod' : 'dev'}"
     }
-}
 
     stages {
         stage('Environment Info') {
@@ -254,6 +253,7 @@ pipeline {
                 }
             }
         }
+    }
 
     //     stage('Checkout Manifest Repository') {
     //         steps {
