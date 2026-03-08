@@ -26,9 +26,13 @@ public class AssignmentCreateRequest {
     @NotNull(message = "Assigned By is required")
     String assignedBy;
 
+    @NotNull(message = "Reviewer is required")
+    String reviewedBy;
+
     String description;
 
     LocalDateTime dueDate;
 
+    @NotBlank(message = "Dataset is required")
     String datasetId;
 }

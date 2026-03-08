@@ -25,17 +25,36 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
 
-        // 1 Get all assignments
-        @GetMapping
-        public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
-                ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+    //find Assignment for Annnotator
+    @GetMapping("/annotators/{annotatorId}")
+    public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
+        ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(assignmentService.getAssignmentForAnnotator(annotatorId));
+        response.setMessage("Get all assignment for annotator successfully");
+        return response;
+    }
 
-                response.setCode(200);
-                response.setData(assignmentService.getAllAssignments());
-                response.setMessage("Get all assignment successfully");
+    //find Assignment for project
+    @GetMapping("/projects/{projectId}")
+    public ApiResponse<List<AssignmentResponse>> getAssignmentsForProject( @PathVariable String projectId) {
+        ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
-                return response;
-        }
+        response.setCode(200);
+        response.setData(assignmentService.getAssignmentForProject(projectId));
+        response.setMessage("Get all assignment for project successfully");
+        return response;
+    }
+    // 1 Get all assignments
+    @GetMapping
+    public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
+        ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+
+        response.setCode(200);
+        response.setData(assignmentService.getAllAssignments());
+        response.setMessage("Get all assignment successfully");
+        return response;
+    }
 
     // 2 Create assignment
     @PostMapping("/projects/{projectId}")

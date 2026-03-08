@@ -17,6 +17,7 @@ import com.group4.DLS.domain.entity.Dataset;
 public interface DatasetMapper {
 
     @Mapping(target = "project", source = "project")
+    @Mapping(target = "assignmentId", source = "assignment.assignmentId")
     DatasetResponse toDatasetResponse(Dataset dataset);
 
     List<DatasetResponse> toDatasetResponse(List<Dataset> datasets);

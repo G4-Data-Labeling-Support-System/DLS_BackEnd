@@ -19,6 +19,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DataItemResponse {
     String itemId;
+    String datasetId;
     String fileName;
     String url;
     String fileFormat;
