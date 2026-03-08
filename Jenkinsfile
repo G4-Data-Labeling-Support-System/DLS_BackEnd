@@ -248,8 +248,8 @@ pipeline {
     stage('Deploy to server') {
             steps {
                 sshagent(['development-srv']) {
-                    sh "ssh -o StrictHostKeyChecking=no -l ${SERVER_CONNECTION}  'sudo docker stop ${APP_NAME} || true && sudo docker rm ${APP_NAME} || true'"
-                    sh "ssh -o StrictHostKeyChecking=no -l ${SERVER_CONNECTION} 'sudo docker run -p 8081:8081 -d --name ${APP_NAME} --restart unless-stopped ${DOCKER_CONTAINER}'"
+                    sh "ssh -o StrictHostKeyChecking=no ${SERVER_CONNECTION}  'sudo docker stop ${APP_NAME} || true && sudo docker rm ${APP_NAME} || true'"
+                    sh "ssh -o StrictHostKeyChecking=no ${SERVER_CONNECTION} 'sudo docker run -p 8081:8081 -d --name ${APP_NAME} --restart unless-stopped ${DOCKER_CONTAINER}'"
                 }
             }
         }
