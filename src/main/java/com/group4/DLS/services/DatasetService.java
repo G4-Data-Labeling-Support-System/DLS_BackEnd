@@ -70,8 +70,10 @@ public class DatasetService {
         // Set project relationship
         dataset.setProject(project);
         datasetRepository.save(dataset);
-
         dataset.setTotalItems(dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles()));
+        datasetRepository.save(dataset);
+
+
         // Save and return response
         return datasetMapper.toDatasetResponse(dataset);
     }
