@@ -124,12 +124,12 @@ public class AssignmentService {
         assignmentRepository.save(assignment);
         datasetRepository.save(dataset);
 
-         // Log action
-        logService.log(
-                "CREATE_ASSIGNMENT",
-                "ASSIGNMENT",
-                assignment.getAssignmentId(),
-                "Created assignment: " + assignment.getAssignmentName());
+//         // Log action
+//        logService.log(
+//                "CREATE_ASSIGNMENT",
+//                "ASSIGNMENT",
+//                assignment.getAssignmentId(),
+//                "Created assignment: " + assignment.getAssignmentName());
 
         return assignmentMapper.toResponse(assignment);
     }
@@ -139,11 +139,19 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
+        User assignedTo = userRepository.findById(request.getAssignedTo())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        User reviewedBy = userRepository.findById(request.getReviewedBy())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
         //check name is null or exists
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
             assignment = assignmentMapper.updateAssignmentFromRequest(request);
             assignment.setUpdateAt(LocalDateTime.now());
+            assignment.setAssignedTo(assignedTo);
+            assignment.setReviewedBy(reviewedBy);
         }
 
         assignmentRepository.save(assignment);
