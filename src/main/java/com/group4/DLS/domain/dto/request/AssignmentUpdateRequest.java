@@ -21,7 +21,10 @@ public class AssignmentUpdateRequest {
     String assignmentName;
 
     @NotNull(message = "Assigned To is required")
-    User assignedTo;
+    String assignedTo;
+
+    @NotNull(message = "Reviewer is required")
+    String reviewedBy;
 
     String description;
 
