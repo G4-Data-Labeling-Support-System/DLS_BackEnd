@@ -28,7 +28,7 @@ public class LabelController {
      * ==============================
      */
     @GetMapping("/api/v1/datasets/{datasetId}/labels")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @Operation(
             summary = "Get labels by dataset",
             description = "Retrieve all labels belonging to a specific dataset"
@@ -45,7 +45,7 @@ public class LabelController {
      * ==============================
      */
     @PostMapping("/api/v1/datasets/{datasetId}/labels")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @Operation(
             summary = "Create new label",
             description = "Create a new label for a dataset"
@@ -67,7 +67,7 @@ public class LabelController {
      * ==============================
      */
     @GetMapping("/api/v1/labels")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @Operation(
             summary = "Get all labels",
             description = "Retrieve all labels in system"
@@ -83,7 +83,7 @@ public class LabelController {
      * ==============================
      */
     @GetMapping("/api/v1/labels/{labelId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @Operation(
             summary = "Get label by ID",
             description = "Retrieve a specific label by its ID"
@@ -99,7 +99,7 @@ public class LabelController {
      * ==============================
      */
     @PutMapping("/api/v1/labels/{labelId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @Operation(
             summary = "Update label",
             description = "Update a label"
@@ -121,7 +121,7 @@ public class LabelController {
      * ==============================
      */
     @DeleteMapping("/api/v1/labels/{labelId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     @Operation(
             summary = "Delete label",
             description = "Delete a label by its ID"

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.group4.DLS.domain.entity.enums.UserRole;
 import com.group4.DLS.domain.entity.enums.UserStatus;
 
@@ -91,9 +93,11 @@ public class User {
 
     // Assignments this user created
     @OneToMany(mappedBy = "assignedBy", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Assignment> createdAssignments = new ArrayList<>();
 
     // Assignments assigned to this user
     @OneToMany(mappedBy = "assignedTo", fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<Assignment> receivedAssignments = new ArrayList<>();
 }

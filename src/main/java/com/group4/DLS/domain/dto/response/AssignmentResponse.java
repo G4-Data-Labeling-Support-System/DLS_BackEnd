@@ -22,6 +22,7 @@ public class AssignmentResponse {
     AssignmentStatus assignmentStatus;
     String assignedBy;
     String assignedTo;
+    String reviewedBy;
     LocalDateTime dueDate;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

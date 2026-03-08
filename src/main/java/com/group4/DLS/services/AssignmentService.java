@@ -105,9 +105,13 @@ public class AssignmentService {
         User assignedTo = userRepository.findById(request.getAssignedTo())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        User reviewedBy = userRepository.findById(request.getReviewedBy())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
         Assignment assignment = new Assignment();
         assignment.setAssignedTo(assignedTo);
         assignment.setAssignedBy(manager);
+        assignment.setReviewedBy(reviewedBy);
         assignment.setAssignmentName(request.getAssignmentName());
         assignment.setDescription(request.getDescription());
         assignment.setDataset(dataset);
@@ -116,11 +120,6 @@ public class AssignmentService {
         assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
         assignment.setTotalItems(dataset.getTotalItems());
         dataset.setAssignment(assignment);
-
-
-        assignment.setAssignedBy(manager);
-        assignment.setAssignedTo(assignedTo);
-      
 
         assignmentRepository.save(assignment);
         datasetRepository.save(dataset);
