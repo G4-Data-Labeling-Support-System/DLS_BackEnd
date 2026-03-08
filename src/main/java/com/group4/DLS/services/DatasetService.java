@@ -53,6 +53,13 @@ public class DatasetService {
         }
     }
 
+    // ===== GET DATASET BY ID =====
+    public DatasetResponse getDatasetById(String datasetId) {
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        return datasetMapper.toDatasetResponse(dataset);
+    }
+
     // ===== CREATE DATASET =====
     public DatasetResponse createDataset(DatasetCreationRequest request) throws IOException {
 
