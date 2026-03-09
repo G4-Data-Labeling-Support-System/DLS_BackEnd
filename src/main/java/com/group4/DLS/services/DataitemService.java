@@ -34,6 +34,12 @@ public class DataitemService {
     private final DataItemMapper dataItemMapper;
 
 
+    //get dataitem by id
+    public DataItemResponse getDataitemById(String dataitemId) {
+        Dataitem dataitem = dataitemRepository.findById(dataitemId).orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+        return dataItemMapper.toDataItemResponse(dataitem);
+    }
+
     //get all dataitem for dataset
     public List<DataItemResponse> getAllDataitemForDataset(String datasetId) {
         //check dataset exist
