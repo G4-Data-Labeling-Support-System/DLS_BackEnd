@@ -51,7 +51,9 @@ public enum ErrorCode {
     LABEL_ALREADY_EXISTS(3002, "Label already exists in this dataset"),
     LABEL_HAS_ANNOTATIONS(3003, "Cannot delete label because it is used in annotations"),
     OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB"),
-    INVALID_IMAGE_FILE(403,"Invalid image file" ), INVALID_FILE_FORMAT(403,"Invalid file format" );
+    INVALID_IMAGE_FILE(403,"Invalid image file" ),
+    INVALID_FILE_FORMAT(403,"Invalid file format" ),
+    DATAITEM_NOT_FOUND(403,"DataItem not found" );
 
     final int code;
     final String message;

@@ -26,4 +26,10 @@ public class DataItemController {
     public List<DataItemResponse> getAllDataset(@PathVariable String id) {
         return dataitemService.getAllDataitemForDataset(id);
     }
+
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public DataItemResponse getDataItemById(@PathVariable String id) {
+        return dataitemService.getDataitemById(id);
+    }
 }
