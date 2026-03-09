@@ -31,7 +31,7 @@ public class DataitemService {
     private final DataItemRepository dataitemRepository;
 
     private final SeaweedFilerUploadService seaweedFilerUploadService;
-    DataItemMapper dataItemMapper;
+    private final DataItemMapper dataItemMapper;
 
 
     //get all dataitem for dataset
@@ -51,14 +51,26 @@ public class DataitemService {
         Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
         int count = 0;
+        List<Dataitem> items = new ArrayList<>();
         for (MultipartFile file : files) {
 
             // đọc ảnh
             BufferedImage image = ImageIO.read(file.getInputStream());
+            if(image == null){
+                throw new AppException(ErrorCode.INVALID_IMAGE_FILE);
+            }
 
             int width = image.getWidth();
             int height = image.getHeight();
-            String fileFormat = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1).toUpperCase();
+
+            //lấy file format
+            String filename = file.getOriginalFilename();
+
+            if(filename == null || !filename.contains(".")){
+                throw new AppException(ErrorCode.INVALID_FILE_FORMAT);
+            }
+
+            String fileFormat = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
 
 
             // 1 upload file lên SeaweedFS
@@ -75,8 +87,10 @@ public class DataitemService {
             item.setDataType(DataType.IMAGE);
             item.setDataset(dataset);
             count++;
-            dataitemRepository.save(item);
+            items.add(item);
         }
+
+        dataitemRepository.saveAll(items);
         return count;
     }
 }
