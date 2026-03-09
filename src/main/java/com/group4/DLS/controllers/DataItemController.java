@@ -22,13 +22,11 @@ public class DataItemController {
     private final DataitemService dataitemService;
 
     @GetMapping("/datasets/{id}")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR')")
     public List<DataItemResponse> getAllDataset(@PathVariable String id) {
         return dataitemService.getAllDataitemForDataset(id);
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR')")
     public DataItemResponse getDataItemById(@PathVariable String id) {
         return dataitemService.getDataitemById(id);
     }
