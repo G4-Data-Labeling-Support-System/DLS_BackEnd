@@ -43,7 +43,9 @@ public class DataitemService {
     //get all dataitem for dataset
     public List<DataItemResponse> getAllDataitemForDataset(String datasetId) {
         //check dataset exist
-        Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        if(datasetRepository.findById(datasetId).isEmpty()){
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
 
         List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
 
