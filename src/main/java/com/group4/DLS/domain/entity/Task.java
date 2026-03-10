@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.entity.enums.ReviewStatus;
 import com.group4.DLS.domain.entity.enums.TaskStatus;
 import com.group4.DLS.domain.entity.enums.TaskType;
 
@@ -52,6 +53,10 @@ public class Task {
     @Column(name = "task_status")
     TaskStatus taskStatus;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "review_status")
+    ReviewStatus reviewStatus;
+
     @Column(name = "created_at")
     LocalDateTime createdAt;
 
@@ -59,11 +64,6 @@ public class Task {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
-    
-    // Many Task belongs to One User
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "userId", nullable = false)
-    private User user;
 
     // Many Task belongs to One Assignment
     @ManyToOne(fetch = FetchType.LAZY)
@@ -71,8 +71,9 @@ public class Task {
     private Assignment assignment;
 
     // One task has Many Annotation
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Annotation> annotations = new ArrayList<>();
+    @OneToOne
+    @JoinColumn(name = "annotaion_id", nullable = true)
+    private Annotation annotation;
 
     // One Task has Many TaskDataitems
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
