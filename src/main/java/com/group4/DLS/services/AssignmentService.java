@@ -30,7 +30,6 @@ public class AssignmentService {
     DatasetRepository datasetRepository;
     ActivityLogService logService;
     UserRepository userRepository;
-    TaskRepository taskRepository;
     TaskService taskService;
 
     // ================= GET ALL ASSIGNMENTS =================
@@ -127,6 +126,8 @@ public class AssignmentService {
 
         assignmentRepository.save(assignment);
         datasetRepository.save(dataset);
+        taskService.createTaskForAssignment(assignment.getAssignmentId());
+        assignmentRepository.save(assignment);
 
 //         // Log action
 //        logService.log(
