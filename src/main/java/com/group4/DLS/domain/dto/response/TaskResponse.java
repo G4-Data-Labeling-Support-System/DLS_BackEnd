@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class TaskResponse {
     String taskId;
-    String assiognmentId;
+    String assignmentId;
     String taskType;
     Integer completedItems;
     Integer totalItems;
