@@ -1,8 +1,10 @@
 package com.group4.DLS.services;
 
 
+import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Assignment;
+import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.enums.TaskStatus;
 import com.group4.DLS.exceptions.AppException;
@@ -25,6 +27,7 @@ public class TaskService {
     TaskRepository taskRepository;
     TaskMapper taskMapper;
     AssignmentRepository assignmentRepository;
+    DataitemService dataitemService;
 
      // ================= GET ALL TASKS =================
      public List<TaskResponse> getAllTasks() {
@@ -76,5 +79,31 @@ public class TaskService {
     public String generateTaskName() {
         long count = taskRepository.count() + 1;
         return String.format("TASK-%02d", count);
+    }
+
+    //Get Task by assignmentId
+    public List<TaskResponse> getTasksByAssignmentId(String assignmentId) {
+        //check assignment exist
+        if (!assignmentRepository.existsById(assignmentId)) {
+            throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
+        }
+
+        //get tasks by assignmentId
+        List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
+        if (tasks.isEmpty()) {
+            throw new AppException(ErrorCode.TASK_NOT_FOUND);
+        }
+
+        return taskMapper.toTaskResponse(tasks);
+    }
+
+    //Assign task and data items to assignment
+    public void assignTaskToAssignment(String assignmentId) {
+        createTaskForAssignment(assignmentId);
+            Assignment assignment = assignmentRepository.findById(assignmentId)
+                    .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+            List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
+            List<DataItemResponse> dataitems = dataitemService.getAllDataitemForDataset(assignment.getDataset().getDatasetId());
+            
     }
 }
