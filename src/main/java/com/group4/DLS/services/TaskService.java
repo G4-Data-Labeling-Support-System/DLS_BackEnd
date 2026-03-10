@@ -1,12 +1,18 @@
 package com.group4.DLS.services;
 
 
+import com.group4.DLS.domain.dto.response.TaskResponse;
+import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
+import com.group4.DLS.mappers.TaskMapper;
+import com.group4.DLS.repositories.AssignmentRepository;
 import com.group4.DLS.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +20,8 @@ import org.springframework.stereotype.Service;
 public class TaskService {
 
     TaskRepository taskRepository;
+    TaskMapper taskMapper;
+    AssignmentRepository assignmentRepository;
 
      // ================= GET ALL TASKS =================
      public List<TaskResponse> getAllTasks() {
@@ -26,4 +34,15 @@ public class TaskService {
         }
         return tasks;
     }
+
+    //crete task for assignment
+     public void createTaskForAssignment(String assignmentId) {
+         //check assignment exist
+         Assignment assignment = assignmentRepository.findById(assignmentId)
+                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        Integer numOfDataItems = assignment.getTotalItems();
+        while(numOfDataItems > 0){
+            for
+        }
 }

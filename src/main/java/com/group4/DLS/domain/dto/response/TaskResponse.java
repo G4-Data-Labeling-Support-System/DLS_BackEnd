@@ -3,13 +3,15 @@ package com.group4.DLS.domain.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class TaskReponse {
+public class TaskResponse {
     String taskId;
     String assiognmentId;
     String taskType;
@@ -17,4 +19,5 @@ public class TaskReponse {
     Integer totalItems;
     boolean flagForReview;
     String reviewStatus;
+    LocalDateTime createdAt;
 }
