@@ -4,6 +4,8 @@ import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.services.DataitemService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,6 +17,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/dataitems")
 @RequiredArgsConstructor
+@Tag(name = "DataItems", description = "DataItems management endpoints")
+@SecurityRequirement(name = "Bearer Authentication")
 public class DataItemController {
 
     private final DataitemService dataitemService;
