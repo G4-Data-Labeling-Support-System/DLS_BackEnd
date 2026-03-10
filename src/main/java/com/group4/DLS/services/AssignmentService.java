@@ -65,6 +65,12 @@ public class AssignmentService {
         return assignments;
     }
 
+    //get assignment by id
+    public AssignmentResponse getAssignmentById(String assignmentId){
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+        return assignmentMapper.toResponse(assignment);
+    }
     //get assignments for project
     public List<AssignmentResponse> getAssignmentForProject(String projectId){
         //check project exist
