@@ -16,8 +16,8 @@ import com.group4.DLS.domain.entity.Dataset;
 @Mapper(componentModel = "spring")
 public interface DatasetMapper {
 
-    @Mapping(target = "projectId", source = "project.projectId")
-    @Mapping(target = "projectName", source = "project.projectName")
+    @Mapping(target = "project", source = "project")
+    @Mapping(target = "assignmentId", source = "assignment.assignmentId")
     DatasetResponse toDatasetResponse(Dataset dataset);
 
     List<DatasetResponse> toDatasetResponse(List<Dataset> datasets);

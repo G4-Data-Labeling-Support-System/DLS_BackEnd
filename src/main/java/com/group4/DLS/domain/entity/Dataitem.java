@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.entity.enums.DataType;
 import com.group4.DLS.domain.entity.enums.FileFormat;
 
@@ -74,6 +75,7 @@ public class Dataitem {
     // Many Dataitem belongs to One Dataset
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "datasetId", nullable = false)
+    @JsonIgnore
     private Dataset dataset;
 
     // One DataItem has Many Annotation

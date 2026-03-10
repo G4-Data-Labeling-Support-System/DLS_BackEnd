@@ -23,6 +23,7 @@ public enum ErrorCode {
     USER_ALREADY_INACTIVE(403, "User already InActive"),
     FORBIDDEN(403, "Access denied"),
     INVALID_CREDENTIALS(403, "Invalid credentials"),
+    USER_NOT_MANAGER(403, "User is not a manager"),
 
     // 409 errors
     USER_EXISTS(409, "User already exists"),
@@ -45,7 +46,14 @@ public enum ErrorCode {
     REQUIRE_PROJECT_ID(400, "Project Id is needed"),
     DATASETNAME_CANNOT_BE_NULL(400, "Dataset name cannot be null"),
     DATASETNAME_ALREADY_EXSITS(400, "Dataset name already exists"),
-    OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB");
+
+    LABEL_NOT_FOUND(3001, "Label not found"),
+    LABEL_ALREADY_EXISTS(3002, "Label already exists in this dataset"),
+    LABEL_HAS_ANNOTATIONS(3003, "Cannot delete label because it is used in annotations"),
+    OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB"),
+    INVALID_IMAGE_FILE(403,"Invalid image file" ),
+    INVALID_FILE_FORMAT(403,"Invalid file format" ),
+    DATAITEM_NOT_FOUND(403,"DataItem not found" );
 
     final int code;
     final String message;

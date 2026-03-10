@@ -13,6 +13,7 @@ import com.group4.DLS.repositories.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -22,6 +23,17 @@ public class DatasetService {
     private final DatasetRepository datasetRepository;
     private final ProjectRepository projectRepository;
     private final DatasetMapper datasetMapper;
+    private final DataitemService dataitemService;
+
+
+    //List all dataset
+    public List<DatasetResponse> getAllDatasets() {
+        List<Dataset> datasets = datasetRepository.findAll();
+        if (datasets.isEmpty()) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
+        return datasetMapper.toDatasetResponse(datasets);
+    }
 
     // ===== LIST ALL DATASET FOR TARGET PROJECT =====
     public List<DatasetResponse> getAllDatasetForProject(String projectId) {
@@ -31,7 +43,7 @@ public class DatasetService {
             }
 
             Project project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+                    .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
             List<Dataset> datasets = datasetRepository.findByProject_ProjectId(project.getProjectId());
 
@@ -41,26 +53,36 @@ public class DatasetService {
         }
     }
 
+    // ===== GET DATASET BY ID =====
+    public DatasetResponse getDatasetById(String datasetId) {
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        return datasetMapper.toDatasetResponse(dataset);
+    }
+
     // ===== CREATE DATASET =====
-    public DatasetResponse createDataset(DatasetCreationRequest request) {
+    public DatasetResponse createDataset(DatasetCreationRequest request) throws IOException {
 
         // Validate project exist
         Project project = projectRepository.findById(request.getProjectId())
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         // Check if this dataset name exist inside this project
-        if (datasetRepository.existsByProject_ProjectIdAndDatasetName(project.getProjectId(), request.getDatasetName())) {    
+        if (datasetRepository.existsByProject_ProjectIdAndDatasetName(project.getProjectId(), request.getDatasetName())) {
             throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 
         // Map request -> entity
         Dataset dataset = datasetMapper.createDatasetFromRequest(request);
-
         // Set project relationship
         dataset.setProject(project);
+        datasetRepository.save(dataset);
+        dataset.setTotalItems(dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles()));
+        datasetRepository.save(dataset);
+
 
         // Save and return response
-        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+        return datasetMapper.toDatasetResponse(dataset);
     }
 
     // ===== UPDATE DATASET =====

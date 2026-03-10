@@ -48,11 +48,11 @@ public class GuidelineService {
         guidelineRepository.save(guideline);
 
         // Log action
-        logService.log(
-                "CREATE_GUIDELINE",
-                "GUIDELINE",
-                guideline.getGuideId(),
-                "Guideline created: " + guideline.getTitle());
+        // logService.log(
+        //         "CREATE_GUIDELINE",
+        //         "GUIDELINE",
+        //         guideline.getGuideId(),
+        //         "Guideline created: " + guideline.getTitle());
 
         return guidelineMapper.toResponse(guideline);
     }
@@ -83,11 +83,11 @@ public class GuidelineService {
         guidelineRepository.save(guideline);
 
         // Log action
-        logService.log(
-                "UPDATE_GUIDELINE",
-                "GUIDELINE",
-                guideline.getGuideId(),
-                "Guideline updated: " + guideline.getTitle());
+        // logService.log(
+        //         "UPDATE_GUIDELINE",
+        //         "GUIDELINE",
+        //         guideline.getGuideId(),
+        //         "Guideline updated: " + guideline.getTitle());
 
         return guidelineMapper.toResponse(guideline);
     }
@@ -110,11 +110,11 @@ public class GuidelineService {
         guidelineRepository.save(guideline);
 
         // Log action
-        logService.log(
-                "REMOVE_GUIDELINE",
-                "GUIDELINE",
-                guideline.getGuideId(),
-                "Guideline removed: " + guideline.getTitle());
+        // logService.log(
+        //         "REMOVE_GUIDELINE",
+        //         "GUIDELINE",
+        //         guideline.getGuideId(),
+        //         "Guideline removed: " + guideline.getTitle());
 
         return guidelineMapper.toResponse(guideline);
     }

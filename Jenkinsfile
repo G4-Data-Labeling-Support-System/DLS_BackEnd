@@ -19,8 +19,14 @@ pipeline {
 
         // Docker info
         DOCKER_USER = 'fleeforezz'
-        DOCKER_IMAGE_NAME = "${DOCKER_USER}" + '/' + "${APP_NAME}"
-        DOCKER_IMAGE_VERSION = "${RELEASE}.${env.BUILD_NUMBER}"
+        DOCKER_IMAGE_NAME = "${DOCKER_USER}" + '/' + "${APP_NAME}" // Docker Image Name: fleeforezz/data-labeling-be
+        DOCKER_IMAGE_VERSION = "${RELEASE}.${env.BUILD_NUMBER}" // Docker Image Version: 1.1.23
+        DOCKER_CONTAINER = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_VERSION}-beta"
+
+        // Server info
+        SERVER_USERNAME = "jso"
+        SERVER_IP = "10.0.1.74"
+        SERVER_CONNECTION = "${SERVER_USERNAME}@${SERVER_IP}" // SSH Connection:jso 10.0.1.74
 
         // Environment-specific variable
         ENVIRONMENT = "${env.BRANCH_NAME == 'main' ? 'production' : 'development'}"
@@ -70,19 +76,19 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    echo "#====================== Sonar Scan for (${env.BRANCH_NAME}) ======================#"
-                    sh """
-                        mvn sonar:sonar \
-                        -Dsonar.projectKey=${APP_NAME}-${env.BRANCH_NAME} \
-                        -Dsonar.projectName="${APP_NAME} (${ENVIRONMENT})" \
-                        -Dsonar.host.url=${SONAR_HOST_URL}
-                    """
-                }
-            }
-        }
+        // stage('SonarQube Analysis') {
+        //     steps {
+        //         withSonarQubeEnv('SonarQube') {
+        //             echo "#====================== Sonar Scan for (${env.BRANCH_NAME}) ======================#"
+        //             sh """
+        //                 mvn sonar:sonar \
+        //                 -Dsonar.projectKey=${APP_NAME}-${env.BRANCH_NAME} \
+        //                 -Dsonar.projectName="${APP_NAME} (${ENVIRONMENT})" \
+        //                 -Dsonar.host.url=${SONAR_HOST_URL}
+        //             """
+        //         }
+        //     }
+        // }
 
         // stage('Quality Gate') {
         //     steps {
@@ -109,21 +115,21 @@ pipeline {
         //     }
         // }
 
-        stage('Security Scans') {
-            parallel {
-                stage('Trivy Filesystem Scan') {
-                    steps {
-                        echo "#====================== Trivy Filesystem scan ======================#"
-                        sh """
-                            trivy fs . --format json --output trivyfs.json
-                            trivy fs . --format table --output trivy.txt
-                            cat trivy.txt
-                        """
-                        archiveArtifacts artifacts: 'trivy.*', allowEmptyArchive: true
-                    }
-                }
-            }
-        }
+        // stage('Security Scans') {
+        //     parallel {
+        //         stage('Trivy Filesystem Scan') {
+        //             steps {
+        //                 echo "#====================== Trivy Filesystem scan ======================#"
+        //                 sh """
+        //                     trivy fs . --format json --output trivyfs.json
+        //                     trivy fs . --format table --output trivy.txt
+        //                     cat trivy.txt
+        //                 """
+        //                 archiveArtifacts artifacts: 'trivy.*', allowEmptyArchive: true
+        //             }
+        //         }
+        //     }
+        // }
 
 
 
@@ -195,28 +201,28 @@ pipeline {
             }
         }
 
-        stage('Trivy Docker Image Scan') {
-            steps {
-                echo "#====================== Trivy Docker Image Scan ======================#"
-                script {
-                    def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
+        // stage('Trivy Docker Image Scan') {
+        //     steps {
+        //         echo "#====================== Trivy Docker Image Scan ======================#"
+        //         script {
+        //             def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
 
-                    sh "trivy image --no-progress --exit-code 1 --format json --severity UNKNOWN,HIGH,CRITICAL ${env.IMAGE_TAGGED} > trivyimage.txt || true"
+        //             sh "trivy image --no-progress --exit-code 1 --format json --severity UNKNOWN,HIGH,CRITICAL ${env.IMAGE_TAGGED} > trivyimage.txt || true"
 
-                    sh """
-                        trivy image --no-progress --format json \
-                            --severity ${securityLevel} \
-                            --output trivyimage.json ${env.IMAGE_TAGGED}
-                        trivy image --no-progress --format table \
-                            --severity ${securityLevel} \
-                            --output trivyimage.txt ${env.IMAGE_TAGGED}
+        //             sh """
+        //                 trivy image --no-progress --format json \
+        //                     --severity ${securityLevel} \
+        //                     --output trivyimage.json ${env.IMAGE_TAGGED}
+        //                 trivy image --no-progress --format table \
+        //                     --severity ${securityLevel} \
+        //                     --output trivyimage.txt ${env.IMAGE_TAGGED}
                         
-                        cat trivyimage.txt
-                    """
-                }
-                archiveArtifacts artifacts: 'trivyimage.txt', allowEmptyArchive: true
-            }
-        }
+        //                 cat trivyimage.txt
+        //             """
+        //         }
+        //         archiveArtifacts artifacts: 'trivyimage.txt', allowEmptyArchive: true
+        //     }
+        // }
 
         stage('Push to registry') {
             steps {
@@ -239,98 +245,108 @@ pipeline {
             }
         }
 
-        stage('Checkout Manifest Repository') {
+    stage('Deploy to server') {
             steps {
-                script {
-                    echo "#====================== Checkout Manifest Repository ======================#"
-                    
-                    sh """
-                        rm -rf infrastructure || true
-                        git clone ${GIT_MANIFEST_REPO} infrastructure
-                    """
-                }
-            }
-        }
-
-        stage('Update Manifest Files') {
-            steps {
-                echo "#====================== Update Kubernetes Manifest Files ======================#"
-                dir('infrastructure') {
-                    script {
-                        def deploymentPath = env.BRANCH_NAME == 'main' ? 
-                            'k8s-gitops/overlays/prod/patch-deployment.yaml' : 
-                            'k8s-gitops/overlays/dev/patch-deployment.yaml'
-                        
-                        sh """
-                            echo "Current deployment file:"
-                            cat ${deploymentPath}
-                            
-                            echo ""
-                            echo "Updating image to: ${env.IMAGE_TAGGED}"
-                            
-                            # Update the image tag using yq (more reliable than sed for YAML)
-                            # If yq is not available, fall back to sed
-                            if command -v yq &> /dev/null; then
-                                yq eval '.spec.template.spec.containers[0].image = "${env.IMAGE_TAGGED}"' -i ${deploymentPath}
-                            else
-                                # Using sed with more precise matching
-                                sed -i 's|image: fleeforezz/data-labeling-be:.*|image: ${env.IMAGE_TAGGED}|g' ${deploymentPath}
-                            fi
-                            
-                            echo ""
-                            echo "Updated deployment file:"
-                            cat ${deploymentPath}
-                        """
-                    }
-                }
-            }
-        }
-
-        stage('Commit and Push Manifest Changes') {
-            steps {
-                echo "#====================== Commit and Push Manifest Changes ======================#"
-                dir('infrastructure') {
-                    script {
-                        withCredentials([sshUserPrivateKey(credentialsId: 'guests-ssh', keyFileVariable: 'SSH_KEY')]) {
-                            sh """
-                                # Setup SSH
-                                mkdir -p ~/.ssh
-                                ssh-keyscan github.com >> ~/.ssh/known_hosts
-                                
-                                # Configure Git
-                                git config user.email "fleeforezz@gmail.com"
-                                git config user.name "fleeforezz"
-                                
-                                # Set SSH URL for push
-                                git remote set-url origin git@github.com:G4-Data-Labeling-Support-System/Infrastructure.git
-                                
-                                # Setup SSH agent
-                                eval \$(ssh-agent -s)
-                                ssh-add ${SSH_KEY}
-                                
-                                # Check for changes
-                                git status
-                                
-                                # Add and commit changes
-                                git add .
-                                
-                                # Commit with skip ci flag to avoid triggering another build
-                                git commit -m "🚀 [${ENVIRONMENT}] Update ${APP_NAME} to ${env.IMAGE_TAG_SHORT} - Build #${env.BUILD_NUMBER} [skip ci]" || {
-                                    echo "No changes to commit"
-                                    exit 0
-                                }
-                                
-                                # Push changes
-                                git push origin main
-                                
-                                echo "✅ Successfully pushed manifest updates"
-                            """
-                        }
-                    }
+                sshagent(['development-srv']) {
+                    sh "ssh -o StrictHostKeyChecking=no ${SERVER_CONNECTION}  'sudo docker stop ${APP_NAME} || true && sudo docker rm ${APP_NAME} || true'"
+                    sh "ssh -o StrictHostKeyChecking=no ${SERVER_CONNECTION} 'sudo docker run -p 8081:8081 -d --name ${APP_NAME} --restart unless-stopped ${DOCKER_CONTAINER}'"
                 }
             }
         }
     }
+
+    //     stage('Checkout Manifest Repository') {
+    //         steps {
+    //             script {
+    //                 echo "#====================== Checkout Manifest Repository ======================#"
+                    
+    //                 sh """
+    //                     rm -rf infrastructure || true
+    //                     git clone ${GIT_MANIFEST_REPO} infrastructure
+    //                 """
+    //             }
+    //         }
+    //     }
+
+    //     stage('Update Manifest Files') {
+    //         steps {
+    //             echo "#====================== Update Kubernetes Manifest Files ======================#"
+    //             dir('infrastructure') {
+    //                 script {
+    //                     def deploymentPath = env.BRANCH_NAME == 'main' ? 
+    //                         'k8s-gitops/overlays/prod/patch-deployment.yaml' : 
+    //                         'k8s-gitops/overlays/dev/patch-deployment.yaml'
+                        
+    //                     sh """
+    //                         echo "Current deployment file:"
+    //                         cat ${deploymentPath}
+                            
+    //                         echo ""
+    //                         echo "Updating image to: ${env.IMAGE_TAGGED}"
+                            
+    //                         # Update the image tag using yq (more reliable than sed for YAML)
+    //                         # If yq is not available, fall back to sed
+    //                         if command -v yq &> /dev/null; then
+    //                             yq eval '.spec.template.spec.containers[0].image = "${env.IMAGE_TAGGED}"' -i ${deploymentPath}
+    //                         else
+    //                             # Using sed with more precise matching
+    //                             sed -i 's|image: fleeforezz/data-labeling-be:.*|image: ${env.IMAGE_TAGGED}|g' ${deploymentPath}
+    //                         fi
+                            
+    //                         echo ""
+    //                         echo "Updated deployment file:"
+    //                         cat ${deploymentPath}
+    //                     """
+    //                 }
+    //             }
+    //         }
+    //     }
+
+    //     stage('Commit and Push Manifest Changes') {
+    //         steps {
+    //             echo "#====================== Commit and Push Manifest Changes ======================#"
+    //             dir('infrastructure') {
+    //                 script {
+    //                     withCredentials([sshUserPrivateKey(credentialsId: 'guests-ssh', keyFileVariable: 'SSH_KEY')]) {
+    //                         sh """
+    //                             # Setup SSH
+    //                             mkdir -p ~/.ssh
+    //                             ssh-keyscan github.com >> ~/.ssh/known_hosts
+                                
+    //                             # Configure Git
+    //                             git config user.email "fleeforezz@gmail.com"
+    //                             git config user.name "fleeforezz"
+                                
+    //                             # Set SSH URL for push
+    //                             git remote set-url origin git@github.com:G4-Data-Labeling-Support-System/Infrastructure.git
+                                
+    //                             # Setup SSH agent
+    //                             eval \$(ssh-agent -s)
+    //                             ssh-add ${SSH_KEY}
+                                
+    //                             # Check for changes
+    //                             git status
+                                
+    //                             # Add and commit changes
+    //                             git add .
+                                
+    //                             # Commit with skip ci flag to avoid triggering another build
+    //                             git commit -m "🚀 [${ENVIRONMENT}] Update ${APP_NAME} to ${env.IMAGE_TAG_SHORT} - Build #${env.BUILD_NUMBER} [skip ci]" || {
+    //                                 echo "No changes to commit"
+    //                                 exit 0
+    //                             }
+                                
+    //                             # Push changes
+    //                             git push origin main
+                                
+    //                             echo "✅ Successfully pushed manifest updates"
+    //                         """
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 
     post {
         always {

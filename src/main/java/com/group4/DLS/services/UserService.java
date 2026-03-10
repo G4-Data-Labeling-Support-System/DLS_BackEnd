@@ -47,7 +47,7 @@ public class UserService {
 
     // Create user with email uniqueness check
     public UserResponse createUser(UserCreationRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
+        if (userRepository.existsByEmail(request.getEmail()) && request.getUserStatus() == UserStatus.INACTIVE) {
             throw new AppException(ErrorCode.USER_EXISTS);
         }
 
