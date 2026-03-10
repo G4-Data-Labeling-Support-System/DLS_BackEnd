@@ -3,6 +3,8 @@ package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Assignment;
+import com.group4.DLS.domain.entity.Task;
+import com.group4.DLS.domain.entity.enums.TaskStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.TaskMapper;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,8 +44,37 @@ public class TaskService {
          Assignment assignment = assignmentRepository.findById(assignmentId)
                  .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        Integer numOfDataItems = assignment.getTotalItems();
-        while(numOfDataItems > 0){
-            for
-        }
+         int numOfDataItems = assignment.getTotalItems();
+         int numOfTasks = 0; // Calculate the number of tasks needed
+         int batchSize = 100; // Define the batch size for task creation
+         List<Task> tasks = new ArrayList<>(); // Get the list of data items for the assignment
+         while (numOfDataItems > 0) {
+             numOfTasks++;
+             if(numOfTasks == batchSize){
+                 Task task = new Task();
+                    task.setAssignment(assignment);
+                    task.setTaskName(generateTaskName());
+                    task.setTaskStatus(TaskStatus.NOT_STARTED);
+                    tasks.add(task);
+                    numOfTasks = 0;
+             }
+             if(numOfDataItems < batchSize) {
+                 Task task = new Task();
+                    task.setAssignment(assignment);
+                    task.setTaskName(generateTaskName());
+                    task.setTaskStatus(TaskStatus.NOT_STARTED);
+                    tasks.add(task);
+                    break;
+             }
+             numOfDataItems--;
+         }
+         taskRepository.saveAll(tasks);
+
+     }
+
+     //đặt tên task theo format TASK-XX
+    public String generateTaskName() {
+        long count = taskRepository.count() + 1;
+        return String.format("TASK-%02d", count);
+    }
 }

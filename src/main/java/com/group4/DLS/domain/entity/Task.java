@@ -46,6 +46,9 @@ public class Task {
     @Column(name = "task_type")
     TaskType taskType;
 
+    @Column(name = "task_name")
+    String taskName;
+
     @Column(name = "completed_count")
     int completedCount;
 
@@ -71,9 +74,8 @@ public class Task {
     private Assignment assignment;
 
     // One task has Many Annotation
-    @OneToOne
-    @JoinColumn(name = "annotaion_id", nullable = true)
-    private Annotation annotation;
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Annotation> annotations = new ArrayList<>();
 
     // One Task has Many TaskDataitems
     @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
