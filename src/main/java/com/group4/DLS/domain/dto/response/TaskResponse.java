@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 public class TaskResponse {
     String taskId;
     String assignmentId;
+    String taskName;
     String taskType;
     Integer completedItems;
     Integer totalItems;
