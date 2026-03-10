@@ -126,7 +126,7 @@ public class AssignmentService {
 
         assignmentRepository.save(assignment);
         datasetRepository.save(dataset);
-        taskService.createTaskForAssignment(assignment.getAssignmentId());
+        taskService.createTasksForAssignment(assignment.getAssignmentId());
         assignmentRepository.save(assignment);
 
 //         // Log action
