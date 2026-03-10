@@ -4,8 +4,6 @@ import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
-import com.group4.DLS.domain.dto.response.GuidelineResponse;
-import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.services.AssignmentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +22,16 @@ import java.util.List;
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
+
+    //find assiagnment by id
+    @GetMapping("/{assignmentId}")
+    public ApiResponse<AssignmentResponse> getAssignmentById( @PathVariable String assignmentId) {
+        ApiResponse<AssignmentResponse> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(assignmentService.getAssignmentById(assignmentId));
+        response.setMessage("Get assignment by id successfully");
+        return response;
+    }
 
     //find Assignment for Annnotator
     @GetMapping("/annotators/{annotatorId}")
