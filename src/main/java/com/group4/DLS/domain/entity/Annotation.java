@@ -9,22 +9,7 @@ import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.AnnotationType;
 import com.group4.DLS.domain.enums.ReviewStatus;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,20 +43,9 @@ public class Annotation {
     @Column(name = "annotation_data", columnDefinition = "JSON")
     String annotationData;
 
-    @Column(name = "flag_for_review")
-    boolean flagForReview;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "review_status")
-    ReviewStatus reviewStatus;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "annotation_status")
     AnnotationStatus annotationStatus;
-
-    @Version
-    @Column(name = "version")
-    int version;
 
     @Column(name = "created_at")
     LocalDate createdAt;
@@ -106,7 +80,12 @@ public class Annotation {
     private User user;
 
     // One Annotation has Many Labels 
-    @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany
+    @JoinTable(
+            name = "annotation_labels",
+            joinColumns = @JoinColumn(name = "annotation_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
     private List<Label> labels = new ArrayList<>();
 
     // One Annotation has Many Review
