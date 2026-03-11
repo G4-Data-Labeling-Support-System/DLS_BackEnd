@@ -42,13 +42,23 @@ public class DatasetController {
         return datasetService.getAllDatasets();
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+            summary = "Get dataset by id",
+            description = "Retrieve dataset"
+    )
+    public DatasetResponse getDatasetById(@PathVariable String id) {
+        return datasetService.getDatasetById(id);
+    }
+
     /*
     * ==============================
     * Get datasets for target project
     * ==============================
     */
     @GetMapping("/project/{projectId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR')")
     @Operation(
         summary = "Get datasets by project",
         description = "Retrieve all datasets belonging to a specific project"

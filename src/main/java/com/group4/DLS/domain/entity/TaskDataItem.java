@@ -49,9 +49,6 @@ public class TaskDataItem {
     @JoinColumn(name = "dataitem_id", nullable = false)
     Dataitem dataitem;
 
-    @Column(name = "sequence")
-    int sequence;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "item_status")
     TaskDataItemStatus taskDataItemStatus;

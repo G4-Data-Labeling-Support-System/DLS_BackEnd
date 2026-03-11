@@ -21,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,13 +31,21 @@ public class DataitemService {
     private final DataItemRepository dataitemRepository;
 
     private final SeaweedFilerUploadService seaweedFilerUploadService;
-    DataItemMapper dataItemMapper;
+    private final DataItemMapper dataItemMapper;
 
+
+    //get dataitem by id
+    public DataItemResponse getDataitemById(String dataitemId) {
+        Dataitem dataitem = dataitemRepository.findById(dataitemId).orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+        return dataItemMapper.toDataItemResponse(dataitem);
+    }
 
     //get all dataitem for dataset
     public List<DataItemResponse> getAllDataitemForDataset(String datasetId) {
         //check dataset exist
-        Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        if(datasetRepository.findById(datasetId).isEmpty()){
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
 
         List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
 
@@ -45,18 +54,31 @@ public class DataitemService {
 
     //create dataitem for dataset
     @Transactional
-    public void createDataitem(String datasetId, List<MultipartFile> files) throws IOException {
+    public int createDataitem(String datasetId, List<MultipartFile> files) throws IOException {
         //check dataset exist
         Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
+        int count = 0;
+        List<Dataitem> items = new ArrayList<>();
         for (MultipartFile file : files) {
 
             // đọc ảnh
             BufferedImage image = ImageIO.read(file.getInputStream());
+            if(image == null){
+                throw new AppException(ErrorCode.INVALID_IMAGE_FILE);
+            }
 
             int width = image.getWidth();
             int height = image.getHeight();
-            String fileFormat = file.getOriginalFilename().substring(file.getOriginalFilename().lastIndexOf(".") + 1).toUpperCase();
+
+            //lấy file format
+            String filename = file.getOriginalFilename();
+
+            if(filename == null || !filename.contains(".")){
+                throw new AppException(ErrorCode.INVALID_FILE_FORMAT);
+            }
+
+            String fileFormat = filename.substring(filename.lastIndexOf(".") + 1).toUpperCase();
 
 
             // 1 upload file lên SeaweedFS
@@ -64,7 +86,7 @@ public class DataitemService {
 
             // 2 tạo Dataitem
             Dataitem item = new Dataitem();
-            item.setFileName(dataset.getDatasetId() + file.getOriginalFilename());
+            item.setFileName(UUID.randomUUID()+"-"+file.getOriginalFilename());
             item.setUrl(fileUrl);
             item.setFileSize((int) file.getSize());
             item.setWidth(width);
@@ -72,8 +94,11 @@ public class DataitemService {
             item.setFileFormat(FileFormat.valueOf(fileFormat));
             item.setDataType(DataType.IMAGE);
             item.setDataset(dataset);
-
-            dataitemRepository.save(item);
+            count++;
+            items.add(item);
         }
+
+        dataitemRepository.saveAll(items);
+        return count;
     }
 }

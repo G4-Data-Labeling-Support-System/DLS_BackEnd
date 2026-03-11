@@ -11,10 +11,7 @@ import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
-import com.group4.DLS.repositories.AssignmentRepository;
-import com.group4.DLS.repositories.DatasetRepository;
-import com.group4.DLS.repositories.ProjectRepository;
-import com.group4.DLS.repositories.UserRepository;
+import com.group4.DLS.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -33,7 +30,7 @@ public class AssignmentService {
     DatasetRepository datasetRepository;
     ActivityLogService logService;
     UserRepository userRepository;
-
+    TaskService taskService;
 
     // ================= GET ALL ASSIGNMENTS =================
     public List<AssignmentResponse> getAllAssignments() {
@@ -65,6 +62,12 @@ public class AssignmentService {
         return assignments;
     }
 
+    //get assignment by id
+    public AssignmentResponse getAssignmentById(String assignmentId){
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+        return assignmentMapper.toResponse(assignment);
+    }
     //get assignments for project
     public List<AssignmentResponse> getAssignmentForProject(String projectId){
         //check project exist
@@ -123,13 +126,15 @@ public class AssignmentService {
 
         assignmentRepository.save(assignment);
         datasetRepository.save(dataset);
+        taskService.createTasksForAssignment(assignment.getAssignmentId());
+        assignmentRepository.save(assignment);
 
-         // Log action
-        logService.log(
-                "CREATE_ASSIGNMENT",
-                "ASSIGNMENT",
-                assignment.getAssignmentId(),
-                "Created assignment: " + assignment.getAssignmentName());
+//         // Log action
+//        logService.log(
+//                "CREATE_ASSIGNMENT",
+//                "ASSIGNMENT",
+//                assignment.getAssignmentId(),
+//                "Created assignment: " + assignment.getAssignmentName());
 
         return assignmentMapper.toResponse(assignment);
     }
@@ -139,11 +144,19 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
+        User assignedTo = userRepository.findById(request.getAssignedTo())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+        User reviewedBy = userRepository.findById(request.getReviewedBy())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
         //check name is null or exists
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
             assignment = assignmentMapper.updateAssignmentFromRequest(request);
             assignment.setUpdateAt(LocalDateTime.now());
+            assignment.setAssignedTo(assignedTo);
+            assignment.setReviewedBy(reviewedBy);
         }
 
         assignmentRepository.save(assignment);

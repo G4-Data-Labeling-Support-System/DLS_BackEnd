@@ -53,6 +53,13 @@ public class DatasetService {
         }
     }
 
+    // ===== GET DATASET BY ID =====
+    public DatasetResponse getDatasetById(String datasetId) {
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        return datasetMapper.toDatasetResponse(dataset);
+    }
+
     // ===== CREATE DATASET =====
     public DatasetResponse createDataset(DatasetCreationRequest request) throws IOException {
 
@@ -70,8 +77,10 @@ public class DatasetService {
         // Set project relationship
         dataset.setProject(project);
         datasetRepository.save(dataset);
+        dataset.setTotalItems(dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles()));
+        datasetRepository.save(dataset);
 
-        dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles());
+
         // Save and return response
         return datasetMapper.toDatasetResponse(dataset);
     }

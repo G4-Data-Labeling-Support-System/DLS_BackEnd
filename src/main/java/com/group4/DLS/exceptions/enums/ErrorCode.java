@@ -50,7 +50,13 @@ public enum ErrorCode {
     LABEL_NOT_FOUND(3001, "Label not found"),
     LABEL_ALREADY_EXISTS(3002, "Label already exists in this dataset"),
     LABEL_HAS_ANNOTATIONS(3003, "Cannot delete label because it is used in annotations"),
-    OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB");
+    OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB"),
+    INVALID_IMAGE_FILE(403,"Invalid image file" ),
+    INVALID_FILE_FORMAT(403,"Invalid file format" ),
+    DATAITEM_NOT_FOUND(403,"DataItem not found" ),
+    TASK_NOT_FOUND(400, "Task not found"),
+    TASK_ALREADY_EXISTS(400, "Task already exists"),
+    INVALID_TASK_STATUS(400, "Invalid task status");
 
     final int code;
     final String message;
