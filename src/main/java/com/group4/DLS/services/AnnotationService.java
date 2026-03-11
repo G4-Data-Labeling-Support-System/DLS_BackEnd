@@ -4,7 +4,7 @@ import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Label;
 import com.group4.DLS.domain.entity.Task;
-import com.group4.DLS.domain.entity.enums.AnnotationStatus;
+import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.repositories.AnnotationRepository;
 import com.group4.DLS.repositories.LabelRepository;
 import lombok.RequiredArgsConstructor;
