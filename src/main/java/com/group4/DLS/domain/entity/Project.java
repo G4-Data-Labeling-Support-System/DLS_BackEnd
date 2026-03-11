@@ -38,7 +38,7 @@ public class Project {
     @Column(name = "project_id", nullable = false)
     String projectId;
 
-    @Column(name = "project_name", nullable = false, unique = true)
+    @Column(name = "project_name", nullable = false)
     String projectName;
 
     @Column(name = "description", nullable = true)
