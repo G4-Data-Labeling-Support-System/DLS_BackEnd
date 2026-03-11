@@ -2,7 +2,7 @@ package com.group4.DLS.domain.dto.response;
 
 import java.time.LocalDateTime;
 
-import com.group4.DLS.domain.entity.enums.DataType;
+import com.group4.DLS.domain.enums.DataType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

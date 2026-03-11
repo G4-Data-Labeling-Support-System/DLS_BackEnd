@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.group4.DLS.domain.entity.Project;
-import com.group4.DLS.domain.entity.enums.ProjectStatus;
+import com.group4.DLS.domain.enums.ProjectStatus;
 
 public interface ProjectRepository extends JpaRepository<Project, String> {
     boolean existsByProjectName(

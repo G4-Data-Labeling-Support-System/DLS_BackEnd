@@ -8,7 +8,7 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.group4.DLS.domain.entity.enums.UserRole;
+import com.group4.DLS.domain.enums.UserRole;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

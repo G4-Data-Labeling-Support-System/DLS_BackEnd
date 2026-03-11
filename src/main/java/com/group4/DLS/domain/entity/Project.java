@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.group4.DLS.domain.entity.enums.ProjectStatus;
+import com.group4.DLS.domain.enums.ProjectStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

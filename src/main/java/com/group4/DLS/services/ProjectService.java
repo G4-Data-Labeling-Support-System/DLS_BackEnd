@@ -7,7 +7,7 @@ import com.group4.DLS.domain.dto.response.ProjectResponse;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.ProjectMember;
 import com.group4.DLS.domain.entity.User;
-import com.group4.DLS.domain.entity.enums.ProjectStatus;
+import com.group4.DLS.domain.enums.ProjectStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.ProjectMapper;

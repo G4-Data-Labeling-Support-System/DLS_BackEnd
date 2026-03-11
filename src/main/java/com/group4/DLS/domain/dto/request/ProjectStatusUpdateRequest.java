@@ -1,6 +1,6 @@
 package com.group4.DLS.domain.dto.request;
 
-import com.group4.DLS.domain.entity.enums.ProjectStatus;
+import com.group4.DLS.domain.enums.ProjectStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
