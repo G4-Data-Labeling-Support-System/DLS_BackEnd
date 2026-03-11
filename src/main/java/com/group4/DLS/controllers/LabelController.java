@@ -28,7 +28,7 @@ public class LabelController {
      * ==============================
      */
     @GetMapping("/api/v1/datasets/{datasetId}/labels")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')")
     @Operation(
             summary = "Get labels by dataset",
             description = "Retrieve all labels belonging to a specific dataset"
