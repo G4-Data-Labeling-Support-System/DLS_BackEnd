@@ -24,6 +24,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.Version;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,7 +69,8 @@ public class Annotation {
     @Column(name = "annotation_status")
     AnnotationStatus annotationStatus;
 
-    @Column(name = "version", nullable = false, unique = true)
+    @Version
+    @Column(name = "version")
     int version;
 
     @Column(name = "created_at")
@@ -103,10 +105,9 @@ public class Annotation {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Many Annotation belongs to One Label
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "label_id", nullable = false)
-    private Label label;
+    // One Annotation has Many Labels 
+    @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Label> labels = new ArrayList<>();
 
     // One Annotation has Many Review
     @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
