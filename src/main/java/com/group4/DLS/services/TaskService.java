@@ -27,8 +27,8 @@ public class TaskService {
     TaskDataItemService taskDataItemService;
     DataItemRepository dataItemRepository;
 
-     // ================= GET ALL TASKS =================
-     public List<TaskResponse> getAllTasks() {
+    // ================= GET ALL TASKS =================
+    public List<TaskResponse> getAllTasks() {
         List<TaskResponse> tasks = taskRepository.findAll()
                 .stream()
                 .map(taskMapper::toResponse)
