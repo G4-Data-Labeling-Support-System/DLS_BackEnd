@@ -6,8 +6,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.group4.DLS.domain.entity.enums.UserRole;
-import com.group4.DLS.domain.entity.enums.UserStatus;
+import com.group4.DLS.domain.enums.UserRole;
+import com.group4.DLS.domain.enums.UserStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

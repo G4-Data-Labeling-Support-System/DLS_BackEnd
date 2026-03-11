@@ -2,8 +2,8 @@ package com.group4.DLS.domain.dto.response;
 
 import java.time.LocalDate;
 
-import com.group4.DLS.domain.entity.enums.UserRole;
-import com.group4.DLS.domain.entity.enums.UserStatus;
+import com.group4.DLS.domain.enums.UserRole;
+import com.group4.DLS.domain.enums.UserStatus;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

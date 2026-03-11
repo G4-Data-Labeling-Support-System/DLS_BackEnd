@@ -1,11 +1,12 @@
 package com.group4.DLS.domain.dto.response;
 
 
-import com.group4.DLS.domain.entity.enums.GuidelineStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+
+import com.group4.DLS.domain.enums.GuidelineStatus;
 @Builder
 @Getter
 @Setter

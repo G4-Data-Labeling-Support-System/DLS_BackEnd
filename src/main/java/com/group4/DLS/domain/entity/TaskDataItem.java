@@ -2,7 +2,7 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDateTime;
 
-import com.group4.DLS.domain.entity.enums.TaskDataItemStatus;
+import com.group4.DLS.domain.enums.TaskDataItemStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

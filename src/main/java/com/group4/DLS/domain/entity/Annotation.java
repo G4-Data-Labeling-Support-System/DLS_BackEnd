@@ -4,27 +4,12 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.group4.DLS.domain.entity.enums.AnnotationConfidence;
-import com.group4.DLS.domain.entity.enums.AnnotationStatus;
-import com.group4.DLS.domain.entity.enums.AnnotationType;
-import com.group4.DLS.domain.entity.enums.ReviewStatus;
+import com.group4.DLS.domain.enums.AnnotationConfidence;
+import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.domain.enums.AnnotationType;
+import com.group4.DLS.domain.enums.ReviewStatus;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import jakarta.persistence.Version;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -95,7 +80,12 @@ public class Annotation {
     private User user;
 
     // One Annotation has Many Labels 
-    @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany
+    @JoinTable(
+            name = "annotation_labels",
+            joinColumns = @JoinColumn(name = "annotation_id"),
+            inverseJoinColumns = @JoinColumn(name = "label_id")
+    )
     private List<Label> labels = new ArrayList<>();
 
     // One Annotation has Many Review

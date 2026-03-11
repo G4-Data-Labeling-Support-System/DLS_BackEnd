@@ -11,7 +11,7 @@ import com.group4.DLS.domain.dto.request.UserPasswordChangeRequest;
 import com.group4.DLS.domain.dto.request.UserUpdateRequest;
 import com.group4.DLS.domain.dto.response.UserResponse;
 import com.group4.DLS.domain.entity.User;
-import com.group4.DLS.domain.entity.enums.UserStatus;
+import com.group4.DLS.domain.enums.UserStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.UserMapper;

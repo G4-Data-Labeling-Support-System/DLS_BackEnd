@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.group4.DLS.domain.entity.enums.ReviewStatus;
-import com.group4.DLS.domain.entity.enums.TaskStatus;
-import com.group4.DLS.domain.entity.enums.TaskType;
+import com.group4.DLS.domain.enums.ReviewStatus;
+import com.group4.DLS.domain.enums.TaskStatus;
+import com.group4.DLS.domain.enums.TaskType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
