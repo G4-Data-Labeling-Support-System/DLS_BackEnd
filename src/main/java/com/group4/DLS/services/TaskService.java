@@ -4,6 +4,8 @@ import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
+import com.group4.DLS.domain.entity.enums.TaskStatus;
+import com.group4.DLS.domain.entity.enums.TaskType;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.TaskMapper;
@@ -27,8 +29,8 @@ public class TaskService {
     TaskDataItemService taskDataItemService;
     DataItemRepository dataItemRepository;
 
-     // ================= GET ALL TASKS =================
-     public List<TaskResponse> getAllTasks() {
+    // ================= GET ALL TASKS =================
+    public List<TaskResponse> getAllTasks() {
         List<TaskResponse> tasks = taskRepository.findAll()
                 .stream()
                 .map(taskMapper::toResponse)
@@ -49,7 +51,7 @@ public class TaskService {
                 dataItemRepository.findByDataset_DatasetId(
                         assignment.getDataset().getDatasetId());
 
-        int maxPerTask = 100;
+        int maxPerTask = 20; // số lượng dataitem tối đa mỗi task có thể xử lý, có thể điều chỉnh tùy theo yêu cầu
         int taskIndex = 1; // bắt đầu từ 1 để đặt tên TASK-01, TASK-02, ...
 
         for (int i = 0; i < dataitems.size(); i += maxPerTask) {// duyệt qua danh sách dataitems theo từng batch có kích thước maxPerTask
@@ -62,6 +64,8 @@ public class TaskService {
             Task task = new Task();
             task.setAssignment(assignment);
             task.setTaskName(String.format("TASK-%02d", taskIndex++));//format tên task theo TASK-XX
+            task.setTaskType(TaskType.BATCH);
+            task.setTaskStatus(TaskStatus.NOT_STARTED);
             task.setCompletedCount(0);
 
             taskRepository.save(task);
