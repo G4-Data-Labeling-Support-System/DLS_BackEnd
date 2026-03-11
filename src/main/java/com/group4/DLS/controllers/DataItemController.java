@@ -7,6 +7,8 @@ import com.group4.DLS.services.DataitemService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,7 @@ public class DataItemController {
     private final DataitemService dataitemService;
 
     @GetMapping("/datasets/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')")
     public ApiResponse<List<DataItemResponse>> getAllDataset(@PathVariable String id) {
         ApiResponse<List<DataItemResponse>> response = new ApiResponse<>();
         response.setCode(200);
