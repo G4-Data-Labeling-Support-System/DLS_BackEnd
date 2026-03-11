@@ -2,7 +2,7 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDateTime;
 
-import com.group4.DLS.domain.entity.enums.TaskDataItemStatus;
+import com.group4.DLS.domain.enums.TaskDataItemStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,9 +48,6 @@ public class TaskDataItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dataitem_id", nullable = false)
     Dataitem dataitem;
-
-    @Column(name = "sequence")
-    int sequence;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "item_status")

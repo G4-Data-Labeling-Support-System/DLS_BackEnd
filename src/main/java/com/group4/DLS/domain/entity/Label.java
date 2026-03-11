@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -59,8 +57,9 @@ public class Label {
     @JoinColumn(name = "dataset_id", nullable = true)
     private Dataset dataset;
     
-    // One Label has Many Annotation
-    @OneToMany(mappedBy = "label", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Annotation> annotations = new ArrayList<>();
+    // Many Labels belong to One Annotation
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "annotation_id", nullable = true)
+    private Annotation annotation;
 
 }

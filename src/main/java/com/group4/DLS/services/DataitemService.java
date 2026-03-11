@@ -3,8 +3,8 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Dataset;
-import com.group4.DLS.domain.entity.enums.DataType;
-import com.group4.DLS.domain.entity.enums.FileFormat;
+import com.group4.DLS.domain.enums.DataType;
+import com.group4.DLS.domain.enums.FileFormat;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DataItemMapper;
@@ -43,7 +43,9 @@ public class DataitemService {
     //get all dataitem for dataset
     public List<DataItemResponse> getAllDataitemForDataset(String datasetId) {
         //check dataset exist
-        Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        if(datasetRepository.findById(datasetId).isEmpty()){
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
 
         List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
 

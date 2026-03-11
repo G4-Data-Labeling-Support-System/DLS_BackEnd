@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.group4.DLS.domain.entity.enums.DataType;
-import com.group4.DLS.domain.entity.enums.FileFormat;
+import com.group4.DLS.domain.enums.DataType;
+import com.group4.DLS.domain.enums.FileFormat;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

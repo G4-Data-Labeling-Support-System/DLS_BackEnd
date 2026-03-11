@@ -1,8 +1,9 @@
-package com.group4.DLS.domain.entity.enums;
+package com.group4.DLS.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum TaskType {
+    BATCH,
     ClASSIFICATION;
 
     @JsonCreator
