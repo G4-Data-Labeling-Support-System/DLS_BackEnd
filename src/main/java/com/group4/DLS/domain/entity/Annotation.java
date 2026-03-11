@@ -58,20 +58,9 @@ public class Annotation {
     @Column(name = "annotation_data", columnDefinition = "JSON")
     String annotationData;
 
-    @Column(name = "flag_for_review")
-    boolean flagForReview;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "review_status")
-    ReviewStatus reviewStatus;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "annotation_status")
     AnnotationStatus annotationStatus;
-
-    @Version
-    @Column(name = "version")
-    int version;
 
     @Column(name = "created_at")
     LocalDate createdAt;
@@ -89,7 +78,7 @@ public class Annotation {
     protected void onUpdate() {
         this.updatedAt = LocalDate.now();
     }
-    
+
     // Many Annotation belongs to One Task
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)
@@ -112,5 +101,5 @@ public class Annotation {
     // One Annotation has Many Review
     @OneToMany(mappedBy = "annotation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Review> reviews = new ArrayList<>();
-    
+
 }
