@@ -2,7 +2,8 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDateTime;
 
-import com.group4.DLS.domain.entity.enums.GuidelineStatus;
+import com.group4.DLS.domain.enums.GuidelineStatus;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
