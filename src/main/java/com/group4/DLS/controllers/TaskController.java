@@ -23,14 +23,14 @@ import java.util.List;
 @SecurityRequirement(name = "Bearer Authentication")
 public class TaskController {
 
-    TaskService taskService;
-
-    @GetMapping("/assignments/{assignmentId}")
-    public ApiResponse<List<TaskResponse>> getTaskByAssignmentId(@PathVariable  String assignmentId){
-        ApiResponse<List<TaskResponse>> response = new ApiResponse<>();
-        response.setCode(200);
-        response.setData(taskService.getTasksByAssignmentId(assignmentId));
-        response.setMessage("Tasks retrieved successfully");
-        return response;
-    }
+//    TaskService taskService;
+//
+//    @GetMapping("/assignments/{assignmentId}")
+//    public ApiResponse<List<TaskResponse>> getTaskByAssignmentId(@PathVariable  String assignmentId){
+//        ApiResponse<List<TaskResponse>> response = new ApiResponse<>();
+//        response.setCode(200);
+//        response.setData(taskService.getTasksByAssignmentId(assignmentId));
+//        response.setMessage("Tasks retrieved successfully");
+//        return response;
+//    }
 }
