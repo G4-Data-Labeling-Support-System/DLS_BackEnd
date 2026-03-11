@@ -4,7 +4,7 @@ import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
 import com.group4.DLS.domain.entity.Project;
-import com.group4.DLS.domain.entity.enums.GuidelineStatus;
+import com.group4.DLS.domain.enums.GuidelineStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.GuidelineMapper;

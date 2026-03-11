@@ -7,9 +7,9 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.group4.DLS.domain.entity.enums.AssignmentStatus;
+import com.group4.DLS.domain.enums.AssignmentStatus;
+import com.group4.DLS.domain.enums.Status;
 
-import com.group4.DLS.domain.entity.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

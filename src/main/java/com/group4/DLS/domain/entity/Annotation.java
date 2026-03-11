@@ -4,10 +4,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.group4.DLS.domain.entity.enums.AnnotationConfidence;
-import com.group4.DLS.domain.entity.enums.AnnotationStatus;
-import com.group4.DLS.domain.entity.enums.AnnotationType;
-import com.group4.DLS.domain.entity.enums.ReviewStatus;
+import com.group4.DLS.domain.enums.AnnotationConfidence;
+import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.domain.enums.AnnotationType;
+import com.group4.DLS.domain.enums.ReviewStatus;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

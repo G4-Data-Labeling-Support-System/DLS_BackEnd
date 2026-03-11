@@ -7,7 +7,7 @@ import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.User;
-import com.group4.DLS.domain.entity.enums.AssignmentStatus;
+import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
