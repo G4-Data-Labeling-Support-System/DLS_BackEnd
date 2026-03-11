@@ -28,6 +28,7 @@ public class TaskService {
     AssignmentRepository assignmentRepository;
     TaskDataItemService taskDataItemService;
     DataItemRepository dataItemRepository;
+    AnnotationService annotationService;
 
     // ================= GET ALL TASKS =================
     public List<TaskResponse> getAllTasks() {
@@ -70,7 +71,7 @@ public class TaskService {
 
             taskRepository.save(task);
             taskDataItemService.createTaskDataItem(task, batch);
-
+            annotationService.assignAnnotationToTask(task, batch);
         }
     }
 
