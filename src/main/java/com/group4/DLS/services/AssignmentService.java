@@ -11,10 +11,7 @@ import com.group4.DLS.domain.entity.enums.AssignmentStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
-import com.group4.DLS.repositories.AssignmentRepository;
-import com.group4.DLS.repositories.DatasetRepository;
-import com.group4.DLS.repositories.ProjectRepository;
-import com.group4.DLS.repositories.UserRepository;
+import com.group4.DLS.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -33,7 +30,7 @@ public class AssignmentService {
     DatasetRepository datasetRepository;
     ActivityLogService logService;
     UserRepository userRepository;
-
+    TaskService taskService;
 
     // ================= GET ALL ASSIGNMENTS =================
     public List<AssignmentResponse> getAllAssignments() {
@@ -129,6 +126,8 @@ public class AssignmentService {
 
         assignmentRepository.save(assignment);
         datasetRepository.save(dataset);
+        taskService.createTasksForAssignment(assignment.getAssignmentId());
+        assignmentRepository.save(assignment);
 
 //         // Log action
 //        logService.log(
