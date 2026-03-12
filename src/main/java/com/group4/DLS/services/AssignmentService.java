@@ -34,6 +34,7 @@ public class AssignmentService {
     TaskService taskService;
     LabelService labelService;
 
+
     // ================= GET ALL ASSIGNMENTS =================
     public List<AssignmentResponse> getAllAssignments() {
         List<AssignmentResponse> assignments = assignmentRepository.findAll()
@@ -155,7 +156,7 @@ public class AssignmentService {
         //check name is null or exists
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
-            assignment = assignmentMapper.updateAssignmentFromRequest(request);
+            assignmentMapper.updateAssignmentFromRequest(request,assignment);
             assignment.setUpdateAt(LocalDateTime.now());
             assignment.setAssignedTo(assignedTo);
             assignment.setReviewedBy(reviewedBy);
@@ -178,15 +179,38 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
+        if( !datasetRepository.findById(assignment.getDataset().getDatasetId()).isEmpty()){
+            Dataset dataset = datasetRepository.findById(assignment.getDataset().getDatasetId())
+                    .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+            dataset.setAssignment(null);
+            datasetRepository.save(dataset);
+        }
+
         assignment.setAssignmentStatus(AssignmentStatus.CANCLED);
+        assignment.setDataset(null);
         assignmentRepository.save(assignment);
 
-        // Log action
-        logService.log(
-                "REMOVE_ASSIGNMENT",
-                "ASSIGNMENT",
-                assignment.getAssignmentId(),
-                "Assignment removed: " + assignment.getAssignmentName());
+
+//        // Log action
+//        logService.log(
+//                "REMOVE_ASSIGNMENT",
+//                "ASSIGNMENT",
+//                assignment.getAssignmentId(),
+//                "Assignment removed: " + assignment.getAssignmentName());
+    }
+
+    //get label for assignment
+    public List<LabelResponse> getLabelsForAssignment(String assignmentId) {
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        Dataset dataset = assignment.getDataset();
+        if (dataset == null) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
+
+         return labelService.getAllByDataset(dataset.getDatasetId());
+
     }
 
     //get label for assignment

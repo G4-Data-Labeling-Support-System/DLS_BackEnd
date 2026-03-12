@@ -40,7 +40,9 @@ public interface AssignmentMapper {
     @Mapping(target = "tasks", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "assignedBy", ignore = true)
-    @Mapping(target = "reviewedBy", ignore = true)
     @Mapping(target = "assignedTo", ignore = true)
-    Assignment updateAssignmentFromRequest(AssignmentUpdateRequest request);
+    @Mapping(target = "reviewedBy", ignore = true)
+    void updateAssignmentFromRequest(
+            AssignmentUpdateRequest request,
+            @MappingTarget Assignment assignment);
 }
