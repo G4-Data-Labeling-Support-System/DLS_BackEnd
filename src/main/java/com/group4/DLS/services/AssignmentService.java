@@ -155,7 +155,7 @@ public class AssignmentService {
         //check name is null or exists
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
-            assignment = assignmentMapper.updateAssignmentFromRequest(request);
+            assignmentMapper.updateAssignmentFromRequest(request,assignment);
             assignment.setUpdateAt(LocalDateTime.now());
             assignment.setAssignedTo(assignedTo);
             assignment.setReviewedBy(reviewedBy);
