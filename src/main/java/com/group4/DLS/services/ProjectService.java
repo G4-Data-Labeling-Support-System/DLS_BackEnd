@@ -7,7 +7,7 @@ import com.group4.DLS.domain.dto.response.ProjectResponse;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.ProjectMember;
 import com.group4.DLS.domain.entity.User;
-import com.group4.DLS.domain.entity.enums.ProjectStatus;
+import com.group4.DLS.domain.enums.ProjectStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.ProjectMapper;
@@ -66,8 +66,13 @@ public class ProjectService {
     // ================= CREATE PROJECT =================
     public ProjectResponse createProject(ProjectCreationRequest request) {
         User manager = currentUserProvider.getCurrentUser();
-        
-        if (projectRepository.existsByProjectName(request.getProjectName())) {
+
+        boolean existsActiveProject = projectRepository.existsByProjectNameAndStatusNot(
+            request.getProjectName(), 
+            ProjectStatus.INACTIVE
+        );
+
+        if (existsActiveProject) {
             throw new AppException(ErrorCode.PROJECT_ALREADY_EXISTS);
         }
 
@@ -83,10 +88,10 @@ public class ProjectService {
 
         // Log action
         // logService.log(
-        //         "CREATE_PROJECT",
-        //         "PROJECT",
-        //         project.getProjectId(),
-        //         "Created project: " + project.getProjectName());
+        // "CREATE_PROJECT",
+        // "PROJECT",
+        // project.getProjectId(),
+        // "Created project: " + project.getProjectName());
 
         return projectMapper.toProjectResponse(project);
     }
@@ -109,10 +114,10 @@ public class ProjectService {
 
         // Log action
         // logService.log(
-        //         "UPDATE_PROJECT",
-        //         "PROJECT",
-        //         project.getProjectId(),
-        //         "Updated project: " + project.getProjectName());
+        // "UPDATE_PROJECT",
+        // "PROJECT",
+        // project.getProjectId(),
+        // "Updated project: " + project.getProjectName());
 
         return projectMapper.toProjectResponse(project);
     }
@@ -136,12 +141,12 @@ public class ProjectService {
             project = projectRepository.save(project);
 
             // Log action
-        //     logService.log(
-        //         "UPDATE_PROJECT_STATUS",
-        //         "PROJECT",
-        //         project.getProjectId(),
-        //         "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
-        //     );
+            // logService.log(
+            // "UPDATE_PROJECT_STATUS",
+            // "PROJECT",
+            // project.getProjectId(),
+            // "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
+            // );
         }
 
         return projectMapper.toProjectResponse(project);
@@ -165,9 +170,9 @@ public class ProjectService {
 
         // Log action
         // logService.log(
-        //         "REMOVE_PROJECT",
-        //         "PROJECT",
-        //         project.getProjectId(),
-        //         "Project removed: " + project.getProjectName());
+        // "REMOVE_PROJECT",
+        // "PROJECT",
+        // project.getProjectId(),
+        // "Project removed: " + project.getProjectName());
     }
 }

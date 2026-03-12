@@ -12,7 +12,6 @@ public interface LabelMapper {
     // CREATE
     @Mapping(target = "labelId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "annotations", ignore = true)
     @Mapping(target = "dataset", ignore = true)
     Label toLabel(LabelCreationRequest request);
 
@@ -25,6 +24,5 @@ public interface LabelMapper {
     @Mapping(target = "labelId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "dataset", ignore = true)
-    @Mapping(target = "annotations", ignore = true)
     void updateLabel(@MappingTarget Label label, LabelUpdateRequest request);
 }

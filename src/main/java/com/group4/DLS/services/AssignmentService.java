@@ -3,18 +3,16 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
+import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.User;
-import com.group4.DLS.domain.entity.enums.AssignmentStatus;
+import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
-import com.group4.DLS.repositories.AssignmentRepository;
-import com.group4.DLS.repositories.DatasetRepository;
-import com.group4.DLS.repositories.ProjectRepository;
-import com.group4.DLS.repositories.UserRepository;
+import com.group4.DLS.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -33,7 +31,8 @@ public class AssignmentService {
     DatasetRepository datasetRepository;
     ActivityLogService logService;
     UserRepository userRepository;
-
+    TaskService taskService;
+    LabelService labelService;
 
     // ================= GET ALL ASSIGNMENTS =================
     public List<AssignmentResponse> getAllAssignments() {
@@ -65,6 +64,12 @@ public class AssignmentService {
         return assignments;
     }
 
+    //get assignment by id
+    public AssignmentResponse getAssignmentById(String assignmentId){
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+        return assignmentMapper.toResponse(assignment);
+    }
     //get assignments for project
     public List<AssignmentResponse> getAssignmentForProject(String projectId){
         //check project exist
@@ -123,6 +128,8 @@ public class AssignmentService {
 
         assignmentRepository.save(assignment);
         datasetRepository.save(dataset);
+        taskService.createTasksForAssignment(assignment.getAssignmentId());
+        assignmentRepository.save(assignment);
 
 //         // Log action
 //        logService.log(
@@ -180,5 +187,19 @@ public class AssignmentService {
                 "ASSIGNMENT",
                 assignment.getAssignmentId(),
                 "Assignment removed: " + assignment.getAssignmentName());
+    }
+
+    //get label for assignment
+    public List<LabelResponse> getLabelsForAssignment(String assignmentId) {
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        Dataset dataset = assignment.getDataset();
+        if (dataset == null) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
+
+         return labelService.getAllByDataset(dataset.getDatasetId());
+
     }
 }

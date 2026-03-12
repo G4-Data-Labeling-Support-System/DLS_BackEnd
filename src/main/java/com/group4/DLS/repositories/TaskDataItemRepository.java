@@ -1,0 +1,12 @@
+package com.group4.DLS.repositories;
+
+import com.group4.DLS.domain.entity.TaskDataItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, String> {
+        List<TaskDataItem> findByTask_TaskId(String taskId);
+}

@@ -46,6 +46,9 @@ public class LabelService {
         label.setDataset(dataset);
 
         Label saved = labelRepository.save(label);
+        // setLabels for dataset to update label count
+        dataset.setLabels(labelRepository.findByDataset_DatasetId(datasetId));
+        datasetRepository.save(dataset);
 
         return labelMapper.toLabelResponse(saved);
     }
