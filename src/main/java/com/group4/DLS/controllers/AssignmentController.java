@@ -4,6 +4,7 @@ import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
+import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.services.AssignmentService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -108,6 +109,20 @@ public class AssignmentController {
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Delete assignment successfully")
+                .build();
+    }
+
+    //get label for assignment
+    @GetMapping("/{assignmentId}/labels")
+    @Operation(
+        summary = "Get labels for assignment",
+        description = "Retrieve all labels associated with a specific assignment")
+    public ApiResponse<List<LabelResponse>> getLabelsForAssignment(
+            @PathVariable String assignmentId) {
+        return ApiResponse.<List<LabelResponse>>builder()
+                .code(200)
+                .message("Get labels for assignment successfully")
+                .data(assignmentService.getLabelsForAssignment(assignmentId))
                 .build();
     }
 }

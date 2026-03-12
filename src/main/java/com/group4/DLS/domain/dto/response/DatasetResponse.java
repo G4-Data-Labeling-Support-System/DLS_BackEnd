@@ -27,4 +27,5 @@ public class DatasetResponse {
     String assignmentId;
     // List all dataItems
     List<DataItemResponse> dataitems;
+    List<LabelResponse> labels;
 }
