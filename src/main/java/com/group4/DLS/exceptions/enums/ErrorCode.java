@@ -56,6 +56,9 @@ public enum ErrorCode {
     DATAITEM_NOT_FOUND(403,"DataItem not found" ),
     TASK_NOT_FOUND(400, "Task not found"),
     TASK_ALREADY_EXISTS(400, "Task already exists"),
+
+    ANNOTATION_NOT_FOUND(404, "Annotation not found"),
+    REVIEW_NOT_FOUND(404, "Review not found"),
     INVALID_TASK_STATUS(400, "Invalid task status");
 
     final int code;
