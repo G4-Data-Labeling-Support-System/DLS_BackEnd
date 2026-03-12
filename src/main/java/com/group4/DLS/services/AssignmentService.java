@@ -212,4 +212,18 @@ public class AssignmentService {
          return labelService.getAllByDataset(dataset.getDatasetId());
 
     }
+
+    //get label for assignment
+    public List<LabelResponse> getLabelsForAssignment(String assignmentId) {
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        Dataset dataset = assignment.getDataset();
+        if (dataset == null) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
+
+         return labelService.getAllByDataset(dataset.getDatasetId());
+
+    }
 }
