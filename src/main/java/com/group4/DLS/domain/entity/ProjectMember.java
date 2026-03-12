@@ -1,6 +1,7 @@
 package com.group4.DLS.domain.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -41,10 +42,10 @@ public class ProjectMember {
     @JoinColumn(name = "user_id", nullable = false)
     User user;
 
-    LocalDate joinAt;
+    LocalDateTime joinAt;
 
     @PrePersist
     protected void onJoin() {
-        this.joinAt = LocalDate.now();
+        this.joinAt = LocalDateTime.now();
     }
 }
