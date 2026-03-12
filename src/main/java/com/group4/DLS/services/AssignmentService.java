@@ -187,6 +187,7 @@ public class AssignmentService {
         }
 
         assignment.setAssignmentStatus(AssignmentStatus.CANCLED);
+        assignment.setDataset(null);
         assignmentRepository.save(assignment);
 
 
