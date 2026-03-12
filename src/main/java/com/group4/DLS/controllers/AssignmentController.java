@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class AssignmentController {
 
     //find assiagnment by id
     @GetMapping("/{assignmentId}")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
     public ApiResponse<AssignmentResponse> getAssignmentById( @PathVariable String assignmentId) {
         ApiResponse<AssignmentResponse> response = new ApiResponse<>();
         response.setCode(200);
