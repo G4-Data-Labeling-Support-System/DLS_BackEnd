@@ -15,6 +15,7 @@ public interface ReviewMapper {
     @Mapping(target = "reviewId", ignore = true)
     @Mapping(target = "reviewedAt", ignore = true)
     @Mapping(target = "user", source = "reviewer")
+    @Mapping(target = "comment", source = "request.comment")
     @Mapping(target = "annotation", source = "annotation")
     Review toReview(ReviewCreationRequest request, User reviewer, Annotation annotation);
 
