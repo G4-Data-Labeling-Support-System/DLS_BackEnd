@@ -15,7 +15,7 @@ def call(config) {
                 sudo docker stop ${config.appName} || true && 
                 sudo docker rm ${config.appName} || true &&
 
-                sudo docker run -d -p ${config.port}:${config.port} \
+                sudo docker run -d -p ${config.prodPort}:${config.prodPort} \
                 --name ${config.appName} \
                 --restart unless-stopped \
                 ${imageTagged}'
