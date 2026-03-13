@@ -5,6 +5,7 @@ def call(config) {
         script {
             String mavenHome = tool 'maven'
             withEnv(["PATH+MAVEN=${mavenHome}/bin"]) {
+                dir("DLS_BE_development")
                 sh '''
                     mvn -version
                     mvn clean package -DskipTests
