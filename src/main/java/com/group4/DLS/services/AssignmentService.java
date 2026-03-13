@@ -133,6 +133,9 @@ public class AssignmentService {
         if(!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, reviewedBy.getUserId())){
             projectMemberService.assignMemberToProject(projectId, reviewedBy.getUserId());
         }
+        if(!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, manager.getUserId())){
+            projectMemberService.assignMemberToProject(projectId, manager.getUserId());
+        }
         datasetRepository.save(dataset);
         taskService.createTasksForAssignment(assignment.getAssignmentId());
         assignmentRepository.save(assignment);
