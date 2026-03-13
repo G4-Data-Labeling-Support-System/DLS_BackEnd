@@ -10,6 +10,7 @@ node {
         release: '1.0.0',
         alpha: '1.0.0',
         port: '8081',
+        prodPort: '8082'
         devServer: "jso@10.0.1.74"
     ]
     // def initPipeline = load "ci/init.groovy"
