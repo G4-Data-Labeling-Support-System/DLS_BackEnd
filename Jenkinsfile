@@ -1,8 +1,4 @@
 node {
-    
-    stage('Checkout') {
-        checkout scm
-    }
 
     def config = [
         appName: 'data-labeling-be',
@@ -12,7 +8,6 @@ node {
         port: '8081',
         devServer: "jso@10.0.1.74"
     ]
-
     def initPipeline = load "ci/init.groovy"
     def buildPipeline = load "ci/build.groovy"
     def dockerPipeline = load "ci/docker.groovy"
