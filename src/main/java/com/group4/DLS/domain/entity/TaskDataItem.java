@@ -39,6 +39,9 @@ public class TaskDataItem {
     @Column(name = "task_item_id")
     String taskItemId;
 
+    @Column(name= "item_index")
+    int itemIndex;
+
     // Many TaskItem belongs to One Task
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "task_id", nullable = false)

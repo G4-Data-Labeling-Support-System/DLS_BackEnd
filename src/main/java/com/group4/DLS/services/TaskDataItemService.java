@@ -26,13 +26,15 @@ public class TaskDataItemService {
 
         List<TaskDataItem> list = new ArrayList<>();
 
+        int order = 0;
+
         for(Dataitem item : dataitems){
 
             TaskDataItem tdi = new TaskDataItem();
             tdi.setTask(task);
             tdi.setDataitem(item);
             tdi.setAssignedAt(LocalDateTime.now());
-
+            tdi.setItemIndex(order++);
             list.add(tdi);
         }
 
