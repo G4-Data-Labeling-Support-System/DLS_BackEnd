@@ -33,6 +33,8 @@ public class AssignmentService {
     UserRepository userRepository;
     TaskService taskService;
     LabelService labelService;
+    ProjectMemberRepository projectMemberRepository;
+    ProjectMemberService projectMemberService;
 
 
     // ================= GET ALL ASSIGNMENTS =================
@@ -114,20 +116,26 @@ public class AssignmentService {
         User reviewedBy = userRepository.findById(request.getReviewedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Assignment assignment = new Assignment();
+        Assignment assignment = assignmentMapper.toAssignment(request);
         assignment.setAssignedTo(assignedTo);
         assignment.setAssignedBy(manager);
         assignment.setReviewedBy(reviewedBy);
-        assignment.setAssignmentName(request.getAssignmentName());
-        assignment.setDescription(request.getDescription());
         assignment.setDataset(dataset);
         assignment.setProject(project);
-        assignment.setDueDate(request.getDueDate());
         assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
         assignment.setTotalItems(dataset.getTotalItems());
         dataset.setAssignment(assignment);
 
         assignmentRepository.save(assignment);
+        if (!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, assignedTo.getUserId())) {
+            projectMemberService.assignMemberToProject(projectId, assignedTo.getUserId());
+        }
+        if(!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, reviewedBy.getUserId())){
+            projectMemberService.assignMemberToProject(projectId, reviewedBy.getUserId());
+        }
+        if(!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, manager.getUserId())){
+            projectMemberService.assignMemberToProject(projectId, manager.getUserId());
+        }
         datasetRepository.save(dataset);
         taskService.createTasksForAssignment(assignment.getAssignmentId());
         assignmentRepository.save(assignment);
@@ -213,17 +221,4 @@ public class AssignmentService {
 
     }
 
-    //get label for assignment
-    public List<LabelResponse> getLabelsForAssignment(String assignmentId) {
-        Assignment assignment = assignmentRepository.findById(assignmentId)
-                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
-
-        Dataset dataset = assignment.getDataset();
-        if (dataset == null) {
-            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
-        }
-
-         return labelService.getAllByDataset(dataset.getDatasetId());
-
-    }
 }
