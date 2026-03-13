@@ -1,28 +1,27 @@
-return this
+def call(config) {
+    String image = "${config.dockerUser}/${config.appName}"
+    String version = "${config.release}-release.${env.BUILD_NUMBER}b"
+    String imageTagged = "${image}:${version}"
 
-node {
+    stage('Deploy to Production Server') {
 
-    def APP_NAME = "data-labeling-be"
-    def SERVER = "jso@10.0.1.12"
-    def IMAGE = "fleeforezz/${APP_NAME}:dev-latest"
-
-    stage('Deploy to Development Server') {
-        
         sshagent(['development-srv']) {
+            sh"""
+                ssh -o StrictHostKeyChecking=no ${config.devServer} \ '
+                echo "Deploying to version ${version}"
 
-            sh """
-                ssh -o StrictHostKeyChecking=no ${SERVER_CONNECTION} \
-                'sudo docker stop ${APP_NAME} || true && sudo docker rm ${APP_NAME} || true'
-            """
+                sudo docker pull ${imageTagged} && 
 
-            sh """
-                ssh -o StrictHostKeyChecking=no ${SERVER_CONNECTION} \
-                'sudo docker run -d -p 8081:8081 \
-                --name ${APP_NAME} \
+                sudo docker stop ${config.appName} || true && 
+                sudo docker rm ${config.appName} || true &&
+
+                sudo docker run -d -p ${config.port}:${config.port} \
+                --name ${config.appName} \
                 --restart unless-stopped \
-                ${IMAGE}'
+                ${imageTagged}'
             """
         }
     }
-
 }
+
+return this
