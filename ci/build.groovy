@@ -1,11 +1,17 @@
 def call() {
 
     stage('Maven Build') {
-        echo "Running Maven Build..."
+        echo 'Running Maven Build...'
 
-        sh '''
-            mvn clean package -DskipTests
-        '''
+        script {
+            String mavenHome = tool 'maven'
+            withEnv(["PATH+MAVEN=${mavenHome}/bin"]) {
+                sh '''
+                    mvn -version
+                    mvn clean package -DskipTests
+                '''
+            }
+        }
     }
 }
 

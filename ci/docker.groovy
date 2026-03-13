@@ -1,13 +1,13 @@
 def call() {
 
-    def appName = "data-labeling-be"
-    def release = "1.1"
-    def dockerUser = "fleeforezz"
+    String appName = 'data-labeling-be'
+    String release = '1.1'
+    String dockerUser = 'fleeforezz'
 
-    def image = "${dockerUser}/${appName}"
-    def version = "${release}.${env.BUILD_NUMBER}"
+    String image = "${dockerUser}/${appName}"
+    String version = "${release}.${env.BUILD_NUMBER}"
 
-    def imageTagged = env.BRANCH_NAME == "main" ?
+    String imageTagged = env.BRANCH_NAME == 'main' ?
         "${image}:latest" :
         "${image}:${version}-beta"
 
@@ -23,8 +23,8 @@ def call() {
 
         script {
 
-            def containerName = "test-${appName}-${env.BUILD_NUMBER}"
-            def testPort = "8081"
+            String containerName = "test-${appName}-${env.BUILD_NUMBER}"
+            String testPort = "8081"
 
             sh """
                 docker run -d --name ${containerName} \
@@ -74,11 +74,8 @@ def call() {
                 dockerImage.push("dev-latest")
 
             }
-
         }
-
     }
-
 }
 
 return this
