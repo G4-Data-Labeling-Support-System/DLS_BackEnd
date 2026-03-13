@@ -1,34 +1,19 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DataType;
 import com.group4.DLS.domain.enums.FileFormat;
-
-import com.group4.DLS.domain.enums.ProjectStatus;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "dataitems")
@@ -94,6 +79,7 @@ public class Dataitem {
     private List<Annotation> annotations = new ArrayList<>();
 
     // One DataItem has Many TaskDataitems
-    @OneToMany(mappedBy = "dataitem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<TaskDataItem> taskDataItems = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_data_item_id")
+    private TaskDataItem taskDataItems;
 }

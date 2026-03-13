@@ -3,6 +3,7 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Dataset;
+import com.group4.DLS.domain.entity.TaskDataItem;
 import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DataType;
 import com.group4.DLS.domain.enums.FileFormat;
@@ -11,6 +12,7 @@ import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DataItemMapper;
 import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.DatasetRepository;
+import com.group4.DLS.repositories.TaskDataItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class DataitemService {
     private final DatasetRepository datasetRepository;
 
     private final DataItemRepository dataitemRepository;
+    private final TaskDataItemRepository taskDataItemRepository;
 
     private final SeaweedFilerUploadService seaweedFilerUploadService;
     private final DataItemMapper dataItemMapper;
@@ -107,6 +110,18 @@ public class DataitemService {
         Dataitem dataitem = dataitemRepository.findById(dataitemId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
 
+        if(dataitem.getTaskDataItems() != null){
+            int index = dataitem.getTaskDataItems().getItemIndex();
+            List<TaskDataItem> taskDataItems = new ArrayList<>();
+            for(TaskDataItem tdi : taskDataItemRepository.findAll()){
+                if(tdi.getItemIndex() > index){
+                    tdi.setItemIndex(tdi.getItemIndex() - 1);
+                    taskDataItems.add(tdi);
+                }
+            }
+            taskDataItemRepository.delete(dataitem.getTaskDataItems());
+            taskDataItemRepository.saveAll(taskDataItems);
+        }
 
         // set dataitem trong database
             dataitem.setDataItemStatus(DataItemStatus.DELETED);

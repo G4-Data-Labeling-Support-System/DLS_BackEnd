@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -42,6 +39,16 @@ public class DataItemController {
         response.setCode(200);
         response.setData(dataitemService.getDataitemById(id));
         response.setMessage("Get dataitem by id successfully");
+        return response;
+    }
+
+    @PatchMapping("/{id}/delete")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
+    public ApiResponse<Void> deleteDataItem(@PathVariable String id) {
+        ApiResponse<Void> response = new ApiResponse<>();
+        dataitemService.deleteDataitem(id);
+        response.setCode(200);
+        response.setMessage("Data item deleted successfully");
         return response;
     }
 }
