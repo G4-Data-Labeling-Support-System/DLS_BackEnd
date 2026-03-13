@@ -212,5 +212,5 @@ public class AssignmentService {
          return labelService.getAllByDataset(dataset.getDatasetId());
 
     }
-    
+
 }
