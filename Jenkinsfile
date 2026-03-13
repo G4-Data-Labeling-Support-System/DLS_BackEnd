@@ -4,29 +4,30 @@ node {
         checkout scm
     }
 
-    def buildPipeline = load "ci/build.groovy"
-    def dockerPipeline = load "ci/docker.groovy"
+    def config = [
+        appName: 'data-labeling-be',
+        dockerUser: 'fleeforezz',
+        release: '1.0.0',
+        alpha: '1.0.0',
+        port: '8081',
+        devServer: "jso@10.0.1.74"
+    ]
 
-    stage('Build') {
-        buildPipeline.call()
-    }
+    load "ci/init.groovy"
+    load "ci/build.groovy"
+    load "ci/docker.groovy"
 
-    stage('Docker Build & Push') {
-        dockerPipeline.call()
-    }
+    // Call functions
+    initPipeline.call()
+    buildPipeline.call(config)
+    dockerPipeline.call(config)
 
+    // Deploy base on branch
     if (env.BRANCH_NAME == "main") {
-        def deployProd = load "ci/deploy-prod.groovy"
-
-        stage('Deloy Production') {
-            deployProd.call()
-        }
+        load "ci/deploy-prod.groovy"
+        deployProd.call(config)
     } else {
-        def deployDev = load "ci/deploy-dev.groovy"
-
-        stage('Deloy Development') {
-            deployDev.call()
-        }
+        load "ci/deploy-dev.groovy"
+        deployDev.call(config)
     }
-
 }

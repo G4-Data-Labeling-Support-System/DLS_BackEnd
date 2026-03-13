@@ -1,27 +1,23 @@
-def call() {
-
-    String appName = 'data-labeling-be'
-    String serverConnection = 'jso@10.0.1.74'
-    String image = "fleeforezz/${appName}:dev-latest"
+def call(config) {
+    String image = "${config.dockerUser}/${config.appName}:dev-latest"
 
     stage('Deploy to Development Server') {
 
         sshagent(['development-srv']) {
+            sh"""
+                ssh -o StrictHostKeyChecking=no ${config.devServer} \ '
 
-            sh """
-                ssh -o StrictHostKeyChecking=no ${serverConnection} \
-                'sudo docker stop ${appName} || true && sudo docker rm ${appName} || true'
-            """
-
-            sh """
-                ssh -o StrictHostKeyChecking=no ${serverConnection} \
-                'sudo docker run -d -p 8081:8081 \
-                --name ${appName} \
+                sudo docker pull ${image} && 
+                
+                sudo docker stop ${config.appName} || true && 
+                sudo docker rm ${config.appName} || true &&
+                
+                sudo docker run -d -p ${config.port}:${config.port} \
+                --name ${config.appName} \
                 --restart unless-stopped \
                 ${image}'
             """
         }
-
     }
 }
 
