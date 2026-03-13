@@ -1,5 +1,9 @@
 node {
 
+    stage('Checkout') {
+        checkout scm
+    }
+
     def config = [
         appName: 'data-labeling-be',
         dockerUser: 'fleeforezz',
