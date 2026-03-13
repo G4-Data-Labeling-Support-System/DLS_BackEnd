@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DataType;
 import com.group4.DLS.domain.enums.FileFormat;
 
+import com.group4.DLS.domain.enums.ProjectStatus;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -67,9 +69,18 @@ public class Dataitem {
     @Column(name = "uploaded_at")
     LocalDateTime uploadedAt;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dataitem_status", nullable = false)
+    DataItemStatus dataItemStatus;
+
     @PrePersist
     protected void onCreate() {
+
         this.uploadedAt = LocalDateTime.now();
+
+            if (dataItemStatus == null) {
+                this.dataItemStatus = DataItemStatus.ACTIVE;
+            }
     }
 
     // Many Dataitem belongs to One Dataset

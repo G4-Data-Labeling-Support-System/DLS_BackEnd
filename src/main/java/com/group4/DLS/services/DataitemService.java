@@ -3,6 +3,7 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Dataset;
+import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DataType;
 import com.group4.DLS.domain.enums.FileFormat;
 import com.group4.DLS.exceptions.AppException;
@@ -100,5 +101,16 @@ public class DataitemService {
 
         dataitemRepository.saveAll(items);
         return count;
+    }
+
+    public void deleteDataitem(String dataitemId) {
+        Dataitem dataitem = dataitemRepository.findById(dataitemId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+
+
+        // set dataitem trong database
+            dataitem.setDataItemStatus(DataItemStatus.DELETED);
+        dataitemRepository.save(dataitem);
+
     }
 }
