@@ -1,11 +1,11 @@
 node {
     
-    def buildPipeline = load "ci/build.groovy"
-    def dockerPipeline = load "ci/docker.groovy"
-
     stage('Checkout') {
         checkout scm
     }
+
+    def buildPipeline = load "ci/build.groovy"
+    def dockerPipeline = load "ci/docker.groovy"
 
     stage('Build') {
         buildPipeline.call()
