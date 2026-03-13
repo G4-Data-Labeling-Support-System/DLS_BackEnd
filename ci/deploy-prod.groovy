@@ -7,8 +7,8 @@ def call(config) {
 
         sshagent(['development-srv']) {
             sh"""
-                ssh -o StrictHostKeyChecking=no ${config.devServer} \ '
-                echo "Deploying to version ${version}"
+                ssh -o StrictHostKeyChecking=no ${config.devServer} \
+                'echo "Deploying to version ${version}"
 
                 sudo docker pull ${imageTagged} && 
 
