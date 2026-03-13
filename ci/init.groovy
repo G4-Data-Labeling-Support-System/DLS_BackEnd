@@ -3,3 +3,5 @@ def call() {
         cleanWs()
     }
 }
+
+return this
