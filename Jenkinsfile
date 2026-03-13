@@ -13,9 +13,9 @@ node {
         devServer: "jso@10.0.1.74"
     ]
 
-    load "ci/init.groovy"
-    load "ci/build.groovy"
-    load "ci/docker.groovy"
+    def initPipeline = load "ci/init.groovy"
+    def buildPipeline = load "ci/build.groovy"
+    def dockerPipeline = load "ci/docker.groovy"
 
     // Call functions
     initPipeline.call()
@@ -24,10 +24,10 @@ node {
 
     // Deploy base on branch
     if (env.BRANCH_NAME == "main") {
-        load "ci/deploy-prod.groovy"
+        def deployProd = load "ci/deploy-prod.groovy"
         deployProd.call(config)
     } else {
-        load "ci/deploy-dev.groovy"
+        def deployDev = load "ci/deploy-dev.groovy"
         deployDev.call(config)
     }
 }
