@@ -1,6 +1,7 @@
 package com.group4.DLS.domain.dto.response;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.group4.DLS.domain.enums.ProjectStatus;
 
@@ -10,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.type.descriptor.java.LocalDateJavaType;
 
 @Builder
 @Getter
@@ -22,6 +24,6 @@ public class ProjectResponse {
     String projectName;
     String description;
     ProjectStatus status;
-    LocalDate createdAt;
-    LocalDate updatedAt;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }
