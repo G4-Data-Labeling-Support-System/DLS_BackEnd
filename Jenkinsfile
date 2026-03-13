@@ -4,23 +4,29 @@ node {
         checkout scm
     }
 
+    // Env var
     def config = [
         appName: 'data-labeling-be',
         dockerUser: 'fleeforezz',
         release: '1.0.0',
         alpha: '1.0.0',
         port: '8081',
-        prodPort: '8082'
+        prodPort: '8082',
         devServer: "jso@10.0.1.74"
     ]
-    // def initPipeline = load "ci/init.groovy"
     def buildPipeline = load "ci/build.groovy"
+    def sonarqubePipeline = load "ci/sonarqube.groovy"
     def dockerPipeline = load "ci/docker.groovy"
 
-    // Call functions
-    // initPipeline.call()
-    buildPipeline.call(config)
-    dockerPipeline.call(config)
+    // Call functions base on branch
+    if (env.BRANCH_NAME == "main") {
+        buildPipeline.call(config)
+        // sonarqubePipeline.call(config)
+        dockerPipeline.call(config)
+    } else {
+        buildPipeline.call(config)
+        dockerPipeline.call(config)
+    }
 
     // Deploy base on branch
     if (env.BRANCH_NAME == "main") {
