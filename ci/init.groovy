@@ -3,11 +3,11 @@ def call() {
         cleanWs()
     }
 
-    // stage('Github Checkout') {
-    //     git branch: "${env.BRANCH_NAME}",
-    //         credentialsId: 'github-credentials',
-    //         url: "${GITHUB_URL}"
-    // }
+    stage('Github Checkout') {
+        git branch: "${env.BRANCH_NAME}",
+            credentialsId: 'github-credentials',
+            url: "${GITHUB_URL}"
+    }
 }
 
 return this
