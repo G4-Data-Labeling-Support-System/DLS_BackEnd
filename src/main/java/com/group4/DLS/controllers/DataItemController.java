@@ -36,6 +36,7 @@ public class DataItemController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')")
     public  ApiResponse<DataItemResponse> getDataItemById(@PathVariable String id) {
         ApiResponse<DataItemResponse> response = new ApiResponse<>();
         response.setCode(200);

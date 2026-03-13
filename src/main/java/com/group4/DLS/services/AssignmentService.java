@@ -33,6 +33,9 @@ public class AssignmentService {
     UserRepository userRepository;
     TaskService taskService;
     LabelService labelService;
+    ProjectMemberRepository projectMemberRepository;
+    ProjectMemberService projectMemberService;
+
 
     // ================= GET ALL ASSIGNMENTS =================
     public List<AssignmentResponse> getAllAssignments() {
@@ -113,20 +116,26 @@ public class AssignmentService {
         User reviewedBy = userRepository.findById(request.getReviewedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Assignment assignment = new Assignment();
+        Assignment assignment = assignmentMapper.toAssignment(request);
         assignment.setAssignedTo(assignedTo);
         assignment.setAssignedBy(manager);
         assignment.setReviewedBy(reviewedBy);
-        assignment.setAssignmentName(request.getAssignmentName());
-        assignment.setDescription(request.getDescription());
         assignment.setDataset(dataset);
         assignment.setProject(project);
-        assignment.setDueDate(request.getDueDate());
         assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
         assignment.setTotalItems(dataset.getTotalItems());
         dataset.setAssignment(assignment);
 
         assignmentRepository.save(assignment);
+        if (!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, assignedTo.getUserId())) {
+            projectMemberService.assignMemberToProject(projectId, assignedTo.getUserId());
+        }
+        if(!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, reviewedBy.getUserId())){
+            projectMemberService.assignMemberToProject(projectId, reviewedBy.getUserId());
+        }
+        if(!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, manager.getUserId())){
+            projectMemberService.assignMemberToProject(projectId, manager.getUserId());
+        }
         datasetRepository.save(dataset);
         taskService.createTasksForAssignment(assignment.getAssignmentId());
         assignmentRepository.save(assignment);
@@ -155,7 +164,7 @@ public class AssignmentService {
         //check name is null or exists
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
-            assignment = assignmentMapper.updateAssignmentFromRequest(request);
+            assignmentMapper.updateAssignmentFromRequest(request,assignment);
             assignment.setUpdateAt(LocalDateTime.now());
             assignment.setAssignedTo(assignedTo);
             assignment.setReviewedBy(reviewedBy);
@@ -178,15 +187,24 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
+        if( !datasetRepository.findById(assignment.getDataset().getDatasetId()).isEmpty()){
+            Dataset dataset = datasetRepository.findById(assignment.getDataset().getDatasetId())
+                    .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+            dataset.setAssignment(null);
+            datasetRepository.save(dataset);
+        }
+
         assignment.setAssignmentStatus(AssignmentStatus.CANCLED);
+        assignment.setDataset(null);
         assignmentRepository.save(assignment);
 
-        // Log action
-        logService.log(
-                "REMOVE_ASSIGNMENT",
-                "ASSIGNMENT",
-                assignment.getAssignmentId(),
-                "Assignment removed: " + assignment.getAssignmentName());
+
+//        // Log action
+//        logService.log(
+//                "REMOVE_ASSIGNMENT",
+//                "ASSIGNMENT",
+//                assignment.getAssignmentId(),
+//                "Assignment removed: " + assignment.getAssignmentName());
     }
 
     //get label for assignment
@@ -202,4 +220,5 @@ public class AssignmentService {
          return labelService.getAllByDataset(dataset.getDatasetId());
 
     }
+
 }
