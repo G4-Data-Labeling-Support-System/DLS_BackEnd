@@ -1,5 +1,4 @@
-def call() {
-
+def call(config) {
     stage('Maven Build') {
         echo 'Running Maven Build...'
 
