@@ -8,12 +8,12 @@ node {
         port: '8081',
         devServer: "jso@10.0.1.74"
     ]
-    def initPipeline = load "ci/init.groovy"
+    // def initPipeline = load "ci/init.groovy"
     def buildPipeline = load "ci/build.groovy"
     def dockerPipeline = load "ci/docker.groovy"
 
     // Call functions
-    initPipeline.call()
+    // initPipeline.call()
     buildPipeline.call(config)
     dockerPipeline.call(config)
 
@@ -24,5 +24,10 @@ node {
     } else {
         def deployDev = load "ci/deploy-dev.groovy"
         deployDev.call(config)
+    }
+
+    // Clean up workspace after run the pipeline
+    stage('Cleanup') {
+        cleanWs()
     }
 }
