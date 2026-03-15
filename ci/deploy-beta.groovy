@@ -1,12 +1,14 @@
 def call(config) {
-    String image = "${config.dockerUser}/${config.appName}:dev-latest"
+    String image = "${config.dockerUser}/${config.appName}"
+    String version = "${config.beta}-beta.${env.BUILD_NUMBER}b"
+    String imageTagged = "${image}:${version}"
 
-    stage('Deploy to Development Server with Dev tag') {
+    stage('Deploy to Development Server with Beta tag') {
 
         sshagent(['development-srv']) {
             sh"""
                 ssh -o StrictHostKeyChecking=no ${config.devServer} \
-                'sudo docker pull ${image} && 
+                'sudo docker pull ${imageTagged} && 
                 
                 sudo docker stop ${config.appName} || true && 
                 sudo docker rm ${config.appName} || true &&
@@ -14,7 +16,7 @@ def call(config) {
                 sudo docker run -d -p ${config.port}:${config.port} \
                 --name ${config.appName} \
                 --restart unless-stopped \
-                ${image}'
+                ${imageTagged}'
             """
         }
     }

@@ -5,9 +5,9 @@ def call(config) {
 
     stage('Deploy to Production Server') {
 
-        sshagent(['development-srv']) {
+        sshagent(['production-srv']) {
             sh"""
-                ssh -o StrictHostKeyChecking=no ${config.devServer} \
+                ssh -o StrictHostKeyChecking=no ${config.prodServer} \
                 'echo "Deploying to version ${version}"
 
                 sudo docker pull ${imageTagged} && 

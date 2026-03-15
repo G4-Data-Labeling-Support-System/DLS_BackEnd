@@ -7,7 +7,7 @@ def call(config) {
     if (env.BRANCH_NAME == 'main') {
         version = "${config.release}-release.${env.BUILD_NUMBER}b" // 1.1.2-release.78b
     } else if (env.BRANCH_NAME == 'development') {
-        version = "${config.alpha}-alpha.${env.BUILD_NUMBER}b" // 1.1.2-alpha.78b
+        version = "${config.beta}-beta.${env.BUILD_NUMBER}b" // 1.1.2-beta.78b
     } else {
         version = "dev-${env.BUILD_NUMBER}b" // dev-78b
     }
@@ -59,12 +59,12 @@ def call(config) {
 
             if (env.BRANCH_NAME == "main") {
                 dockerImage.push()         // version tag
-                dockerImage.push("latest") // production latest
+                dockerImage.push("release-latest") // production latest
             } else if (env.BRANCH_NAME == "development") {
                 dockerImage.push()            // version tag
-                dockerImage.push("dev-latest") // dev latest
+                dockerImage.push("beta-latest") // beta latest
             } else {
-                dockerImage.push("staging-latest")
+                dockerImage.push("dev-latest") // dev latest
             }
         }
     }
