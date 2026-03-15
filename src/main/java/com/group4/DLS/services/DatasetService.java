@@ -75,7 +75,7 @@ public class DatasetService {
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         // Check if this dataset name exist inside this project
-        if (datasetRepository.existsByProject_ProjectIdAndDatasetName(project.getProjectId(), request.getDatasetName())) {
+        if (datasetRepository.existsByProjectProjectIdAndDatasetNameAndDatasetStatusNot(project.getProjectId(), request.getDatasetName(), DatasetStatus.INACTIVE)) {
             throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 
@@ -98,7 +98,8 @@ public class DatasetService {
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
         // Check duplicate name (If name change)
-        if (request.getDatasetName() != null && !request.getDatasetName().equals(dataset.getDatasetName())) {
+        if (request.getDatasetName() != null && !request.getDatasetName().equals(dataset.getDatasetName())
+                && datasetRepository.existsByProjectProjectIdAndDatasetNameAndDatasetStatusNot(dataset.getProject().getProjectId(), request.getDatasetName(), DatasetStatus.INACTIVE)) {
             throw new AppException(ErrorCode.DATASETNAME_ALREADY_EXSITS);
         }
 
