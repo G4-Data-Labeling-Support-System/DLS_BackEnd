@@ -9,12 +9,13 @@ import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Review;
 import com.group4.DLS.domain.entity.User;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
 
-    @Mapping(target = "reviewId", ignore = true)
-    @Mapping(target = "reviewedAt", ignore = true)
-    ReviewResponse toReview(ReviewCreationRequest request);
+    
+    List<ReviewResponse> toReview(List<Review> reviews);
 
     @Mapping(target = "annotationId", source = "annotation.annotationId")
     @Mapping(target = "reviewerId", source = "user.userId")

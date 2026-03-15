@@ -15,6 +15,7 @@ import com.group4.DLS.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.View;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,10 +28,11 @@ public class ReviewService {
     private final UserRepository userRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
+    private final View view;
 
-    public List<Review> createReview(ReviewCreationRequest request) {
+    public List<ReviewResponse> createReview(ReviewCreationRequest request) {
 
-        List<Review> responses = new ArrayList<>();
+        List<Review> reviews = new ArrayList<>();
 
         for (String annotationId : request.getAnnotationIds()) {
 
@@ -46,12 +48,13 @@ public class ReviewService {
             review.setAnnotation(annotation);
             review.setUser(reviewer);
 
-
-            responses.add(review);
+            reviews.add(review);
         }
 
+        List<Review> savedReviews = reviewRepository.saveAll(reviews);
 
-
-        return reviewRepository.saveAll(responses);
+        return savedReviews.stream()
+                .map(reviewMapper::toReviewResponse)
+                .toList();
     }
 }

@@ -29,10 +29,11 @@ public class ReviewController {
     @Operation(summary = "Create reviews for annotations")
     @PostMapping
     @PreAuthorize("hasRole('REVIEWER')")
-    public ApiResponse<List<Review>> createReview(@RequestBody ReviewCreationRequest request) {
-
-        return ApiResponse.<List<Review>>builder()
-                .data(reviewService.createReview(request))
-                .build();
+    public ApiResponse<List<ReviewResponse>> createReview(@RequestBody ReviewCreationRequest request) {
+        ApiResponse<List<ReviewResponse>> response = new ApiResponse<>();
+        response.setData(reviewService.createReview(request));
+        response.setCode(200);
+        response.setMessage("Create reviews successfully");
+        return response;
     }
 }
