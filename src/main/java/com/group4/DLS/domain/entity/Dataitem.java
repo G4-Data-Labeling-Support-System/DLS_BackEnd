@@ -81,5 +81,5 @@ public class Dataitem {
     // One DataItem has Many TaskDataitems
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "task_data_item_id")
-    private TaskDataItem taskDataItems;
+    private TaskDataItem taskDataItem;
 }

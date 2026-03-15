@@ -13,4 +13,6 @@ public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, Stri
 
     void deleteByDataitem_Dataset_DatasetId(String datasetId);
 
+    /// lấy các item phía sau
+    List<TaskDataItem> findByItemIndexGreaterThan(int index);
 }

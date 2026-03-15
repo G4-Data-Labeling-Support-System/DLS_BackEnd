@@ -106,27 +106,43 @@ public class DataitemService {
         return count;
     }
 
+
     public void deleteDataitem(String dataitemId) {
+
         Dataitem dataitem = dataitemRepository.findById(dataitemId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
 
-        if(dataitem.getTaskDataItems() != null){
-            int index = dataitem.getTaskDataItems().getItemIndex();
-            List<TaskDataItem> taskDataItems = new ArrayList<>();
-            for(TaskDataItem tdi : taskDataItemRepository.findAll()){
-                if(tdi.getItemIndex() > index){
-                    tdi.setItemIndex(tdi.getItemIndex() - 1);
-                    taskDataItems.add(tdi);
-                }
+        TaskDataItem taskDataItem = dataitem.getTaskDataItem();
+
+        if (taskDataItem != null) {
+
+            int index = taskDataItem.getItemIndex();
+
+            // xóa taskDataItem hiện tại
+            taskDataItemRepository.delete(taskDataItem);
+
+            // lấy các item phía sau
+            List<TaskDataItem> itemsToUpdate =
+                    taskDataItemRepository.findByItemIndexGreaterThan(index);
+
+            // trừ index đi 1
+            for (TaskDataItem tdi : itemsToUpdate) {
+                tdi.setItemIndex(tdi.getItemIndex() - 1);
             }
-            taskDataItemRepository.delete(dataitem.getTaskDataItems());
-            taskDataItemRepository.saveAll(taskDataItems);
+
+            taskDataItemRepository.saveAll(itemsToUpdate);
+
+            // xóa taskDataItem hiện tại
+            taskDataItemRepository.delete(taskDataItem);
+
+            taskDataItemRepository.flush();
         }
 
-        // set dataitem trong database
-            dataitem.setDataItemStatus(DataItemStatus.DELETED);
-        dataitemRepository.save(dataitem);
+        // xóa dataitem
+        dataitemRepository.delete(dataitem);
 
+        // xóa file S3
+        seaweedFilerUploadService.deleteImageByUrl(dataitem.getUrl());
     }
 
     public void deleteDataitemsByDatasetId(String datasetId) {

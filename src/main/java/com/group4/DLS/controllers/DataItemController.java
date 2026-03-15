@@ -42,7 +42,7 @@ public class DataItemController {
         return response;
     }
 
-    @PatchMapping("/{id}/delete")
+    @DeleteMapping("/{id}/delete")
     @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
     public ApiResponse<Void> deleteDataItem(@PathVariable String id) {
         ApiResponse<Void> response = new ApiResponse<>();

@@ -125,7 +125,7 @@ public class DatasetService {
                  .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
          // Delete all dataitems, taskdataitems, and assignment related to this dataset
-         taskDataItemRepository.deleteByDataitem_Dataset_DatasetId(dataset.getDatasetId());
+         taskDataItemRepository.deleteByDataitem_Dataset_DatasetId(dataset.getDatasetId());//delete taskdataitem
          if(dataset.getAssignment() != null) {
              assignmentService.deleteAssignment(dataset.getAssignment().getAssignmentId());// Delete assignment
          }
