@@ -59,6 +59,10 @@ public enum ErrorCode {
     INVALID_TASK_STATUS(400, "Invalid task status"),
     PROJECT_MEMBER_NOT_FOUND(400, "Project member not found"),
     PROJECT_MEMBER_ALREADY_EXISTS(400, "Project member already exists"),
+
+    ANNOTATION_NOT_FOUND(1002, "Annotation not found"),
+    REVIEW_NOT_FOUND(1003, "Review not found"),
+
     INVALID_ROLE(400, "Invalid role");
 
     final int code;
