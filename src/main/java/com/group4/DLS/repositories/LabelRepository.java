@@ -11,7 +11,5 @@ public interface LabelRepository extends JpaRepository<Label, String> {
 
     List<Label> findByDataset_DatasetId(String datasetId);
 
-    Optional<Label> findByLabelNameAndDataset_DatasetId(String labelName, String datasetId);
-
     boolean existsByLabelNameAndDataset_DatasetId(String labelName, String datasetId);
 }

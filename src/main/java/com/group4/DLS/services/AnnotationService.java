@@ -39,4 +39,13 @@ public class AnnotationService {
         }
         annotationRepository.saveAll(list);
     }
+
+    void deleteAnnotationByAssignment(String assignmentId){
+        List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
+
+        for(Annotation annotation : annotations){
+            annotation.setAnnotationStatus(AnnotationStatus.DELETED);
+        }
+        annotationRepository.saveAll(annotations);
+    }
 }
