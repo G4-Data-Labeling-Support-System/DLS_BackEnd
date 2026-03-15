@@ -7,12 +7,13 @@ node {
     // Env var
     def config = [
         appName: 'data-labeling-be',
-        
         dockerUser: 'fleeforezz',
         release: '1.0.0',
         beta: '1.0.0',
-        port: '8081',
-        prodPort: '8082',
+        testPort: '8081',
+        betaPort: '8082',
+        devPort: '8083',
+        prodPort: '8084',
         devServer: "jso@10.0.1.74",
         prodServer: "jso@10.0.1.23"
     ]

@@ -25,7 +25,7 @@ def call(config) {
 
             sh """
                 docker run -d --name ${containerName} \
-                -p ${config.port}:${config.port} ${imageTagged}
+                -p ${config.testPort}:${config.testPort} ${imageTagged}
 
                 echo "Waiting for Spring Boot health check..."
 
@@ -33,7 +33,7 @@ def call(config) {
                 SLEEP=3
 
                 for i in \$(seq 1 \$ATTEMPTS); do
-                    if curl -fs http://localhost:${config.port}/actuator/health > /dev/null; then
+                    if curl -fs http://localhost:${config.testPort}/actuator/health > /dev/null; then
                         echo "App is UP"
                         break
                     fi
@@ -42,7 +42,7 @@ def call(config) {
                     sleep \$SLEEP
                 done
 
-                curl -f http://localhost:${config.port}/actuator/health
+                curl -f http://localhost:${config.testPort}/actuator/health
 
                 docker stop ${containerName}
                 docker rm ${containerName}
