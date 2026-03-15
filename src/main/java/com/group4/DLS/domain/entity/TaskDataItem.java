@@ -35,7 +35,7 @@ public class TaskDataItem {
     @JoinColumn(name = "task_id", nullable = false)
     Task task;
 
-    // Many TaskItem belongs to One Dataitem
+    // One TaskItem belongs to One Dataitem
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dataitem_id", nullable = true)
     Dataitem dataitem;

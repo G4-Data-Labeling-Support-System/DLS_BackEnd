@@ -107,6 +107,7 @@ public class DataitemService {
     }
 
 
+    @Transactional
     public void deleteDataitem(String dataitemId) {
 
         Dataitem dataitem = dataitemRepository.findById(dataitemId)
@@ -118,30 +119,27 @@ public class DataitemService {
 
             int index = taskDataItem.getItemIndex();
 
-            // xóa taskDataItem hiện tại
-            taskDataItemRepository.delete(taskDataItem);
-
-            // lấy các item phía sau
+            // 1. cập nhật index các item phía sau
             List<TaskDataItem> itemsToUpdate =
                     taskDataItemRepository.findByItemIndexGreaterThan(index);
 
-            // trừ index đi 1
             for (TaskDataItem tdi : itemsToUpdate) {
                 tdi.setItemIndex(tdi.getItemIndex() - 1);
             }
 
             taskDataItemRepository.saveAll(itemsToUpdate);
 
-            // xóa taskDataItem hiện tại
+            // 2. xóa taskDataItem
             taskDataItemRepository.delete(taskDataItem);
 
+            // đảm bảo delete chạy ngay
             taskDataItemRepository.flush();
         }
 
-        // xóa dataitem
+        // 3. xóa dataitem
         dataitemRepository.delete(dataitem);
 
-        // xóa file S3
+        // 4. xóa file trên storage
         seaweedFilerUploadService.deleteImageByUrl(dataitem.getUrl());
     }
 
