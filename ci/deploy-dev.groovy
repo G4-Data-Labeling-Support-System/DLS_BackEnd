@@ -5,7 +5,7 @@ def call(config) {
 
         sshagent(['development-srv']) {
             sh"""
-                ssh -o StrictHostKeyChecking=no -l ${config.devServer} \
+                ssh -o StrictHostKeyChecking=no ${config.devServer} \
                 'sudo docker pull ${image} && 
                 
                 sudo docker stop ${config.appName}-dev || true && 
