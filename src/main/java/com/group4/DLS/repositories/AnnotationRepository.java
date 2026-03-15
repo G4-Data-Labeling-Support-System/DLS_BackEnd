@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface AnnotationRepository extends JpaRepository<Annotation, String> {
     List<Annotation> findByTask_Assignment_AssignmentId(String assignmentId);
+    Annotation findByTask_TaskIdAndDataitem_ItemId(String taskId, String ItemId);
 }

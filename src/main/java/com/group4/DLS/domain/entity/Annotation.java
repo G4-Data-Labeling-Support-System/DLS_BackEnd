@@ -56,7 +56,6 @@ public class Annotation {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
     }
 
     @PreUpdate
@@ -69,8 +68,8 @@ public class Annotation {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
-    // Many Annotation belongs to One DataItem
-    @ManyToOne(fetch = FetchType.LAZY)
+    //One Annotation belongs to One DataItem
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private Dataitem dataitem;
 
