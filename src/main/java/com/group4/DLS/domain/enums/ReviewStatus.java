@@ -6,7 +6,6 @@ public enum ReviewStatus {
 
     PENDING,
     APPROVED,
-    CORRECTED,
     REJECTED;
 
     @JsonCreator
