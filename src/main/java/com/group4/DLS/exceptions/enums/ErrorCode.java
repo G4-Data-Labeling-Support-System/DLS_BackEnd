@@ -56,7 +56,10 @@ public enum ErrorCode {
     DATAITEM_NOT_FOUND(403,"DataItem not found" ),
     TASK_NOT_FOUND(400, "Task not found"),
     TASK_ALREADY_EXISTS(400, "Task already exists"),
-    INVALID_TASK_STATUS(400, "Invalid task status");
+    INVALID_TASK_STATUS(400, "Invalid task status"),
+    PROJECT_MEMBER_NOT_FOUND(400, "Project member not found"),
+    PROJECT_MEMBER_ALREADY_EXISTS(400, "Project member already exists"),
+    INVALID_ROLE(400, "Invalid role");
 
     final int code;
     final String message;

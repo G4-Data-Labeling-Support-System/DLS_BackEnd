@@ -4,7 +4,10 @@ import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
+import com.group4.DLS.domain.dto.response.ProjectMemberResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
+import com.group4.DLS.domain.dto.response.UserResponse;
+import com.group4.DLS.services.ProjectMemberService;
 import com.group4.DLS.services.ProjectService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +28,7 @@ import java.util.List;
 public class ProjectController {
 
     private final ProjectService projectService;
+    private final ProjectMemberService projectMemberService;
 
     /*
     * ================
@@ -130,4 +134,20 @@ public class ProjectController {
                 .data(projectService.getAllProjects())
                 .build();
     }
+
+    //get all member of project
+    @GetMapping("/{projectId}/members")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+        summary = "Get project members",
+        description = "Retrieve all members associated with a specific project")
+    public ApiResponse<List<ProjectMemberResponse>> getProjectMembersApiResponse(@PathVariable String projectId){
+        return ApiResponse.<List<ProjectMemberResponse>>builder()
+                .code(200)
+                .message("Get project members successfully")
+                .data(projectMemberService.getMembersByProjectId(projectId))
+                .build();
+    }
+
+
 }

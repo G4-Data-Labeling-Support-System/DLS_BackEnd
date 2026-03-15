@@ -3,6 +3,8 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Dataset;
+import com.group4.DLS.domain.entity.TaskDataItem;
+import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DataType;
 import com.group4.DLS.domain.enums.FileFormat;
 import com.group4.DLS.exceptions.AppException;
@@ -10,6 +12,7 @@ import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DataItemMapper;
 import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.DatasetRepository;
+import com.group4.DLS.repositories.TaskDataItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +32,7 @@ public class DataitemService {
     private final DatasetRepository datasetRepository;
 
     private final DataItemRepository dataitemRepository;
+    private final TaskDataItemRepository taskDataItemRepository;
 
     private final SeaweedFilerUploadService seaweedFilerUploadService;
     private final DataItemMapper dataItemMapper;
@@ -100,5 +104,41 @@ public class DataitemService {
 
         dataitemRepository.saveAll(items);
         return count;
+    }
+
+
+    @Transactional
+    public void deleteDataitem(String dataitemId) {
+
+        Dataitem dataitem = dataitemRepository.findById(dataitemId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+
+        TaskDataItem taskDataItem = dataitem.getTaskDataItem();
+
+        if (taskDataItem != null) {
+
+            int index = taskDataItem.getItemIndex();
+            String taskId = taskDataItem.getTask().getTaskId();
+
+            // 1. cập nhật index các item phía sau
+            taskDataItemRepository.decreaseIndexAfter(taskId, index);
+
+            // 2. xóa taskDataItem của dataitem
+            taskDataItemRepository.deleteByDataitemId(dataitemId);
+
+        }
+
+        // 3. xóa dataitem
+        dataitemRepository.delete(dataitem);
+
+        // 4. xóa file trên storage
+        seaweedFilerUploadService.deleteImageByUrl(dataitem.getUrl());
+    }
+
+    public void deleteDataitemsByDatasetId(String datasetId) {
+        List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
+        for (Dataitem dataitem : dataitems) {
+            deleteDataitem(dataitem.getItemId());
+        }
     }
 }

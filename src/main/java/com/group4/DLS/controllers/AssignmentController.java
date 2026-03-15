@@ -4,12 +4,15 @@ import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
+import com.group4.DLS.domain.dto.response.DatasetResponse;
+import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.services.AssignmentService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +28,7 @@ public class AssignmentController {
 
     //find assiagnment by id
     @GetMapping("/{assignmentId}")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
     public ApiResponse<AssignmentResponse> getAssignmentById( @PathVariable String assignmentId) {
         ApiResponse<AssignmentResponse> response = new ApiResponse<>();
         response.setCode(200);
@@ -106,6 +110,35 @@ public class AssignmentController {
         return ApiResponse.<Void>builder()
                 .code(200)
                 .message("Delete assignment successfully")
+                .build();
+    }
+
+    //get label for assignment
+    @GetMapping("/{assignmentId}/labels")
+    @Operation(
+        summary = "Get labels for assignment",
+        description = "Retrieve all labels associated with a specific assignment")
+    public ApiResponse<List<LabelResponse>> getLabelsForAssignment(
+            @PathVariable String assignmentId) {
+        return ApiResponse.<List<LabelResponse>>builder()
+                .code(200)
+                .message("Get labels for assignment successfully")
+                .data(assignmentService.getLabelsForAssignment(assignmentId))
+                .build();
+    }
+
+    //get dataset by assignment
+    //get label for assignment
+    @GetMapping("/{assignmentId}/dataset")
+    @Operation(
+            summary = "Get dataset for assignment",
+            description = "Retrieve all dataset associated with a specific assignment")
+    public ApiResponse<DatasetResponse> getDatasetForAssignment(
+            @PathVariable String assignmentId) {
+        return ApiResponse.<DatasetResponse>builder()
+                .code(200)
+                .message("Get dataset for assignment successfully")
+                .data(assignmentService.getDatasetByAssignmentId(assignmentId))
                 .build();
     }
 }

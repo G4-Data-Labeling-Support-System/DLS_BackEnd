@@ -3,6 +3,8 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
+import com.group4.DLS.domain.dto.response.DatasetResponse;
+import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
@@ -11,6 +13,7 @@ import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
+import com.group4.DLS.mappers.DatasetMapper;
 import com.group4.DLS.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +34,11 @@ public class AssignmentService {
     ActivityLogService logService;
     UserRepository userRepository;
     TaskService taskService;
+    LabelService labelService;
+    ProjectMemberRepository projectMemberRepository;
+    ProjectMemberService projectMemberService;
+    DatasetMapper datasetMapper;
+
 
     // ================= GET ALL ASSIGNMENTS =================
     public List<AssignmentResponse> getAllAssignments() {
@@ -111,20 +119,26 @@ public class AssignmentService {
         User reviewedBy = userRepository.findById(request.getReviewedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
-        Assignment assignment = new Assignment();
+        Assignment assignment = assignmentMapper.toAssignment(request);
         assignment.setAssignedTo(assignedTo);
         assignment.setAssignedBy(manager);
         assignment.setReviewedBy(reviewedBy);
-        assignment.setAssignmentName(request.getAssignmentName());
-        assignment.setDescription(request.getDescription());
         assignment.setDataset(dataset);
         assignment.setProject(project);
-        assignment.setDueDate(request.getDueDate());
         assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
         assignment.setTotalItems(dataset.getTotalItems());
         dataset.setAssignment(assignment);
 
         assignmentRepository.save(assignment);
+        if (!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, assignedTo.getUserId())) {
+            projectMemberService.assignMemberToProject(projectId, assignedTo.getUserId());
+        }
+        if(!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, reviewedBy.getUserId())){
+            projectMemberService.assignMemberToProject(projectId, reviewedBy.getUserId());
+        }
+        if(!projectMemberRepository.existsByProject_ProjectIdAndUser_UserId(projectId, manager.getUserId())){
+            projectMemberService.assignMemberToProject(projectId, manager.getUserId());
+        }
         datasetRepository.save(dataset);
         taskService.createTasksForAssignment(assignment.getAssignmentId());
         assignmentRepository.save(assignment);
@@ -153,7 +167,7 @@ public class AssignmentService {
         //check name is null or exists
         if (request.getAssignmentName() != null
                 && !assignmentRepository.existsByAssignmentName(request.getAssignmentName())) {
-            assignment = assignmentMapper.updateAssignmentFromRequest(request);
+            assignmentMapper.updateAssignmentFromRequest(request,assignment);
             assignment.setUpdateAt(LocalDateTime.now());
             assignment.setAssignedTo(assignedTo);
             assignment.setReviewedBy(reviewedBy);
@@ -176,14 +190,48 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        assignment.setAssignmentStatus(AssignmentStatus.CANCLED);
+        // Remove assignment reference from dataset
+        if( !datasetRepository.findById(assignment.getDataset().getDatasetId()).isEmpty()){
+            Dataset dataset = datasetRepository.findById(assignment.getDataset().getDatasetId())
+                    .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+            dataset.setAssignment(null);
+            datasetRepository.save(dataset);
+        }
+
+
+        assignment.setAssignmentStatus(AssignmentStatus.CANCELLED);// Soft delete assignment
+        assignment.setDataset(null);// Remove dataset reference from assignment
         assignmentRepository.save(assignment);
 
-        // Log action
-        logService.log(
-                "REMOVE_ASSIGNMENT",
-                "ASSIGNMENT",
-                assignment.getAssignmentId(),
-                "Assignment removed: " + assignment.getAssignmentName());
+
+//        // Log action
+//        logService.log(
+//                "REMOVE_ASSIGNMENT",
+//                "ASSIGNMENT",
+//                assignment.getAssignmentId(),
+//                "Assignment removed: " + assignment.getAssignmentName());
+    }
+
+    //get label for assignment
+    public List<LabelResponse> getLabelsForAssignment(String assignmentId) {
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        //check dataset exist
+        Dataset dataset = assignment.getDataset();
+        if (dataset == null) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
+
+         return labelService.getAllByDataset(dataset.getDatasetId());// Get labels for the dataset associated with the assignment
+
+    }
+
+    //get dataset by assginment
+    public DatasetResponse getDatasetByAssignmentId(String assignmentId){
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        return datasetMapper.toDatasetResponse(assignment.getDataset());
     }
 }

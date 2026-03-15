@@ -13,13 +13,16 @@ import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.ProjectMapper;
 import com.group4.DLS.repositories.ProjectMemberRepository;
 import com.group4.DLS.repositories.ProjectRepository;
-import com.group4.DLS.security.CurrentUserProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -30,9 +33,17 @@ public class ProjectService {
     ProjectRepository projectRepository;
     ProjectMapper projectMapper;
     ProjectMemberRepository projectMemberRepository;
-    CurrentUserProvider currentUserProvider;
+
 
     ActivityLogService logService;
+
+    //Lấy user hiện tại từ SecurityContextHolder
+    private User getCurrentUser() {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        return (User) authentication.getPrincipal();
+    }
 
     // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
     public List<ProjectResponse> getAllProjects() {
@@ -65,7 +76,7 @@ public class ProjectService {
 
     // ================= CREATE PROJECT =================
     public ProjectResponse createProject(ProjectCreationRequest request) {
-        User manager = currentUserProvider.getCurrentUser();
+        User manager = getCurrentUser();
 
         boolean existsActiveProject = projectRepository.existsByProjectNameAndStatusNot(
             request.getProjectName(), 
@@ -84,6 +95,7 @@ public class ProjectService {
         ProjectMember member = new ProjectMember();
         member.setProject(project);
         member.setUser(manager);
+        member.setJoinAt(LocalDateTime.now());
         projectMemberRepository.save(member);
 
         // Log action

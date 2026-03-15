@@ -114,13 +114,16 @@ public class DatasetController {
     * Remove a dataset
     * ================
     */
-    // @DeleteMapping("/{id}")
-    // @Operation(
-    //     summary = "Delete dataset",
-    //     description = "Delete a dataset by its ID"
-    // )
-    // public ResponseEntity<Void> delete(@PathVariable String id) {
-    //     datasetService.deleteDataset(id);
-    //     return ResponseEntity.noContent().build();
-    // }
+     @PatchMapping("/{id}")
+     @Operation(
+         summary = "Delete dataset",
+         description = "Delete a dataset by its ID"
+     )
+     public ApiResponse<Void> delete(@PathVariable String id) {
+         datasetService.deleteDataset(id);
+         ApiResponse<Void> response = new ApiResponse<>();
+         response.setCode(200);
+         response.setMessage("Dataset deleted successfully");
+         return response;
+     }
 }
