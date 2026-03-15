@@ -1,15 +1,20 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Label;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.mappers.AnnotationMapper;
 import com.group4.DLS.repositories.AnnotationRepository;
+import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.LabelRepository;
+import com.group4.DLS.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,24 +25,46 @@ import java.util.List;
 public class AnnotationService {
 
     AnnotationRepository annotationRepository;
+    AnnotationMapper annotationMapper;
+    TaskRepository taskRepository;
+    DataItemRepository  dataItemRepository;
     LabelRepository labelRepository;
 
-    //assign annotation to task
-    public void assignAnnotationToTask(Task task, List<Dataitem> dataitems){
-        List<Annotation> list = new ArrayList<>();
+    @Transactional
+    public Annotation saveAnnotation(AnnotationSaveRequest request) {
 
-        List<Label> labels = labelRepository.findByDataset_DatasetId(task.getAssignment().getDataset().getDatasetId());
-        for(Dataitem item : dataitems){
-            Annotation annotation = new Annotation();
+        Annotation annotation = annotationRepository
+                .findByTask_TaskIdAndDataitem_ItemId(
+                        request.getTaskId(),
+                        request.getDataitemId());
+
+        if (annotation == null) {
+
+            annotation = annotationMapper.toEntity(request);
+
+            Task task = taskRepository.findById(request.getTaskId())
+                    .orElseThrow(() -> new RuntimeException("Task not found"));
+
+            Dataitem dataitem = dataItemRepository.findById(request.getDataitemId())
+                    .orElseThrow(() -> new RuntimeException("Dataitem not found"));
+
+            List<Label> labels = labelRepository.findAllById(request.getLabelIds());
+
+
             annotation.setTask(task);
+            annotation.setDataitem(dataitem);
             annotation.setUser(task.getAssignment().getAssignedTo());
-            annotation.setAnnotationStatus(AnnotationStatus.DRAFT);
             annotation.setLabels(labels);
-            annotation.setDataitem(item);
+            annotation.setAnnotationData(annotationMapper.map(request.getAnnotationData()));
+            annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
 
-            list.add(annotation);
+        } else {
+            annotation.setAnnotationType(request.getAnnotationType());
+            annotation.setAnnotationConfidence(request.getAnnotationConfidence());
+            annotation.setComment(request.getComment());
         }
-        annotationRepository.saveAll(list);
+
+        return annotationRepository.save(annotation);
     }
 
     void deleteAnnotationByAssignment(String assignmentId){

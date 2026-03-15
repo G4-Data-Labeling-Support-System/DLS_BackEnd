@@ -74,11 +74,6 @@ public class Dataitem {
     @JsonIgnore
     private Dataset dataset;
 
-    // One DataItem has one Annotation
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "annotation_id", nullable = false)
-    private Annotation annotation;
-
     // One DataItem has Many TaskDataitems
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "task_data_item_id", nullable = true)

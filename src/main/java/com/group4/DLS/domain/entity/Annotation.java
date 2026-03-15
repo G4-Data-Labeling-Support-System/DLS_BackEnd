@@ -56,7 +56,6 @@ public class Annotation {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
     }
 
     @PreUpdate
