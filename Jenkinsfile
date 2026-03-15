@@ -12,7 +12,7 @@ node {
         beta: '1.0.0',
         port: '8081',
         prodPort: '8082',
-        devServer: "jso@10.0.1.74"
+        devServer: "jso@10.0.1.74",
         prodServer: "jso@10.0.1.23"
     ]
     def buildPipeline = load "ci/build.groovy"
