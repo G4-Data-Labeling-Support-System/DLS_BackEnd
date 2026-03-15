@@ -7,14 +7,14 @@ def call(config) {
 
         sshagent(['development-srv']) {
             sh"""
-                ssh -o StrictHostKeyChecking=no ${config.devServer} \
+                ssh -o StrictHostKeyChecking=no -l ${config.devServer} \
                 'sudo docker pull ${imageTagged} && 
                 
-                sudo docker stop ${config.appName} || true && 
-                sudo docker rm ${config.appName} || true &&
+                sudo docker stop ${config.appName}-beta || true && 
+                sudo docker rm ${config.appName}-beta || true &&
                 
-                sudo docker run -d -p ${config.port}:${config.port} \
-                --name ${config.appName} \
+                sudo docker run -d -p ${config.betaPort}:${config.containerPort} \
+                --name ${config.appName}-beta \
                 --restart unless-stopped \
                 ${imageTagged}'
             """
