@@ -1,5 +1,5 @@
 def call(config) {
-    String image = "${config.dockerUser}/${config.appName}:dev-latest"
+    String image = "${config.dockerUser}/${config.appName}-dev:dev-latest"
 
     stage('Deploy to Development Server with Dev tag') {
 
@@ -8,11 +8,11 @@ def call(config) {
                 ssh -o StrictHostKeyChecking=no ${config.devServer} \
                 'sudo docker pull ${image} && 
                 
-                sudo docker stop ${config.appName} || true && 
-                sudo docker rm ${config.appName} || true &&
+                sudo docker stop ${config.appName}-dev || true && 
+                sudo docker rm ${config.appName}-dev || true &&
                 
                 sudo docker run -d -p ${config.port}:${config.port} \
-                --name ${config.appName} \
+                --name ${config.appName}-dev \
                 --restart unless-stopped \
                 ${image}'
             """

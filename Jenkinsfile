@@ -7,6 +7,7 @@ node {
     // Env var
     def config = [
         appName: 'data-labeling-be',
+        
         dockerUser: 'fleeforezz',
         release: '1.0.0',
         beta: '1.0.0',
