@@ -3,6 +3,7 @@ package com.group4.DLS.controllers;
 import com.group4.DLS.domain.dto.request.ReviewCreationRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ReviewResponse;
+import com.group4.DLS.domain.entity.Review;
 import com.group4.DLS.services.ReviewService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,9 +29,9 @@ public class ReviewController {
     @Operation(summary = "Create reviews for annotations")
     @PostMapping
     @PreAuthorize("hasRole('REVIEWER')")
-    public ApiResponse<List<ReviewResponse>> createReview(@RequestBody ReviewCreationRequest request) {
+    public ApiResponse<List<Review>> createReview(@RequestBody ReviewCreationRequest request) {
 
-        return ApiResponse.<List<ReviewResponse>>builder()
+        return ApiResponse.<List<Review>>builder()
                 .data(reviewService.createReview(request))
                 .build();
     }

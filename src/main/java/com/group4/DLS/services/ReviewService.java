@@ -28,9 +28,9 @@ public class ReviewService {
     private final ReviewRepository reviewRepository;
     private final ReviewMapper reviewMapper;
 
-    public List<ReviewResponse> createReview(ReviewCreationRequest request) {
+    public List<Review> createReview(ReviewCreationRequest request) {
 
-        List<ReviewResponse> responses = new ArrayList<>();
+        List<Review> responses = new ArrayList<>();
 
         for (String annotationId : request.getAnnotationIds()) {
 
@@ -47,11 +47,11 @@ public class ReviewService {
             review.setUser(reviewer);
 
 
-            responses.add(reviewMapper.toReviewResponse(review));
+            responses.add(review);
         }
 
 
 
-        return responses;
+        return reviewRepository.saveAll(responses);
     }
 }
