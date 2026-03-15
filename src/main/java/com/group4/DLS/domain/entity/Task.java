@@ -52,6 +52,9 @@ public class Task {
     @Column(name = "completed_count")
     int completedCount;
 
+    @Column(name = "flagForReview")
+    boolean flagForReview;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "task_status")
     TaskStatus taskStatus;
