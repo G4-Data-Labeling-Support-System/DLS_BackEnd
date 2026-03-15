@@ -118,22 +118,14 @@ public class DataitemService {
         if (taskDataItem != null) {
 
             int index = taskDataItem.getItemIndex();
+            String taskId = taskDataItem.getTask().getTaskId();
 
             // 1. cập nhật index các item phía sau
-            List<TaskDataItem> itemsToUpdate =
-                    taskDataItemRepository.findByItemIndexGreaterThan(index);
+            taskDataItemRepository.decreaseIndexAfter(taskId, index);
 
-            for (TaskDataItem tdi : itemsToUpdate) {
-                tdi.setItemIndex(tdi.getItemIndex() - 1);
-            }
+            // 2. xóa taskDataItem của dataitem
+            taskDataItemRepository.deleteByDataitemId(dataitemId);
 
-            taskDataItemRepository.saveAll(itemsToUpdate);
-
-            // 2. xóa taskDataItem
-            taskDataItemRepository.delete(taskDataItem);
-
-            // đảm bảo delete chạy ngay
-            taskDataItemRepository.flush();
         }
 
         // 3. xóa dataitem

@@ -4,6 +4,7 @@ import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
+import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.services.AssignmentService;
 
@@ -123,6 +124,21 @@ public class AssignmentController {
                 .code(200)
                 .message("Get labels for assignment successfully")
                 .data(assignmentService.getLabelsForAssignment(assignmentId))
+                .build();
+    }
+
+    //get dataset by assignment
+    //get label for assignment
+    @GetMapping("/{assignmentId}/dataset")
+    @Operation(
+            summary = "Get dataset for assignment",
+            description = "Retrieve all dataset associated with a specific assignment")
+    public ApiResponse<DatasetResponse> getDatasetForAssignment(
+            @PathVariable String assignmentId) {
+        return ApiResponse.<DatasetResponse>builder()
+                .code(200)
+                .message("Get dataset for assignment successfully")
+                .data(assignmentService.getDatasetByAssignmentId(assignmentId))
                 .build();
     }
 }

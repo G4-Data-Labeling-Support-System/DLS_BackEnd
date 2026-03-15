@@ -3,6 +3,7 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
+import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
@@ -12,6 +13,7 @@ import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
+import com.group4.DLS.mappers.DatasetMapper;
 import com.group4.DLS.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,6 +37,7 @@ public class AssignmentService {
     LabelService labelService;
     ProjectMemberRepository projectMemberRepository;
     ProjectMemberService projectMemberService;
+    DatasetMapper datasetMapper;
 
 
     // ================= GET ALL ASSIGNMENTS =================
@@ -224,4 +227,11 @@ public class AssignmentService {
 
     }
 
+    //get dataset by assginment
+    public DatasetResponse getDatasetByAssignmentId(String assignmentId){
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        return datasetMapper.toDatasetResponse(assignment.getDataset());
+    }
 }
