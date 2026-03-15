@@ -187,6 +187,7 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
+        // Remove assignment reference from dataset
         if( !datasetRepository.findById(assignment.getDataset().getDatasetId()).isEmpty()){
             Dataset dataset = datasetRepository.findById(assignment.getDataset().getDatasetId())
                     .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
@@ -194,8 +195,9 @@ public class AssignmentService {
             datasetRepository.save(dataset);
         }
 
-        assignment.setAssignmentStatus(AssignmentStatus.CANCLED);
-        assignment.setDataset(null);
+
+        assignment.setAssignmentStatus(AssignmentStatus.CANCLED);// Soft delete assignment
+        assignment.setDataset(null);// Remove dataset reference from assignment
         assignmentRepository.save(assignment);
 
 
@@ -212,12 +214,13 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
+        //check dataset exist
         Dataset dataset = assignment.getDataset();
         if (dataset == null) {
             throw new AppException(ErrorCode.DATASET_NOT_FOUND);
         }
 
-         return labelService.getAllByDataset(dataset.getDatasetId());
+         return labelService.getAllByDataset(dataset.getDatasetId());// Get labels for the dataset associated with the assignment
 
     }
 

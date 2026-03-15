@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, String> {
         List<TaskDataItem> findByTask_TaskId(String taskId);
+
+
+    void deleteByDataitem_Dataset_DatasetId(String datasetId);
+
 }

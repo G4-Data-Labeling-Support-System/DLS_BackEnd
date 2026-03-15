@@ -5,17 +5,21 @@ import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
+import com.group4.DLS.domain.enums.DatasetStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DatasetMapper;
 import com.group4.DLS.repositories.AssignmentRepository;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectRepository;
+import com.group4.DLS.repositories.TaskDataItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,6 +29,8 @@ public class DatasetService {
     private final ProjectRepository projectRepository;
     private final DatasetMapper datasetMapper;
     private final DataitemService dataitemService;
+    private final TaskDataItemRepository taskDataItemRepository;
+    private final AssignmentService assignmentService;
 
 
     //List all dataset
@@ -109,18 +115,21 @@ public class DatasetService {
         return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
     }
 
-    // ===== DELETE DATASET =====
-    // public void deleteDataset(String datasetId) {
+//     ===== DELETE DATASET =====
+    @Transactional
+     public void deleteDataset(String datasetId) {
 
-    //     User currentUser = currentUserProvider.getCurrentUser();
+        // Check dataset exist
+         Dataset dataset = datasetRepository.findById(datasetId)
+                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-    //     if (currentUser.getUserRole() != UserRole.MANAGER) {
-    //         throw new AppException(ErrorCode.FORBIDDEN);
-    //     }
-
-    //     Dataset dataset = datasetRepository.findById(datasetId)
-    //             .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
-
-    //     datasetRepository.delete(dataset);
-    // }
+         // Delete all dataitems, taskdataitems, and assignment related to this dataset
+         taskDataItemRepository.deleteByDataitem_Dataset_DatasetId(dataset.getDatasetId());
+         if(dataset.getAssignment() != null) {
+             assignmentService.deleteAssignment(dataset.getAssignment().getAssignmentId());// Delete assignment
+         }
+         dataitemService.deleteDataitemsByDatasetId(dataset.getDatasetId());// Delete dataitems
+         dataset.setDatasetStatus(DatasetStatus.INACTIVE);// Soft delete dataset
+         datasetRepository.save(dataset);
+     }
 }
