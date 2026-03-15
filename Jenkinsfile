@@ -10,8 +10,11 @@ node {
         dockerUser: 'fleeforezz',
         release: '1.0.0',
         beta: '1.0.0',
-        port: '8081',
-        prodPort: '8082',
+        containerPort: '8081',
+        testPort: '8081',
+        devPort: '8082',
+        betaPort: '8083',
+        prodPort: '8084',
         devServer: "jso@10.0.1.74",
         prodServer: "jso@10.0.1.23"
     ]
