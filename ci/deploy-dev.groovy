@@ -1,5 +1,5 @@
 def call(config) {
-    String image = "${config.dockerUser}/${config.appName}-dev:dev-latest"
+    String image = "${config.dockerUser}/${config.appName}:dev-latest"
 
     stage('Deploy to Development Server with Dev tag') {
 
