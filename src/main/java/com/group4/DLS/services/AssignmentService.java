@@ -199,7 +199,7 @@ public class AssignmentService {
         }
 
 
-        assignment.setAssignmentStatus(AssignmentStatus.CANCLED);// Soft delete assignment
+        assignment.setAssignmentStatus(AssignmentStatus.CANCELLED);// Soft delete assignment
         assignment.setDataset(null);// Remove dataset reference from assignment
         assignmentRepository.save(assignment);
 
