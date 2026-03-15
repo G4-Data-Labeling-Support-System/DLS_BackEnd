@@ -10,11 +10,11 @@ def call(config) {
                 ssh -o StrictHostKeyChecking=no ${config.devServer} \
                 'sudo docker pull ${imageTagged} && 
                 
-                sudo docker stop ${config.appName} || true && 
-                sudo docker rm ${config.appName} || true &&
+                sudo docker stop ${config.appName}-beta || true && 
+                sudo docker rm ${config.appName}-beta || true &&
                 
                 sudo docker run -d -p ${config.port}:${config.port} \
-                --name ${config.appName} \
+                --name ${config.appName}-beta \
                 --restart unless-stopped \
                 ${imageTagged}'
             """
