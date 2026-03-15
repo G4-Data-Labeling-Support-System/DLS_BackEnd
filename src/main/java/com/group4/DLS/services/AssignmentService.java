@@ -39,6 +39,7 @@ public class AssignmentService {
     ProjectMemberService projectMemberService;
     DatasetMapper datasetMapper;
 
+
     // ================= GET ALL ASSIGNMENTS =================
     public List<AssignmentResponse> getAllAssignments() {
         List<AssignmentResponse> assignments = assignmentRepository.findAll()
@@ -231,8 +232,8 @@ public class AssignmentService {
 
     }
 
-    // get dataset by assginment
-    public DatasetResponse getDatasetByAssignmentId(String assignmentId) {
+    //get dataset by assginment
+    public DatasetResponse getDatasetByAssignmentId(String assignmentId){
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 

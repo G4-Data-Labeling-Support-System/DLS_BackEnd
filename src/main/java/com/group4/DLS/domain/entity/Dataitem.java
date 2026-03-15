@@ -74,10 +74,6 @@ public class Dataitem {
     @JsonIgnore
     private Dataset dataset;
 
-    // One DataItem has Many Annotation
-    @OneToMany(mappedBy = "dataitem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Annotation> annotations = new ArrayList<>();
-
     // One DataItem has Many TaskDataitems
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "task_data_item_id", nullable = true)

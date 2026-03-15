@@ -71,7 +71,6 @@ public class TaskService {
 
             taskRepository.save(task);
             taskDataItemService.createTaskDataItem(task, batch);
-            annotationService.assignAnnotationToTask(task, batch);
         }
     }
 
