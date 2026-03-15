@@ -37,7 +37,7 @@ public class TaskDataItem {
 
     // Many TaskItem belongs to One Dataitem
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dataitem_id", nullable = false)
+    @JoinColumn(name = "dataitem_id", nullable = true)
     Dataitem dataitem;
 
     @Enumerated(EnumType.STRING)
