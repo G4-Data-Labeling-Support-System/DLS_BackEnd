@@ -13,7 +13,7 @@ def call(config) {
                 sudo docker stop ${config.appName}-beta || true && 
                 sudo docker rm ${config.appName}-beta || true &&
                 
-                sudo docker run -d -p ${config.betaPort}:${config.port} \
+                sudo docker run -d -p ${config.betaPort}:${config.containerPort} \
                 --name ${config.appName}-beta \
                 --restart unless-stopped \
                 ${imageTagged}'
