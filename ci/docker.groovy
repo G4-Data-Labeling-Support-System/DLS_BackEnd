@@ -1,16 +1,21 @@
 def call(config) {
 
     String image = "${config.dockerUser}/${config.appName}"
-    String version = env.BRANCH_NAME == 'main' ?
-        "${config.release}-release.${env.BUILD_NUMBER}b" : // 1.1.2-release.78b
-        "${config.alpha}-alpha.${env.BUILD_NUMBER}" // 1.1.2-alpha.78b
 
-    String imageTagged = env.BRANCH_NAME == 'main' ?
-        "${image}:${version}" : // fleeforezz/data-labeling-be:1.1.2-release.78b
-        "${image}:${version}" // fleeforezz/data-labeling-be:1.1.2-alpha.78b
+    // Version tags
+    String version
+    if (env.BRANCH_NAME == 'main') {
+        version = "${config.release}-release.${env.BUILD_NUMBER}b" // 1.1.2-release.78b
+    } else if (env.BRANCH_NAME == 'development') {
+        version = "${config.beta}-beta.${env.BUILD_NUMBER}b" // 1.1.2-beta.78b
+    } else {
+        version = "dev-${env.BUILD_NUMBER}b" // dev-78b
+    }
+
+    String imageTagged = "${image}:${version}" // fleeforezz/data-labeling-be:1.1.2-release.78b
 
     stage('Docker Build') {
-        echo 'Building Docker image...'
+        echo "Building Docker image: ${imageTagged}"
         docker.build("${imageTagged}")
     }
 
@@ -54,9 +59,11 @@ def call(config) {
 
             if (env.BRANCH_NAME == "main") {
                 dockerImage.push()         // version tag
-                dockerImage.push("latest") // production latest
-            } else {
+                dockerImage.push("release-latest") // production latest
+            } else if (env.BRANCH_NAME == "development") {
                 dockerImage.push()            // version tag
+                dockerImage.push("beta-latest") // beta latest
+            } else {
                 dockerImage.push("dev-latest") // dev latest
             }
         }

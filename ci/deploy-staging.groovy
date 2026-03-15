@@ -1,7 +1,7 @@
 def call(config) {
     String image = "${config.dockerUser}/${config.appName}:dev-latest"
 
-    stage('Deploy to Development Server with Dev tag') {
+    stage('Deploy to Staging Server') {
 
         sshagent(['development-srv']) {
             sh"""

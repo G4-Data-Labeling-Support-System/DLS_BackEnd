@@ -9,10 +9,11 @@ node {
         appName: 'data-labeling-be',
         dockerUser: 'fleeforezz',
         release: '1.0.0',
-        alpha: '1.0.0',
+        beta: '1.0.0',
         port: '8081',
         prodPort: '8082',
         devServer: "jso@10.0.1.74"
+        prodServer: "jso@10.0.1.23"
     ]
     def buildPipeline = load "ci/build.groovy"
     def sonarqubePipeline = load "ci/sonarqube.groovy"
@@ -20,6 +21,10 @@ node {
 
     // Call functions base on branch
     if (env.BRANCH_NAME == "main") {
+        buildPipeline.call(config)
+        // sonarqubePipeline.call(config)
+        dockerPipeline.call(config)
+    } else if (env.BRANCH_NAME == "development") {
         buildPipeline.call(config)
         // sonarqubePipeline.call(config)
         dockerPipeline.call(config)
@@ -32,9 +37,12 @@ node {
     if (env.BRANCH_NAME == "main") {
         def deployProd = load "ci/deploy-prod.groovy"
         deployProd.call(config)
-    } else {
-        def deployDev = load "ci/deploy-dev.groovy"
+    } else if (env.BRANCH_NAME == "development") {
+        def deployDev = load "ci/deploy-beta.groovy"
         deployDev.call(config)
+    } else {
+        def deployStaging = load "ci/deploy-dev.groovy"
+        deployStaging.call(config)
     }
 
     // Clean up workspace after run the pipeline
