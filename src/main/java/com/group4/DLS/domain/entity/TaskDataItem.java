@@ -28,7 +28,7 @@ public class TaskDataItem {
     String taskItemId;
 
     @Column(name= "item_index")
-    Integer itemIndex;
+    int itemIndex;
 
     // Many TaskItem belongs to One Task
     @ManyToOne(fetch = FetchType.LAZY)
