@@ -1,5 +1,7 @@
 package com.group4.DLS.domain.dto.request;
 
+import com.group4.DLS.domain.dto.response.LabelResponse;
+import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Label;
 import com.group4.DLS.domain.enums.AnnotationConfidence;
 import com.group4.DLS.domain.enums.AnnotationType;
@@ -9,14 +11,14 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Data
- @Builder
- @NoArgsConstructor
- @AllArgsConstructor
- @FieldDefaults(level = AccessLevel.PRIVATE)
- public class AnnotationSaveRequest {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class AnnotationSaveRequest {
   String taskId;
   String dataitemId;
-  List<String> labelIds;
+  List<Label> labels;
 
   AnnotationType annotationType;
   Object annotationData;
