@@ -18,6 +18,7 @@ public interface DatasetMapper {
 
     @Mapping(target = "project", source = "project")
     @Mapping(target = "assignmentId", source = "assignment.assignmentId")
+    @Mapping(target = "datasetStatus", source = "datasetStatus")
     DatasetResponse toDatasetResponse(Dataset dataset);
 
     List<DatasetResponse> toDatasetResponse(List<Dataset> datasets);
