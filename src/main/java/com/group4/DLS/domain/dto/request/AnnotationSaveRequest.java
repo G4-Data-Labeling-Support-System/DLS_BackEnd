@@ -16,7 +16,7 @@ import java.util.List;
  public class AnnotationSaveRequest {
   String taskId;
   String dataitemId;
-  List<String> labelIds;
+  List<Label> labels;
 
   AnnotationType annotationType;
   Object annotationData;
