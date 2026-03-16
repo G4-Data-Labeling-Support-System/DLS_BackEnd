@@ -3,14 +3,14 @@ package com.group4.DLS.mappers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.entity.Annotation;
-import org.mapstruct.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
-public abstract class AnnotationMapper {
-
-    @Autowired
-    protected ObjectMapper objectMapper;
+public interface AnnotationMapper {
 
     @Mapping(target = "annotationId", ignore = true)
     @Mapping(target = "task", ignore = true)
@@ -20,13 +20,30 @@ public abstract class AnnotationMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "annotationStatus", ignore = true)
-    public abstract Annotation toEntity(AnnotationSaveRequest request);
+    @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
+    Annotation toCreateAnnotation (AnnotationSaveRequest request);
 
-    public String map(Object value) {
+
+
+    // ===== UPDATE =====
+    @Mapping(target = "annotationId", ignore = true)
+    @Mapping(target = "task", ignore = true)
+    @Mapping(target = "dataitem", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "annotationStatus", ignore = true)
+    @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
+    void updateAnnotation(AnnotationSaveRequest request, @MappingTarget Annotation annotation);
+
+
+    //function to change to jason to save database
+    default String convertToJson(Object value) {
         try {
-            return objectMapper.writeValueAsString(value);
+            return new ObjectMapper().writeValueAsString(value);
         } catch (Exception e) {
-            throw new RuntimeException("Error converting annotationData to JSON", e);
+            throw new RuntimeException(e);
         }
     }
+
 }
