@@ -7,7 +7,6 @@ import com.group4.DLS.domain.dto.request.UserPasswordChangeRequest;
 import com.group4.DLS.domain.dto.request.UserUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.UserResponse;
-import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.services.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;

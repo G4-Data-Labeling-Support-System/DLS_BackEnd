@@ -1,6 +1,5 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.enums.AssignmentStatus;
-import com.group4.DLS.domain.enums.Status;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

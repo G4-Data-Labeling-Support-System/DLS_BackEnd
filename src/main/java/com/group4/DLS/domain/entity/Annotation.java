@@ -8,7 +8,6 @@ import java.util.List;
 import com.group4.DLS.domain.enums.AnnotationConfidence;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.AnnotationType;
-import com.group4.DLS.domain.enums.ReviewStatus;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

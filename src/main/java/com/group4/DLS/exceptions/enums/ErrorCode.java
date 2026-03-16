@@ -16,6 +16,7 @@ public enum ErrorCode {
     ASSIGNMENT_NOT_FOUND(404, "Assignment not found"),
     DATASET_NOT_FOUND(404, "Dataset not found"),
     GUIDELINE_NOT_FOUND(404,"Guideline not found" ),
+    ANNOTATION_NOT_FOUND(404, "There are no annotation related to current assignment"),
 
     // 403 errors
     USER_NOT_ACTIVE(403, "User is not active"),
