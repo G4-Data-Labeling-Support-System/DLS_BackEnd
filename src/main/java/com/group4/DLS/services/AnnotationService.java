@@ -48,34 +48,26 @@ public class AnnotationService {
     @Transactional
     public Annotation saveAnnotation(AnnotationSaveRequest request) {
 
+        Annotation annotation = annotationMapper.toCreateAnnotation(request);
 
+        Task task = taskRepository.findById(request.getTaskId())
+                .orElseThrow(() -> new RuntimeException("Task not found"));
 
-            Annotation annotation= annotationMapper.toCreateAnnotation(request);
+        Dataitem dataitem = dataItemRepository.findById(request.getDataitemId())
+                .orElseThrow(() -> new RuntimeException("Dataitem not found"));
 
-            Task task = taskRepository.findById(request.getTaskId())
-                    .orElseThrow(() -> new RuntimeException("Task not found"));
-
-            Dataitem dataitem = dataItemRepository.findById(request.getDataitemId())
-                    .orElseThrow(() -> new RuntimeException("Dataitem not found"));
-
-
-            annotation.setTask(task);
-            annotation.setDataitem(dataitem);
-            annotation.setUser(task.getAssignment().getAssignedTo());
-            annotation.setLabels(request.getLabels());
-            annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
+        annotation.setTask(task);
+        annotation.setDataitem(dataitem);
+        annotation.setUser(task.getAssignment().getAssignedTo());
+        annotation.setLabels(request.getLabels());
+        annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
 
         return annotationRepository.save(annotation);
     }
-    
 
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================
     public void removeAnnotationByAssignmentId(String assignmentId) {
-        
-    }
 
-
-    void deleteAnnotationByAssignment(String assignmentId){
         // Get all annotation related to task and assignment
         List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
