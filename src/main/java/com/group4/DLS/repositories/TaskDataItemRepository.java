@@ -14,7 +14,10 @@ import java.util.List;
 
 @Repository
 public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, String> {
-    List<TaskDataItem> findByTask_TaskId(String taskId);
+        List<TaskDataItem> findByTask_TaskId(String taskId);
+
+        //đếm item trong task
+    int countByTaskTaskId(String taskId);
 
     void deleteByDataitem_Dataset_DatasetId(String datasetId);
 

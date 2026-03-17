@@ -71,7 +71,11 @@ public class AnnotationService {
 
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================
     public void removeAnnotationByAssignmentId(String assignmentId) {
+        
+    }
 
+
+    void deleteAnnotationByAssignment(String assignmentId){
         // Get all annotation related to task and assignment
         List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
