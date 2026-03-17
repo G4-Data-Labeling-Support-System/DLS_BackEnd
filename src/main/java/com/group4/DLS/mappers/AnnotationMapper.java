@@ -10,12 +10,13 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {LabelMapper.class, ReviewMapper.class})
 public interface AnnotationMapper {
 
+    @Mapping(target = "labels", source = "labels")
     AnnotationResponse toAnnotationResponse(Annotation annotation);
 
-    List<AnnotationResponse> tAnnotationResponses(List<Annotation> annotations);
+    List<AnnotationResponse> toAnnotationResponses(List<Annotation> annotations);
 
     // ===== CREATE MAPPER =====
     @Mapping(target = "annotationId", ignore = true)

@@ -13,6 +13,7 @@ import com.group4.DLS.repositories.AnnotationRepository;
 import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.LabelRepository;
 import com.group4.DLS.repositories.TaskRepository;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -36,8 +37,10 @@ public class AnnotationService {
         List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
         if (annotations != null) {
-            return 
+            return annotationMapper.toAnnotationResponses(annotations);
         }
+
+        return Collections.emptyList();
     }
 
     // ================= CREATE NEW ANNOTATION =================

@@ -40,20 +40,20 @@ public class AnnotationController {
         return response;
     }
 
-    @DeleteMapping("/annotations/{assignmentId}")
-    @PreAuthorize("hasAnyRole('MANAGER')")
-    @Operation(
-        summary = "Remove annotation by assignment_id",
-        description = "Remove anntation by assignment_id"
-    )
-    public ApiResponse<Annotation> removeAnnotationApiResponse(@PathVariable String assignmentId) {
+    // @DeleteMapping("/{assignmentId}")
+    // @PreAuthorize("hasAnyRole('MANAGER')")
+    // @Operation(
+    //     summary = "Remove annotation by assignment_id",
+    //     description = "Remove anntation by assignment_id"
+    // )
+    // public ApiResponse<Annotation> removeAnnotationApiResponse(@PathVariable String assignmentId) {
 
-        ApiResponse<Annotation> response = new ApiResponse<>();
+    //     ApiResponse<Annotation> response = new ApiResponse<>();
 
-        response.setCode(200);
-        response.setData(annotationService.removeAnnotationByAssignmentId(assignmentId));
-        response.setMessage("Annotation saved successfully");
+    //     response.setCode(200);
+    //     response.setData(annotationService.removeAnnotationByAssignmentId(assignmentId));
+    //     response.setMessage("Annotation removed successfully");
 
-        return response;
-    }
+    //     return response;
+    // }
 }

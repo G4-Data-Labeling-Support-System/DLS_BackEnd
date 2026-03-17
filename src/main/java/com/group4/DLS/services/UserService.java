@@ -36,7 +36,7 @@ public class UserService {
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
 
-        return userMapper.toUserResponse(users);
+        return userMapper.toUserResponses(users);
     }
 
     // Get user by ID
