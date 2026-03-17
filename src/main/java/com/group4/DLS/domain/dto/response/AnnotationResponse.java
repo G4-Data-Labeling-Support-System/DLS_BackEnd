@@ -25,7 +25,7 @@ public class AnnotationResponse {
     AnnotationConfidence annotationConfidence;
     String comment;
     AnnotationType annotationType;
-    String annotationData; 
+    String annotationData;
     AnnotationStatus annotationStatus;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

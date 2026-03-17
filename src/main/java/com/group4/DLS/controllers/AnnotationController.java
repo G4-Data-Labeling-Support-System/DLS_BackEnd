@@ -1,5 +1,6 @@
 package com.group4.DLS.controllers;
 
+import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.entity.Annotation;
@@ -29,12 +30,12 @@ public class AnnotationController {
         summary = "Create new annotation",
         description = "Create new annotation"
     )
-    public ApiResponse<Annotation> saveAnnotation(@RequestBody AnnotationSaveRequest request) {
+    public ApiResponse<Annotation> createAnnotationApiResponse(@RequestBody AnnotationCreationRequest request) {
 
         ApiResponse<Annotation> response = new ApiResponse<>();
 
         response.setCode(200);
-        response.setData(annotationService.saveAnnotation(request));
+        response.setData(annotationService.createAnnotation(request));
         response.setMessage("Annotation saved successfully");
 
         return response;

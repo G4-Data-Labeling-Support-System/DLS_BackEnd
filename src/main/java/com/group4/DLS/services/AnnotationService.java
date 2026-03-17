@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.Annotation;
@@ -28,9 +29,6 @@ public class AnnotationService {
 
     AnnotationRepository annotationRepository;
     AnnotationMapper annotationMapper;
-    TaskRepository taskRepository;
-    DataItemRepository dataItemRepository;
-    LabelRepository labelRepository;
     ReviewService reviewService;
 
     // ================= GET ALL ANNOTATION FOR CURRENT ASSIGNMENT =================
@@ -38,7 +36,7 @@ public class AnnotationService {
         List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
         if (annotations != null) {
-            return annotationMapper.toAnnotationResponses(annotations);
+            return annotationMapper.tAnnotationResponses(annotations);
         }
 
         return Collections.emptyList();
@@ -46,23 +44,21 @@ public class AnnotationService {
 
     // ================= CREATE NEW ANNOTATION =================
     @Transactional
-    public Annotation saveAnnotation(AnnotationSaveRequest request) {
+    public Annotation createAnnotation(AnnotationCreationRequest request) {
 
-        Annotation annotation = annotationMapper.toCreateAnnotation(request);
+        var annotations = request.getAnnotations();
 
-        Task task = taskRepository.findById(request.getTaskId())
-                .orElseThrow(() -> new RuntimeException("Task not found"));
+        if (annotations.isEmpty()) {
+            return null;
+        }
 
-        Dataitem dataitem = dataItemRepository.findById(request.getDataitemId())
-                .orElseThrow(() -> new RuntimeException("Dataitem not found"));
+        for (Annotation annotation : annotations) {
+            if (annotation != null) {
+                annotationRepository.save(annotation);
+            }
+        }
 
-        annotation.setTask(task);
-        annotation.setDataitem(dataitem);
-        annotation.setUser(task.getAssignment().getAssignedTo());
-        annotation.setLabels(request.getLabels());
-        annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
-
-        return annotationRepository.save(annotation);
+        return null;
     }
 
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================

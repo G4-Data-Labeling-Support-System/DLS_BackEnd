@@ -1,6 +1,7 @@
 package com.group4.DLS.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.Annotation;
@@ -10,13 +11,12 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {LabelMapper.class, ReviewMapper.class})
+@Mapper(componentModel = "spring")
 public interface AnnotationMapper {
 
-    @Mapping(target = "labels", source = "labels")
     AnnotationResponse toAnnotationResponse(Annotation annotation);
 
-    List<AnnotationResponse> toAnnotationResponses(List<Annotation> annotations);
+    List<AnnotationResponse> tAnnotationResponses(List<Annotation> annotations);
 
     // ===== CREATE MAPPER =====
     @Mapping(target = "annotationId", ignore = true)
@@ -29,6 +29,17 @@ public interface AnnotationMapper {
     @Mapping(target = "annotationStatus", ignore = true)
     @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
     Annotation toCreateAnnotation (AnnotationSaveRequest request);
+
+    @Mapping(target = "annotationId", ignore = true)
+    @Mapping(target = "task", ignore = true)
+    @Mapping(target = "dataitem", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "reviews", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "annotationStatus", ignore = true)
+    @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
+    Annotation toCreateAnnotationRequest(AnnotationCreationRequest request);
 
     // ===== UPDATE MAPPER =====
     @Mapping(target = "annotationId", ignore = true)
