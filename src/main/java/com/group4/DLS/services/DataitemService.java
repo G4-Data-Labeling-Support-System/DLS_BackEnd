@@ -136,11 +136,13 @@ public class DataitemService {
             // so sánh xem thử xem task cúi còn thiếu item không
             if (currentCount >= maxItemsPerTask) {
 
+                int taskNumber = tasks.size() + 1;
                 // tạo task mới
                 currentTask = new Task();
                 currentTask.setAssignment(assignment);
                 currentTask.setTaskStatus(TaskStatus.NOT_STARTED);
                 currentTask.setTaskType(TaskType.BATCH);
+                currentTask.setTaskName("TASK-" + String.format("%02d", taskNumber));
 
                 taskRepository.save(currentTask);
 
