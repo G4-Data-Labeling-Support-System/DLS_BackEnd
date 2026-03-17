@@ -119,7 +119,7 @@ public class AnnotationService {
         List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
         if (annotations.isEmpty()) {
-            throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
+            return;
         }
 
         // Extract annotationIds
