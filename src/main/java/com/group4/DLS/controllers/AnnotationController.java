@@ -5,6 +5,7 @@ import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.services.AnnotationService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -24,6 +25,10 @@ public class AnnotationController {
 
     @PostMapping("/save")
     @PreAuthorize("hasAnyRole('ANNOTATOR')")
+    @Operation(
+        summary = "Create new annotation",
+        description = "Create new annotation"
+    )
     public ApiResponse<Annotation> saveAnnotation(@RequestBody AnnotationSaveRequest request) {
 
         ApiResponse<Annotation> response = new ApiResponse<>();
@@ -34,4 +39,21 @@ public class AnnotationController {
 
         return response;
     }
+
+    // @DeleteMapping("/{assignmentId}")
+    // @PreAuthorize("hasAnyRole('MANAGER')")
+    // @Operation(
+    //     summary = "Remove annotation by assignment_id",
+    //     description = "Remove anntation by assignment_id"
+    // )
+    // public ApiResponse<Annotation> removeAnnotationApiResponse(@PathVariable String assignmentId) {
+
+    //     ApiResponse<Annotation> response = new ApiResponse<>();
+
+    //     response.setCode(200);
+    //     response.setData(annotationService.removeAnnotationByAssignmentId(assignmentId));
+    //     response.setMessage("Annotation removed successfully");
+
+    //     return response;
+    // }
 }

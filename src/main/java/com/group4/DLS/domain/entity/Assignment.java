@@ -1,6 +1,5 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.enums.AssignmentStatus;
-import com.group4.DLS.domain.enums.Status;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -89,7 +87,7 @@ public class Assignment {
 
     // Who is review to do it
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewed_by", nullable = false)
+    @JoinColumn(name = "reviewed_by", nullable = true)
     @JsonBackReference
     private User reviewedBy;
 

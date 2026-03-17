@@ -42,7 +42,7 @@ public class TaskService {
         return tasks;
     }
 
-    //crete task for assignment
+    // ================= CREATE NEW TASK FOR CURRENT ASSIGNMENT =================
     public void createTasksForAssignment(String assignmentId){
 
         Assignment assignment = assignmentRepository.findById(assignmentId)
@@ -74,7 +74,7 @@ public class TaskService {
         }
     }
 
-    //Get Task by assignmentId
+    // ================= GET TASK BY ASSIGNMENT_ID =================
     public List<TaskResponse> getTasksByAssignmentId(String assignmentId) {
         //check assignment exist
         if (!assignmentRepository.existsById(assignmentId)) {
@@ -90,4 +90,15 @@ public class TaskService {
         return taskMapper.toTaskResponse(tasks);
     }
 
+    // ================= REMOVE TASK BY ASSIGNMENT_ID =================
+    public void removeTasksByAssignmentId(String assignmentId) {
+
+        // Check assignment exists
+        if (!assignmentRepository.existsById(assignmentId)) {
+            throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
+        }
+
+        // Remove tasks
+        taskRepository.deleteByAssignment_AssignmentId(assignmentId);
+    }
 }
