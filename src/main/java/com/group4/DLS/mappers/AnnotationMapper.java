@@ -28,7 +28,7 @@ public interface AnnotationMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "annotationStatus", ignore = true)
-    @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
+    @Mapping(target = "annotationData", ignore = true)
     Annotation toCreateAnnotationRequest(AnnotationItemRequest request);
 
     // ===== UPDATE MAPPER =====
@@ -39,7 +39,7 @@ public interface AnnotationMapper {
     @Mapping(target = "reviews", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "annotationStatus", ignore = true)
-    @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
+    @Mapping(target = "annotationData", ignore = true)
     void updateAnnotation(AnnotationSaveRequest request, @MappingTarget Annotation annotation);
 
 }

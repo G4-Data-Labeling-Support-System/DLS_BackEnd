@@ -75,7 +75,7 @@ public class Assignment {
 
     // Who created the assignment
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_by", nullable = false)
+    @JoinColumn(name = "assigned_by", nullable = true)
     @JsonBackReference
     private User assignedBy;
 
