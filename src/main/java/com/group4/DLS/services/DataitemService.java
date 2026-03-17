@@ -1,18 +1,12 @@
 package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.response.DataItemResponse;
-import com.group4.DLS.domain.entity.Dataitem;
-import com.group4.DLS.domain.entity.Dataset;
-import com.group4.DLS.domain.entity.TaskDataItem;
-import com.group4.DLS.domain.enums.DataItemStatus;
-import com.group4.DLS.domain.enums.DataType;
-import com.group4.DLS.domain.enums.FileFormat;
+import com.group4.DLS.domain.entity.*;
+import com.group4.DLS.domain.enums.*;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DataItemMapper;
-import com.group4.DLS.repositories.DataItemRepository;
-import com.group4.DLS.repositories.DatasetRepository;
-import com.group4.DLS.repositories.TaskDataItemRepository;
+import com.group4.DLS.repositories.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +28,8 @@ public class DataitemService {
     private final DataItemRepository dataitemRepository;
     private final TaskDataItemRepository taskDataItemRepository;
 
+    private final TaskRepository taskRepository;
+    private final AssignmentRepository assignmentRepository;
     private final SeaweedFilerUploadService seaweedFilerUploadService;
     private final DataItemMapper dataItemMapper;
 
@@ -107,6 +103,66 @@ public class DataitemService {
     }
 
 
+    //add new dataitem
+    @Transactional
+    public void assignNewDataItems(String datasetId) {
+
+        Assignment assignment = assignmentRepository
+                .findByDatasetDatasetId(datasetId);
+
+        //tìm các item mới thêm và chưa đươc assign vào taskitem
+        List<Dataitem> newItems = dataitemRepository.findUnassignedDataItems(datasetId);
+
+        if (newItems.isEmpty()) {
+            return;
+        }
+
+        int maxItemsPerTask = 20;
+
+        //list task theo thời gian tạo
+        List<Task> tasks = taskRepository
+                .findByAssignmentAssignmentIdOrderByCreatedAtAsc(assignment.getAssignmentId());
+
+        // lấy task cúi
+        Task currentTask = tasks.get(tasks.size() - 1);
+
+        //đếm số iteam trong task cúi
+        int currentCount = taskDataItemRepository.countByTaskTaskId(currentTask.getTaskId());
+
+        List<TaskDataItem> taskItems = new ArrayList<>();
+
+        for (Dataitem item : newItems) {
+
+            // so sánh xem thử xem task cúi còn thiếu item không
+            if (currentCount >= maxItemsPerTask) {
+
+                // tạo task mới
+                currentTask = new Task();
+                currentTask.setAssignment(assignment);
+                currentTask.setTaskStatus(TaskStatus.NOT_STARTED);
+                currentTask.setTaskType(TaskType.BATCH);
+
+                taskRepository.save(currentTask);
+
+                tasks.add(currentTask);
+                currentCount = 0;
+            }
+
+            TaskDataItem taskItem = new TaskDataItem();
+            taskItem.setTask(currentTask);
+            taskItem.setDataitem(item);
+            taskItem.setItemIndex(currentCount + 1);
+
+
+            taskItems.add(taskItem);
+
+            currentCount++;
+        }
+
+        taskDataItemRepository.saveAll(taskItems);
+    }
+
+
     @Transactional
     public void deleteDataitem(String dataitemId) {
 
@@ -117,21 +173,19 @@ public class DataitemService {
 
         if (taskDataItem != null) {
 
-            int index = taskDataItem.getItemIndex();
             String taskId = taskDataItem.getTask().getTaskId();
+            int index = taskDataItem.getItemIndex();
 
-            // 1. cập nhật index các item phía sau
-            taskDataItemRepository.decreaseIndexAfter(taskId, index);
+            // xóa taskDataItem
+            taskDataItemRepository.delete(taskDataItem);
 
-            // 2. xóa taskDataItem của dataitem
-            taskDataItemRepository.deleteByDataitemId(dataitemId);
-
+            for(TaskDataItem updateIndexTaskItem: taskDataItemRepository.findByTask_TaskId(taskId)){
+                taskDataItemRepository.decreaseIndexAfter(updateIndexTaskItem.getTaskItemId(), index);
+            }
         }
-
-        // 3. xóa dataitem
+        //  xóa dataitem
         dataitemRepository.delete(dataitem);
-
-        // 4. xóa file trên storage
+        // xóa file trên storage
         seaweedFilerUploadService.deleteImageByUrl(dataitem.getUrl());
     }
 

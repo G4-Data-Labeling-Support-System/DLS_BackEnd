@@ -3,23 +3,24 @@ package com.group4.DLS.services;
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
+import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.enums.DatasetStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DatasetMapper;
-import com.group4.DLS.repositories.AssignmentRepository;
+import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectRepository;
 import com.group4.DLS.repositories.TaskDataItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -93,28 +94,62 @@ public class DatasetService {
     }
 
     // ===== UPDATE DATASET =====
-    public DatasetResponse updateDatasetResponse(String datasetId, DatasetUpdateRequest request) {
+    public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request) throws IOException{
+
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
-
-        // Check duplicate name (If name change)
-        if (request.getDatasetName() != null && !request.getDatasetName().equals(dataset.getDatasetName())
-                && datasetRepository.existsByProjectProjectIdAndDatasetNameAndDatasetStatusNot(dataset.getProject().getProjectId(), request.getDatasetName(), DatasetStatus.INACTIVE)) {
-            throw new AppException(ErrorCode.DATASETNAME_ALREADY_EXSITS);
+        // Validate project exist
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+        // Check if this dataset name exist inside this project
+        if (!request.getDatasetName().equals(dataset.getDatasetName()) && datasetRepository.existsByProjectProjectIdAndDatasetNameAndDatasetStatusNot(project.getProjectId(), request.getDatasetName(), DatasetStatus.INACTIVE)) {
+            throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 
-        // Capture old values for logging
-        String oldName = dataset.getDatasetName();
-        String oldDescription = dataset.getDescription();
-
-        // Update entity
+        // update basic info
         datasetMapper.updateDatasetFromRequest(request, dataset);
+        dataset.setProject(project);
+
+        //check do dataset have assignment
+        Assignment hasAssignment = dataset.getAssignment();
+
+        // delete dataitems
+        if (request.getDeleteDataItemId() != null && !request.getDeleteDataItemId().isEmpty()) {
+            if (hasAssignment != null) {
+                throw new AppException(ErrorCode.CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT);
+            }
+
+            for(String dataItemId: request.getDeleteDataItemId()) {
+                try {
+                    dataitemService.deleteDataitem(dataItemId);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
 
+        List<MultipartFile> files = request.getFiles();
 
-        // Save and return response
-        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+        if (files != null &&
+                files.stream().anyMatch(file -> !file.isEmpty()) &&
+                files.size() < 20) {
+            // rule: chỉ được thêm và phải >=20
+            throw new AppException(ErrorCode.DATAITEM_MINIMUM_REQUIRED);
+        }else if(files.size() >= 20){
+            dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles());//insert and return new item
+            if (!(hasAssignment == null)) {
+                dataitemService.assignNewDataItems(dataset.getDatasetId());//insert and return new item
+            }
+        }
+        datasetRepository.save(dataset);
+        dataset.setTotalItems(dataset.getDataitems().size());
+        datasetRepository.save(dataset);
+
+        return datasetMapper.toDatasetResponse(dataset) ;
     }
+
+
 
 //     ===== DELETE DATASET =====
     @Transactional
