@@ -1,6 +1,8 @@
 package com.group4.DLS.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
+import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.Annotation;
@@ -10,10 +12,9 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {LabelMapper.class, ReviewMapper.class})
+@Mapper(componentModel = "spring")
 public interface AnnotationMapper {
 
-    @Mapping(target = "labels", source = "labels")
     AnnotationResponse toAnnotationResponse(Annotation annotation);
 
     List<AnnotationResponse> toAnnotationResponses(List<Annotation> annotations);
@@ -28,7 +29,7 @@ public interface AnnotationMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "annotationStatus", ignore = true)
     @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
-    Annotation toCreateAnnotation (AnnotationSaveRequest request);
+    Annotation toCreateAnnotationRequest(AnnotationItemRequest request);
 
     // ===== UPDATE MAPPER =====
     @Mapping(target = "annotationId", ignore = true)
@@ -40,15 +41,5 @@ public interface AnnotationMapper {
     @Mapping(target = "annotationStatus", ignore = true)
     @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
     void updateAnnotation(AnnotationSaveRequest request, @MappingTarget Annotation annotation);
-
-
-    //function to change to jason to save database
-    default String convertToJson(Object value) {
-        try {
-            return new ObjectMapper().writeValueAsString(value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 }

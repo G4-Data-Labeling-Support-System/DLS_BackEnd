@@ -1,6 +1,8 @@
 package com.group4.DLS.controllers;
 
+import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
+import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.services.AnnotationService;
@@ -10,6 +12,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -23,37 +27,22 @@ public class AnnotationController {
 
     private final AnnotationService annotationService;
 
-    @PostMapping("/save")
+    @PostMapping("/submit")
     @PreAuthorize("hasAnyRole('ANNOTATOR')")
     @Operation(
         summary = "Create new annotation",
         description = "Create new annotation"
     )
-    public ApiResponse<Annotation> saveAnnotation(@RequestBody AnnotationSaveRequest request) {
+    public ApiResponse<List<AnnotationResponse>> createAnnotationApiResponse(
+        @RequestBody AnnotationCreationRequest request
+    ) {
 
-        ApiResponse<Annotation> response = new ApiResponse<>();
+        ApiResponse<List<AnnotationResponse>> response = new ApiResponse<>();
 
         response.setCode(200);
-        response.setData(annotationService.saveAnnotation(request));
-        response.setMessage("Annotation saved successfully");
+        response.setData(annotationService.createAnnotation(request));
+        response.setMessage("Annotation submit successfully");
 
         return response;
     }
-
-    // @DeleteMapping("/{assignmentId}")
-    // @PreAuthorize("hasAnyRole('MANAGER')")
-    // @Operation(
-    //     summary = "Remove annotation by assignment_id",
-    //     description = "Remove anntation by assignment_id"
-    // )
-    // public ApiResponse<Annotation> removeAnnotationApiResponse(@PathVariable String assignmentId) {
-
-    //     ApiResponse<Annotation> response = new ApiResponse<>();
-
-    //     response.setCode(200);
-    //     response.setData(annotationService.removeAnnotationByAssignmentId(assignmentId));
-    //     response.setMessage("Annotation removed successfully");
-
-    //     return response;
-    // }
 }

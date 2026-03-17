@@ -9,18 +9,18 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Data
- @Builder
- @NoArgsConstructor
- @AllArgsConstructor
- @FieldDefaults(level = AccessLevel.PRIVATE)
- public class AnnotationSaveRequest {
-  String taskId;
-  String dataitemId;
-  List<Label> labels;
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class AnnotationSaveRequest {
+    String taskId;
+    String dataitemId;
+    List<Label> labels;
 
-  AnnotationType annotationType;
-  Object annotationData;
+    AnnotationType annotationType;
+    Object annotationData;
 
-  AnnotationConfidence annotationConfidence;
-  String comment;
- }
+    AnnotationConfidence annotationConfidence;
+    String comment;
+}
