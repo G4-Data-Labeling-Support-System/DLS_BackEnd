@@ -14,6 +14,7 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, String> {
 
     List<Task> findByAssignment_AssignmentId(String assignmentId);
+    List<Task> findByAssignmentAssignmentIdOrderByCreatedAtAsc(String assignmentId);
 
     @Transactional
     void deleteByAssignment_AssignmentId(String assignmentId);

@@ -99,11 +99,11 @@ public class DatasetController {
         summary = "Update current dataset",
         description = "Update dataset"
     )
-    public ApiResponse<DatasetResponse> update(@PathVariable String id, @RequestBody DatasetUpdateRequest request) {
+    public ApiResponse<DatasetResponse> update(@PathVariable String id, @ModelAttribute DatasetUpdateRequest request) throws IOException{
         ApiResponse<DatasetResponse> response = new ApiResponse<>();
 
         response.setCode(200);
-        response.setData(datasetService.updateDatasetResponse(id, request));
+        response.setData(datasetService.updateDataset(id, request));
         response.setMessage("Dataset updated successfully");
 
         return response;
