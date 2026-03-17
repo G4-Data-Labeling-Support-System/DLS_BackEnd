@@ -87,7 +87,7 @@ public class Assignment {
 
     // Who is review to do it
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewed_by", nullable = false)
+    @JoinColumn(name = "reviewed_by", nullable = true)
     @JsonBackReference
     private User reviewedBy;
 

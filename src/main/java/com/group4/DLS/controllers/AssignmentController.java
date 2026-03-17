@@ -26,7 +26,7 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
 
-    //find assiagnment by id
+    // ================= GET ASSIGNMENT BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}")
     @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
     public ApiResponse<AssignmentResponse> getAssignmentById( @PathVariable String assignmentId) {
@@ -37,7 +37,7 @@ public class AssignmentController {
         return response;
     }
 
-    //find Assignment for Annnotator
+    // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
     @GetMapping("/annotators/{annotatorId}")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
@@ -47,7 +47,7 @@ public class AssignmentController {
         return response;
     }
 
-    //find Assignment for project
+    // ================= GET ASSIGNMENT FOR PRORJECT =================
     @GetMapping("/projects/{projectId}")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForProject( @PathVariable String projectId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
@@ -99,21 +99,21 @@ public class AssignmentController {
     }
 
     // 4️ Delete assignment
-    @PatchMapping("/{assignmentId}")
+    @PatchMapping("/remove/{assignmentId}")
     @Operation(
         summary = "Delete assignment",
         description = "Delete an assignment by its ID")
     public ApiResponse<Void> deleteAssignment(
             @PathVariable String assignmentId) {
-        assignmentService.deleteAssignment(assignmentId);
+        assignmentService.removeAssignment(assignmentId);
 
         return ApiResponse.<Void>builder()
                 .code(200)
-                .message("Delete assignment successfully")
+                .message("Remove assignment successfully")
                 .build();
     }
 
-    //get label for assignment
+    // ================= GET LABELS BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/labels")
     @Operation(
         summary = "Get labels for assignment",
@@ -127,8 +127,7 @@ public class AssignmentController {
                 .build();
     }
 
-    //get dataset by assignment
-    //get label for assignment
+    // ================= GET DATASET BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/dataset")
     @Operation(
             summary = "Get dataset for assignment",
@@ -141,4 +140,6 @@ public class AssignmentController {
                 .data(assignmentService.getDatasetByAssignmentId(assignmentId))
                 .build();
     }
+
+
 }

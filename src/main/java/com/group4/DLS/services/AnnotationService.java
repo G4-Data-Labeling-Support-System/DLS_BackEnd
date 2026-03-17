@@ -31,6 +31,7 @@ public class AnnotationService {
     TaskRepository taskRepository;
     DataItemRepository dataItemRepository;
     LabelRepository labelRepository;
+    ReviewService reviewService;
 
     // ================= GET ALL ANNOTATION FOR CURRENT ASSIGNMENT =================
     public List<AnnotationResponse> getAnnotationsByAssignmentId(String assignmentId) {
@@ -69,21 +70,24 @@ public class AnnotationService {
     
 
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================
-    public Annotation removeAnnotationByAssignmentId(String assignmentId) {
+    public void removeAnnotationByAssignmentId(String assignmentId) {
 
-        // Find annotation related to task and assignment
+        // Get all annotation related to task and assignment
         List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
-        if (annotations != null) {
-            for (Annotation annotation : annotations) {
-                if (annotation != null) {
-                    annotationRepository.delete(annotation);
-                }
-            }
-        } else {
+        if (annotations.isEmpty()) {
             throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
         }
-        
-        return null;
+
+        // Extract annotationIds
+        List<String> annotationIds = annotations.stream()
+                .map(Annotation::getAnnotationId)
+                .toList();
+
+        // Delete reviews in batch
+        reviewService.removeReviewByAnnotationId(annotationIds);
+
+        // Delete annotations in batch
+        annotationRepository.deleteAll(annotations);
     }
 }

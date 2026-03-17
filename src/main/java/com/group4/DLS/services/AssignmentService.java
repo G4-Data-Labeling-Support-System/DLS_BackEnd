@@ -28,15 +28,20 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class AssignmentService {
     AssignmentRepository assignmentRepository;
-    AssignmentMapper assignmentMapper;
     ProjectRepository projectRepository;
+    ProjectMemberRepository projectMemberRepository;
     DatasetRepository datasetRepository;
-    ActivityLogService logService;
     UserRepository userRepository;
+
     TaskService taskService;
     LabelService labelService;
-    ProjectMemberRepository projectMemberRepository;
+    ActivityLogService logService;
+    AnnotationService annotationService;
+    TaskDataItemService taskDataItemService;
     ProjectMemberService projectMemberService;
+    ReviewService reviewService;
+
+    AssignmentMapper assignmentMapper;
     DatasetMapper datasetMapper;
 
 
@@ -215,21 +220,34 @@ public class AssignmentService {
     }
 
     // ================= REMOVE CURRENT ASSIGNMENT =================
-    public void deleteAssignment(String assignmentId) {
+    public void removeAssignment(String assignmentId) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        // Remove related Annotations
+        annotationService.removeAnnotationByAssignmentId(assignmentId);
+
+        // Unmap Task and Dataitem from TaskItem
+        taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
+
+        // Remove related Tasks
+        taskService.removeTasksByAssignmentId(assignmentId);
 
         // Remove assignment reference from dataset
         if (!datasetRepository.findById(assignment.getDataset().getDatasetId()).isEmpty()) {
             Dataset dataset = datasetRepository.findById(assignment.getDataset().getDatasetId())
                     .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+
             dataset.setAssignment(null);
+
             datasetRepository.save(dataset);
         }
 
         assignment.setAssignmentStatus(AssignmentStatus.CANCELLED);// Soft delete assignment
         assignment.setAssignedTo(null);
+        // assignment.setReviewedBy(null);
         assignment.setDataset(null); // Remove dataset reference from assignment
+
         assignmentRepository.save(assignment);
 
         // // Log action
