@@ -2,6 +2,7 @@ package com.group4.DLS.mappers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
+import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.Annotation;
@@ -16,7 +17,7 @@ public interface AnnotationMapper {
 
     AnnotationResponse toAnnotationResponse(Annotation annotation);
 
-    List<AnnotationResponse> tAnnotationResponses(List<Annotation> annotations);
+    List<AnnotationResponse> toAnnotationResponses(List<Annotation> annotations);
 
     // ===== CREATE MAPPER =====
     @Mapping(target = "annotationId", ignore = true)
@@ -28,18 +29,7 @@ public interface AnnotationMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "annotationStatus", ignore = true)
     @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
-    Annotation toCreateAnnotation (AnnotationSaveRequest request);
-
-    @Mapping(target = "annotationId", ignore = true)
-    @Mapping(target = "task", ignore = true)
-    @Mapping(target = "dataitem", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "reviews", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "annotationStatus", ignore = true)
-    @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
-    Annotation toCreateAnnotationRequest(AnnotationCreationRequest request);
+    Annotation toCreateAnnotationRequest(AnnotationItemRequest request);
 
     // ===== UPDATE MAPPER =====
     @Mapping(target = "annotationId", ignore = true)
@@ -51,15 +41,5 @@ public interface AnnotationMapper {
     @Mapping(target = "annotationStatus", ignore = true)
     @Mapping(target = "annotationData", expression = "java(convertToJson(request.getAnnotationData()))")
     void updateAnnotation(AnnotationSaveRequest request, @MappingTarget Annotation annotation);
-
-
-    //function to change to jason to save database
-    default String convertToJson(Object value) {
-        try {
-            return new ObjectMapper().writeValueAsString(value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
 }
