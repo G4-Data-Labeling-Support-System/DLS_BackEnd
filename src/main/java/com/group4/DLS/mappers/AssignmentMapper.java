@@ -7,8 +7,6 @@ import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.entity.Assignment;
 
-import java.util.List;
-
 @Mapper(componentModel = "spring")
 public interface AssignmentMapper {
 

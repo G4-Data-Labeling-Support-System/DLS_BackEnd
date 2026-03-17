@@ -33,8 +33,7 @@ public class DatasetService {
     private final TaskDataItemRepository taskDataItemRepository;
     private final AssignmentService assignmentService;
 
-
-    //List all dataset
+    // List all dataset
     public List<DatasetResponse> getAllDatasets() {
         List<Dataset> datasets = datasetRepository.findAll();
         if (datasets.isEmpty()) {
@@ -76,7 +75,8 @@ public class DatasetService {
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         // Check if this dataset name exist inside this project
-        if (datasetRepository.existsByProjectProjectIdAndDatasetNameAndDatasetStatusNot(project.getProjectId(), request.getDatasetName(), DatasetStatus.INACTIVE)) {
+        if (datasetRepository.existsByProjectProjectIdAndDatasetNameAndDatasetStatusNot(project.getProjectId(),
+                request.getDatasetName(), DatasetStatus.INACTIVE)) {
             throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 
@@ -87,7 +87,6 @@ public class DatasetService {
         datasetRepository.save(dataset);
         dataset.setTotalItems(dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles()));
         datasetRepository.save(dataset);
-
 
         // Save and return response
         return datasetMapper.toDatasetResponse(dataset);
@@ -120,9 +119,7 @@ public class DatasetService {
             }
 
             for(String dataItemId: request.getDeleteDataItemId()) {
-                System.out.println(dataItemId);
                 dataitemService.deleteDataitem(dataItemId);
-
             }
         }
 
@@ -150,19 +147,19 @@ public class DatasetService {
 
 //     ===== DELETE DATASET =====
     @Transactional
-     public void deleteDataset(String datasetId) {
+    public void deleteDataset(String datasetId) {
 
         // Check dataset exist
-         Dataset dataset = datasetRepository.findById(datasetId)
-                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-         // Delete all dataitems, taskdataitems, and assignment related to this dataset
-         taskDataItemRepository.deleteByDataitem_Dataset_DatasetId(dataset.getDatasetId());//delete taskdataitem
-         if(dataset.getAssignment() != null) {
-             assignmentService.deleteAssignment(dataset.getAssignment().getAssignmentId());// Delete assignment
-         }
-         dataitemService.deleteDataitemsByDatasetId(dataset.getDatasetId());// Delete dataitems
-         dataset.setDatasetStatus(DatasetStatus.INACTIVE);// Soft delete dataset
-         datasetRepository.save(dataset);
-     }
+        // Delete all dataitems, taskdataitems, and assignment related to this dataset
+        taskDataItemRepository.deleteByDataitem_Dataset_DatasetId(dataset.getDatasetId());// delete taskdataitem
+        if (dataset.getAssignment() != null) {
+            assignmentService.removeAssignment(dataset.getAssignment().getAssignmentId());// Delete assignment
+        }
+        dataitemService.deleteDataitemsByDatasetId(dataset.getDatasetId());// Delete dataitems
+        dataset.setDatasetStatus(DatasetStatus.INACTIVE);// Soft delete dataset
+        datasetRepository.save(dataset);
+    }
 }

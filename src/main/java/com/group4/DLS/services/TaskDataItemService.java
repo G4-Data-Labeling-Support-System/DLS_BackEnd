@@ -24,14 +24,14 @@ public class TaskDataItemService {
     DataItemMapper dataItemMapper;
     TaskDataitemMapper taskDataitemMapper;
 
-    //Assign dataItem to task
-    public void createTaskDataItem(Task task, List<Dataitem> dataitems){
+    // ================= ASSIGN DATAITEM TO TASK =================
+    public void createTaskDataItem(Task task, List<Dataitem> dataitems) {
 
         List<TaskDataItem> list = new ArrayList<>();
 
         int order = 0;
 
-        for(Dataitem item : dataitems){
+        for (Dataitem item : dataitems) {
 
             TaskDataItem tdi = new TaskDataItem();
             tdi.setTask(task);
@@ -44,7 +44,7 @@ public class TaskDataItemService {
         taskDataItemRepository.saveAll(list);
     }
 
-        //get dataitems by task id
+    // ================= GET DATAITEMS BY TASK_ID =================
     public List<DataItemResponse> getDataitemsByTaskId(String taskId) {
         List<TaskDataItem> taskDataItems = taskDataItemRepository.findByTask_TaskId(taskId);
         List<Dataitem> dataitems = new ArrayList<>();
@@ -54,8 +54,16 @@ public class TaskDataItemService {
         return dataItemMapper.toDataItemResponse(dataitems);
     }
 
-    //get taskDataItem by taskId
+    // get taskDataItem by taskId
+    // ================= GET TASKDATAITEM BY TASK_ID =================
     public List<TaskDataITemResponse> getTaskDataItemsByTaskId(String taskId) {
         return taskDataitemMapper.toResponse(taskDataItemRepository.findByTask_TaskId(taskId));
+    }
+
+    // ================= REMOVE TASKDATAITEM BY ASSIGNMENT_ID =================
+    public void deleteTaskDataItemsByAssignmentId(String assignmentId) {
+        List<TaskDataItem> list = taskDataItemRepository.findByTask_Assignment_AssignmentId(assignmentId);
+
+        taskDataItemRepository.deleteAll(list);
     }
 }

@@ -1,6 +1,9 @@
 package com.group4.DLS.repositories;
 
 import com.group4.DLS.domain.entity.TaskDataItem;
+
+import jakarta.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,18 +23,21 @@ public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, Stri
 
     @Modifying
     @Query("""
-UPDATE TaskDataItem t
-SET t.itemIndex = t.itemIndex - 1
-WHERE t.task.taskId = :taskId
-AND t.itemIndex > :index
-""")
+            UPDATE TaskDataItem t
+            SET t.itemIndex = t.itemIndex - 1
+            WHERE t.task.taskId = :taskId
+            AND t.itemIndex > :index
+            """)
     void decreaseIndexAfter(@Param("taskId") String taskId,
-                            @Param("index") int index);
+            @Param("index") int index);
 
     @Modifying
     @Query("""
-DELETE FROM TaskDataItem t
-WHERE t.dataitem.itemId = :dataitemId
-""")
+            DELETE FROM TaskDataItem t
+            WHERE t.dataitem.itemId = :dataitemId
+            """)
     void deleteByDataitemId(@Param("dataitemId") String dataitemId);
+
+    @Transactional
+    List<TaskDataItem> findByTask_Assignment_AssignmentId(String assignmentId);
 }

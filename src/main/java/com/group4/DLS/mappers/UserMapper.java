@@ -17,7 +17,7 @@ import com.group4.DLS.domain.entity.User;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
     UserResponse toUserResponse(User user);
-    List<UserResponse> toUserResponse(List<User> user);
+    List<UserResponse> toUserResponses(List<User> users);
 
     @Mapping(target = "userId", ignore = true)
     @Mapping(target = "createdAt", ignore = true)

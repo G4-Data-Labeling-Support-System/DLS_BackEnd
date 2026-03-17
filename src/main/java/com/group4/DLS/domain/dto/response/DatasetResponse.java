@@ -1,6 +1,5 @@
 package com.group4.DLS.domain.dto.response;
 
-import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DatasetStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

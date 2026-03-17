@@ -1,6 +1,5 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 import com.group4.DLS.domain.enums.AnnotationConfidence;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.AnnotationType;
-import com.group4.DLS.domain.enums.ReviewStatus;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

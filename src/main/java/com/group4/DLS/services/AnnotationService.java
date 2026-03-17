@@ -1,15 +1,19 @@
 package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
+import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.exceptions.AppException;
+import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AnnotationMapper;
 import com.group4.DLS.repositories.AnnotationRepository;
 import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.LabelRepository;
 import com.group4.DLS.repositories.TaskRepository;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
@@ -25,9 +29,22 @@ public class AnnotationService {
     AnnotationRepository annotationRepository;
     AnnotationMapper annotationMapper;
     TaskRepository taskRepository;
-    DataItemRepository  dataItemRepository;
+    DataItemRepository dataItemRepository;
     LabelRepository labelRepository;
+    ReviewService reviewService;
 
+    // ================= GET ALL ANNOTATION FOR CURRENT ASSIGNMENT =================
+    public List<AnnotationResponse> getAnnotationsByAssignmentId(String assignmentId) {
+        List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
+
+        if (annotations != null) {
+            return annotationMapper.toAnnotationResponses(annotations);
+        }
+
+        return Collections.emptyList();
+    }
+
+    // ================= CREATE NEW ANNOTATION =================
     @Transactional
     public Annotation saveAnnotation(AnnotationSaveRequest request) {
 
@@ -42,7 +59,6 @@ public class AnnotationService {
                     .orElseThrow(() -> new RuntimeException("Dataitem not found"));
 
 
-
             annotation.setTask(task);
             annotation.setDataitem(dataitem);
             annotation.setUser(task.getAssignment().getAssignedTo());
@@ -51,14 +67,29 @@ public class AnnotationService {
 
         return annotationRepository.save(annotation);
     }
+    
+
+    // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================
+    public void removeAnnotationByAssignmentId(String assignmentId) {
 
 
     void deleteAnnotationByAssignment(String assignmentId){
+        // Get all annotation related to task and assignment
         List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
-        for(Annotation annotation : annotations){
-            annotation.setAnnotationStatus(AnnotationStatus.DELETED);
+        if (annotations.isEmpty()) {
+            throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
         }
-        annotationRepository.saveAll(annotations);
+
+        // Extract annotationIds
+        List<String> annotationIds = annotations.stream()
+                .map(Annotation::getAnnotationId)
+                .toList();
+
+        // Delete reviews in batch
+        reviewService.removeReviewByAnnotationId(annotationIds);
+
+        // Delete annotations in batch
+        annotationRepository.deleteAll(annotations);
     }
 }

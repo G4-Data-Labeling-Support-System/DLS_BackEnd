@@ -6,7 +6,6 @@ import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ProjectMemberResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
-import com.group4.DLS.domain.dto.response.UserResponse;
 import com.group4.DLS.services.ProjectMemberService;
 import com.group4.DLS.services.ProjectService;
 
