@@ -120,25 +120,22 @@ public class DatasetService {
             }
 
             for(String dataItemId: request.getDeleteDataItemId()) {
-                try {
-                    dataitemService.deleteDataitem(dataItemId);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                System.out.println(dataItemId);
+                dataitemService.deleteDataitem(dataItemId);
+
             }
         }
 
 
         List<MultipartFile> files = request.getFiles();
 
-        if (files != null &&
-                files.stream().anyMatch(file -> !file.isEmpty()) &&
-                files.size() < 20) {
-            // rule: chỉ được thêm và phải >=20
-            throw new AppException(ErrorCode.DATAITEM_MINIMUM_REQUIRED);
-        }else if(files.size() >= 20){
+        if(files != null && files.stream().anyMatch(file -> !file.isEmpty())){
             dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles());//insert and return new item
             if (!(hasAssignment == null)) {
+                if (files.size() < 20) {
+                    // rule: chỉ được thêm và phải >=20
+                    throw new AppException(ErrorCode.DATAITEM_MINIMUM_REQUIRED);
+                }
                 dataitemService.assignNewDataItems(dataset.getDatasetId());//insert and return new item
             }
         }
