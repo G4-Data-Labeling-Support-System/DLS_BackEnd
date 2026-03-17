@@ -36,7 +36,6 @@ public class AnnotationService {
 
     AnnotationRepository annotationRepository;
     TaskRepository taskRepository;
-    UserRepository userRepository;
     DataItemRepository dataItemRepository;
     LabelRepository labelRepository;
 
