@@ -97,7 +97,7 @@ public class TaskService {
         }
 
         for (Task task: tasks){
-            if(task.getAnnotations().size() == getAnnotationsNotRejected(task).size()){
+            if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size()){
                 reviewService.createReviews(task);
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(true);
