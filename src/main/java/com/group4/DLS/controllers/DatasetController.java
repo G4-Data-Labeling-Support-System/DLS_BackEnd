@@ -93,13 +93,14 @@ public class DatasetController {
     * Update a dataset
     * ================
     */
-    @PutMapping("/{id}")
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('MANAGER')")
     @Operation(
         summary = "Update current dataset",
         description = "Update dataset"
     )
-    public ApiResponse<DatasetResponse> update(@PathVariable String id, @ModelAttribute DatasetUpdateRequest request) throws IOException{
+    public ApiResponse<DatasetResponse> update(@PathVariable String id,
+                                               @ModelAttribute DatasetUpdateRequest request) throws IOException{
         ApiResponse<DatasetResponse> response = new ApiResponse<>();
 
         response.setCode(200);

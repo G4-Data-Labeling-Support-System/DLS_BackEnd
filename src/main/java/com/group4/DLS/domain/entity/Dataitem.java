@@ -52,18 +52,9 @@ public class Dataitem {
     @Column(name = "uploaded_at")
     LocalDateTime uploadedAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "dataitem_status", nullable = false)
-    DataItemStatus dataItemStatus;
-
     @PrePersist
     protected void onCreate() {
-
         this.uploadedAt = LocalDateTime.now();
-
-            if (dataItemStatus == null) {
-                this.dataItemStatus = DataItemStatus.ACTIVE;
-            }
     }
 
     // Many Dataitem belongs to One Dataset
