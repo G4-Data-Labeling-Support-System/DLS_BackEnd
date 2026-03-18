@@ -33,7 +33,7 @@ public class DatasetService {
     private final TaskDataItemRepository taskDataItemRepository;
     private final AssignmentService assignmentService;
 
-    // List all dataset
+    // ===== LIST ALL DATASET =====
     public List<DatasetResponse> getAllDatasets() {
         List<Dataset> datasets = datasetRepository.findAll();
         if (datasets.isEmpty()) {
@@ -143,9 +143,7 @@ public class DatasetService {
         return datasetMapper.toDatasetResponse(dataset) ;
     }
 
-
-
-//     ===== DELETE DATASET =====
+    // ===== DELETE DATASET =====
     @Transactional
     public void deleteDataset(String datasetId) {
 
@@ -155,11 +153,14 @@ public class DatasetService {
 
         // Delete all dataitems, taskdataitems, and assignment related to this dataset
         taskDataItemRepository.deleteByDataitem_Dataset_DatasetId(dataset.getDatasetId());// delete taskdataitem
+
         if (dataset.getAssignment() != null) {
             assignmentService.removeAssignment(dataset.getAssignment().getAssignmentId());// Delete assignment
         }
+
         dataitemService.deleteDataitemsByDatasetId(dataset.getDatasetId());// Delete dataitems
         dataset.setDatasetStatus(DatasetStatus.INACTIVE);// Soft delete dataset
+        
         datasetRepository.save(dataset);
     }
 }

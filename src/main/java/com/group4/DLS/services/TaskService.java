@@ -94,7 +94,7 @@ public class TaskService {
     public void removeTasksByAssignmentId(String assignmentId) {
 
         // Check assignment exists
-        if (!assignmentRepository.existsById(assignmentId)) {
+        if (assignmentId != null && !assignmentRepository.existsById(assignmentId)) {
             throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
         }
 

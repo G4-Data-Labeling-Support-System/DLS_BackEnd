@@ -244,11 +244,7 @@ public class AssignmentService {
         }
 
         assignment.setAssignmentStatus(AssignmentStatus.CANCELLED);// Soft delete assignment
-        assignment.setAssignedTo(null);
-        assignment.setAssignedBy(null);
-        assignment.setReviewedBy(null);
-        assignment.setDataset(null); // Remove dataset reference from assignment
-
+        
         assignmentRepository.save(assignment);
 
         // // Log action
