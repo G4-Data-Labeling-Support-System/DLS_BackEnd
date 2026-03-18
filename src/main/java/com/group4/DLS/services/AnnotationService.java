@@ -70,10 +70,6 @@ public class AnnotationService {
             throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
         }
 
-        if(status.equals(AnnotationStatus.REJECTED)){
-            throw new AppException(ErrorCode.ANNOTATION_STATUS_HAVE_REJECTED);
-        }
-
         return annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
     }
 

@@ -48,7 +48,6 @@ public class ReviewService {
            if(annotation.getAnnotationStatus().equals(AnnotationStatus.SUBMITTED)){
                // Tạo review lần đầu cho annotation
                Review review = new Review();
-               review.setReviewStatus(ReviewStatus.CORRECTED); // default cũng ok
                review.setComment(""); // comment rỗng lần đầu
                review.setUser(reviewer); // map reviewer
                review.setAnnotation(annotation); // map annotation
