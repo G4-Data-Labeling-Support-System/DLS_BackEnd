@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, String> {
-    List<Review> findByAnnotation_AnnotationId(String annotationId);
+    List<Review> findByAnnotation_AnnotationIdIn(List<String> annotationId);
 
     // Remove review by annotation_id
     @Transactional
