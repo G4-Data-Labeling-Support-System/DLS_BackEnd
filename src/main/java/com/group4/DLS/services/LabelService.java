@@ -5,6 +5,7 @@ import com.group4.DLS.domain.dto.request.LabelUpdateRequest;
 import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Label;
+import com.group4.DLS.domain.enums.LabelStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.LabelMapper;
@@ -135,6 +136,8 @@ public class LabelService {
 
         Label label = labelRepository.findById(labelId)
                 .orElseThrow(() -> new AppException(ErrorCode.LABEL_NOT_FOUND));
+
+        label.setStatus(LabelStatus.INACTIVE);
 
         labelRepository.delete(label);
     }

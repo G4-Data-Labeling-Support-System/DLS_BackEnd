@@ -42,7 +42,7 @@ public class Assignment {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "assignment_status", nullable = false)
-    AssignmentStatus assignmentStatus;
+    AssignmentStatus assignmentStatus = AssignmentStatus.ASSIGNED;
 
     @Column(name = "due_date")
     LocalDateTime dueDate;
@@ -56,10 +56,6 @@ public class Assignment {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-
-        if (assignmentStatus == null) {
-            this.assignmentStatus = AssignmentStatus.ASSIGNED;
-        }
     }
 
     // Many Assignment belongs to One Project

@@ -107,8 +107,7 @@ public class DataitemService {
     @Transactional
     public void assignNewDataItems(String datasetId) {
 
-        Assignment assignment = assignmentRepository
-                .findByDatasetDatasetId(datasetId);
+        Assignment assignment = assignmentRepository.findByDatasetDatasetId(datasetId);
 
         //tìm các item mới thêm và chưa đươc assign vào taskitem
         List<Dataitem> newItems = dataitemRepository.findUnassignedDataItems(datasetId);

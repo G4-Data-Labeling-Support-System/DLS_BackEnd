@@ -4,7 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DatasetStatus;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,19 +36,16 @@ public class Dataset {
     @Column(name = "total_items")
     int totalItems;
 
-    @Column(name = "created_at")
-    LocalDateTime createdAt;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "dataset_status")
-    DatasetStatus datasetStatus;
+    DatasetStatus datasetStatus = DatasetStatus.ACTIVE;
+
+    @Column(name = "created_at")
+    LocalDateTime createdAt;
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        if (datasetStatus == null) {
-            this.datasetStatus = DatasetStatus.ACTIVE;
-        }
     }
 
     // Many Dataset belongs to One Prject

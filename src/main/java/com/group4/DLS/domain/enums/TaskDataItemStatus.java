@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum TaskDataItemStatus {
     
-    INACTIVE,
-    PENDING,
-    COMPLETED;
+    IN_PROGRESS,
+    COMPLETED,
+    INACTIVE;
 
     @JsonCreator
     public static TaskDataItemStatus fromString(String value) {

@@ -3,6 +3,7 @@ package com.group4.DLS.domain.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum UserStatus {
+    
     ACTIVE,
     INACTIVE,
     SUSPENDED;

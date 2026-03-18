@@ -3,13 +3,11 @@ package com.group4.DLS.domain.enums;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum ProjectStatus {
-    ACTIVE,
-    INACTIVE,
+    
     NOT_STARTED,
     IN_PROGRESS,
     COMPLETED,
-    ON_HOLD,
-    CANCELLED;
+    INACTIVE;
 
     @JsonCreator
     public static ProjectStatus fromString(String value) {

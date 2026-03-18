@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 
 import com.group4.DLS.domain.enums.GuidelineStatus;
+
 @Builder
 @Getter
 @Setter
@@ -19,7 +20,7 @@ public class GuidelineResponse {
     String title;
     String content;
     int version;
-    GuidelineStatus status;
+    GuidelineStatus guidelineStatus;
     LocalDate createdAt;
     LocalDate updatedAt;
     ProjectResponse project;

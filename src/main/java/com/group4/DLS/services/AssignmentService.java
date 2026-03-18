@@ -122,6 +122,19 @@ public class AssignmentService {
         return datasetMapper.toDatasetResponse(assignment.getDataset());
     }
 
+    // ================= GET ASSIGNMENT BY DATASET_ID =================
+    public AssignmentResponse getAssignmentByDatasetId(String datasetId) {
+        
+        // Check dataset exist for current assignment
+        Assignment assignment = assignmentRepository.findByDatasetDatasetId(datasetId);
+
+        if (assignment == null) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        } 
+
+        return assignmentMapper.toResponse(assignment);
+    }
+
     // ================= CREATE NEW ASSIGNMENT =================
     public AssignmentResponse createAssignment(String projectId, @RequestBody AssignmentCreateRequest request) {
 
@@ -243,7 +256,7 @@ public class AssignmentService {
             datasetRepository.save(dataset);
         }
 
-        assignment.setAssignmentStatus(AssignmentStatus.CANCELLED);// Soft delete assignment
+        assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);// Soft delete assignment
         
         assignmentRepository.save(assignment);
 

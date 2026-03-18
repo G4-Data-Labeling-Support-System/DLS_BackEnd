@@ -1,6 +1,7 @@
 package com.group4.DLS.repositories;
 
 import com.group4.DLS.domain.entity.TaskDataItem;
+import com.group4.DLS.domain.enums.TaskDataItemStatus;
 
 import jakarta.transaction.Transactional;
 
@@ -14,6 +15,8 @@ import java.util.List;
 
 @Repository
 public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, String> {
+        
+        // Find all TaskDataItem that belongs to a specific Task
         List<TaskDataItem> findByTask_TaskId(String taskId);
 
         // đếm item trong task
