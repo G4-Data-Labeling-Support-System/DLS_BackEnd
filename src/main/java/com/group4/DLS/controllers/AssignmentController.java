@@ -1,6 +1,7 @@
 package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
+import com.group4.DLS.domain.dto.request.AssignmentDatasetChangeRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
@@ -96,6 +97,21 @@ public class AssignmentController {
                 .code(200)
                 .message("Update assignment successfully")
                 .data(assignmentService.updateAssignment(assignmentId, request))
+                .build();
+    }
+
+    // ================= GET ASSIGNMENT FOR PRORJECT =================
+    @PutMapping("/change-dataset/assignment/{assignmentId}")
+    @Operation(
+        summary = "Change Assignment dataset",
+        description = "Change Assignment dataset")
+    public ApiResponse<AssignmentResponse> changeAssignmentDatasetApiResponse (
+            @PathVariable String assignmentId,
+            @RequestBody AssignmentDatasetChangeRequest request) {
+        return ApiResponse.<AssignmentResponse>builder()
+                .code(200)
+                .message("Update assignment successfully")
+                .data(assignmentService.changeDatasetForCurrentAssignment(assignmentId, request))
                 .build();
     }
 

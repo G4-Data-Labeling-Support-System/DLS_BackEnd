@@ -4,7 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.group4.DLS.domain.entity.Assignment;
-import com.group4.DLS.domain.enums.AssignmentStatus;
 
 import java.util.List;
 
@@ -12,6 +11,8 @@ import java.util.List;
 public interface AssignmentRepository extends JpaRepository<Assignment, String> {
 
     boolean existsByAssignmentName(String assignmentName);
+
+    boolean existsByDataset_DatasetIdAndAssignmentIdNot(String datasetId, String assignmentId);
 
     List<Assignment> findByProject_ProjectId(String projectId);
 

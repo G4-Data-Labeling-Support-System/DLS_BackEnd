@@ -1,11 +1,9 @@
 package com.group4.DLS.domain.dto.request;
 
-import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.enums.AssignmentStatus;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
