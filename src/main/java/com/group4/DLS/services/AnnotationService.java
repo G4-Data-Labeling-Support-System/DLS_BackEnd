@@ -70,7 +70,13 @@ public class AnnotationService {
             throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
         }
 
-        return annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
+        List<Annotation> annotations = annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
+
+        if(annotations.isEmpty()){
+            throw new AppException(ErrorCode.ANNOTATION_STATUS_HAVE_REJECTED);
+        }
+
+        return annotations;
     }
 
     // ================= CREATE NEW ANNOTATION =================
