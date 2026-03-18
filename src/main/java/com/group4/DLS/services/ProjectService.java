@@ -46,6 +46,7 @@ public class ProjectService {
     public List<ProjectResponse> getAllProjects() {
         List<Project> projects = projectRepository.findByProjectStatusIn(List.of(
                 ProjectStatus.INACTIVE,
+                ProjectStatus.NOT_STARTED,
                 ProjectStatus.COMPLETED,
                 ProjectStatus.IN_PROGRESS,
                 ProjectStatus.NOT_STARTED));
@@ -57,6 +58,7 @@ public class ProjectService {
         Project project = projectRepository.findByProjectIdAndProjectStatusIn(projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
                         ProjectStatus.NOT_STARTED))
@@ -104,6 +106,7 @@ public class ProjectService {
                 projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
                         ProjectStatus.NOT_STARTED))
@@ -128,6 +131,7 @@ public class ProjectService {
                 projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
                         ProjectStatus.NOT_STARTED))
@@ -155,6 +159,7 @@ public class ProjectService {
                 projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
                         ProjectStatus.NOT_STARTED))

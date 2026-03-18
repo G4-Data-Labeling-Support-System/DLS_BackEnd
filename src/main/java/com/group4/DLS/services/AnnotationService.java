@@ -137,12 +137,12 @@ public class AnnotationService {
         // }
 
         // Extract annotationIds
-        // List<String> annotationIds = annotations.stream()
-        //         .map(Annotation::getAnnotationId)
-        //         .toList();
+        List<String> annotationIds = annotations.stream()
+                .map(Annotation::getAnnotationId)
+                .toList();
 
         // Delete reviews in batch
-        // reviewService.removeReviewByAnnotationId(annotationIds);
+        reviewService.removeReviewByAnnotationId(annotationIds);
 
         // Delete annotations in batch
         for (Annotation annotation : annotations) {
