@@ -41,7 +41,6 @@ public class GuidelineService {
 
 
         Guideline guideline = guidelineMapper.toEntity(request);
-        guideline.setStatus(GuidelineStatus.ACTIVE);
         guideline.setProject(project);
         guideline.setVersion(1);
 
@@ -106,7 +105,7 @@ public class GuidelineService {
     public GuidelineResponse deleteGuideline(String guidelineId){
         Guideline guideline = guidelineRepository.findById(guidelineId)
                 .orElseThrow(() -> new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
-        guideline.setStatus(GuidelineStatus.INACTIVE);
+        guideline.setGuidelineStatus(GuidelineStatus.INACTIVE);
         guidelineRepository.save(guideline);
 
         // Log action

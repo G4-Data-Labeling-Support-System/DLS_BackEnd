@@ -122,20 +122,31 @@ public class AssignmentService {
         return datasetMapper.toDatasetResponse(assignment.getDataset());
     }
 
+    // ================= GET ASSIGNMENT BY DATASET_ID =================
+    public AssignmentResponse getAssignmentByDatasetId(String datasetId) {
+        
+        // Check dataset exist for current assignment
+        Assignment assignment = assignmentRepository.findByDatasetDatasetId(datasetId);
+
+        if (assignment == null) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        } 
+
+        return assignmentMapper.toResponse(assignment);
+    }
+
     // ================= CREATE NEW ASSIGNMENT =================
     public AssignmentResponse createAssignment(String projectId, @RequestBody AssignmentCreateRequest request) {
 
         User manager = userRepository.findById(request.getAssignedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        if (!"MANAGER".equalsIgnoreCase(manager.getRole().toString())) {
-            throw new AppException(ErrorCode.USER_NOT_MANAGER);
-        }
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         Dataset dataset = datasetRepository.findById(request.getDatasetId())
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+
         // Optional: kiểm tra dataset có thuộc project không
         if (dataset.getProject() == null ||
                 !dataset.getProject().getProjectId().equals(projectId)) {
@@ -228,7 +239,7 @@ public class AssignmentService {
         annotationService.removeAnnotationByAssignmentId(assignmentId);
 
         // Unmap Task and Dataitem from TaskItem
-        taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
+        // taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
 
         // Remove related Tasks
         taskService.removeTasksByAssignmentId(assignmentId);
@@ -243,12 +254,8 @@ public class AssignmentService {
             datasetRepository.save(dataset);
         }
 
-        assignment.setAssignmentStatus(AssignmentStatus.CANCELLED);// Soft delete assignment
-        assignment.setAssignedTo(null);
-        assignment.setAssignedBy(null);
-        assignment.setReviewedBy(null);
-        assignment.setDataset(null); // Remove dataset reference from assignment
-
+        assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);// Soft delete assignment
+        
         assignmentRepository.save(assignment);
 
         // // Log action

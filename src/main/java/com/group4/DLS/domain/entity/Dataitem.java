@@ -49,6 +49,10 @@ public class Dataitem {
     @Column(name = "data_type")
     DataType dataType;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dataitem_status")
+    DataItemStatus dataItemStatus = DataItemStatus.ACTIVE;
+
     @Column(name = "uploaded_at")
     LocalDateTime uploadedAt;
 

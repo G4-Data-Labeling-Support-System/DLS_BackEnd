@@ -2,13 +2,13 @@ package com.group4.DLS.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
-public enum DatasetStatus {
+public enum LabelStatus {
     
     ACTIVE,
     INACTIVE;
 
     @JsonCreator
-    public static DatasetStatus fromString(String value) {
-        return DatasetStatus.valueOf(value.toUpperCase());
+    public static LabelStatus fromString(String value) {
+        return LabelStatus.valueOf(value.toUpperCase());
     }
 }

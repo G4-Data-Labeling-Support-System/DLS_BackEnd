@@ -54,7 +54,6 @@ public class TaskDataItemService {
         return dataItemMapper.toDataItemResponse(dataitems);
     }
 
-    // get taskDataItem by taskId
     // ================= GET TASKDATAITEM BY TASK_ID =================
     public List<TaskDataITemResponse> getTaskDataItemsByTaskId(String taskId) {
         return taskDataitemMapper.toResponse(taskDataItemRepository.findByTask_TaskId(taskId));
@@ -62,8 +61,8 @@ public class TaskDataItemService {
 
     // ================= REMOVE TASKDATAITEM BY ASSIGNMENT_ID =================
     public void deleteTaskDataItemsByAssignmentId(String assignmentId) {
-        List<TaskDataItem> list = taskDataItemRepository.findByTask_Assignment_AssignmentId(assignmentId);
+        List<TaskDataItem> taskDataItems = taskDataItemRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
-        taskDataItemRepository.deleteAll(list);
+        taskDataItemRepository.deleteAll(taskDataItems);
     }
 }

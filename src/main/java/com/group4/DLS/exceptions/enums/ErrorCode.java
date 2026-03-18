@@ -48,6 +48,7 @@ public enum ErrorCode {
     REQUIRE_PROJECT_ID(400, "Project Id is needed"),
     DATASETNAME_CANNOT_BE_NULL(400, "Dataset name cannot be null"),
     DATASETNAME_ALREADY_EXSITS(400, "Dataset name already exists"),
+    ASSIGNMENT_BUSY(400, "Assignment is currently being used"),
 
     LABEL_NOT_FOUND(3001, "Label not found"),
     LABEL_ALREADY_EXISTS(3002, "Label already exists in this dataset"),
