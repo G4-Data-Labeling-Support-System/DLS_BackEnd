@@ -1,6 +1,7 @@
 package com.group4.DLS.domain.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.group4.DLS.domain.enums.ReviewStatus;
 
@@ -25,4 +26,5 @@ public class ReviewResponse {
     ReviewStatus reviewStatus;
     String comment;
     LocalDateTime reviewedAt;
+    List<String> evidences;
 }
