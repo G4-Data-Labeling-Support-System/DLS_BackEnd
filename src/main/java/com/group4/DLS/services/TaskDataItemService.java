@@ -5,6 +5,7 @@ import com.group4.DLS.domain.dto.response.TaskDataITemResponse;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.TaskDataItem;
+import com.group4.DLS.domain.enums.TaskDataItemStatus;
 import com.group4.DLS.mappers.DataItemMapper;
 import com.group4.DLS.mappers.TaskDataitemMapper;
 import com.group4.DLS.repositories.TaskDataItemRepository;

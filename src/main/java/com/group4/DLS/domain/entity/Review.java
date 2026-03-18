@@ -28,7 +28,7 @@ public class Review {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "review_status")
-    ReviewStatus reviewStatus = ReviewStatus.PENDING;
+    ReviewStatus reviewStatus;
 
     @Column(name = "comment")
     String comment;

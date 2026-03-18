@@ -62,7 +62,9 @@ public enum ErrorCode {
     PROJECT_MEMBER_ALREADY_EXISTS(400, "Project member already exists"),
     INVALID_ROLE(400, "Invalid role"),
     CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT(400,"Cannot delete dataitem after assignment created" ),
-    DATAITEM_MINIMUM_REQUIRED(400,"Must upload at least 20 dataitems when dataset already assigned");
+    DATAITEM_MINIMUM_REQUIRED(400,"Must upload at least 20 dataitems when dataset already assigned"),
+    ANNOTATION_STATUS_HAVE_REJECTED(400, "Task is having rejected annotation status "),
+    ANNOTATIONS_NOT_HAVE(400,"Annotations is empty" );
 
     final int code;
     final String message;

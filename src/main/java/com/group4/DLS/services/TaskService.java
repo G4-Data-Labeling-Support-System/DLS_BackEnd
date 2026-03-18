@@ -1,9 +1,11 @@
 package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.response.TaskResponse;
+import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
+import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.domain.enums.TaskType;
 import com.group4.DLS.exceptions.AppException;
@@ -29,6 +31,7 @@ public class TaskService {
     TaskDataItemService taskDataItemService;
     DataItemRepository dataItemRepository;
     AnnotationService annotationService;
+    ReviewService reviewService;
 
     // ================= GET ALL TASKS =================
     public List<TaskResponse> getAllTasks() {
@@ -74,6 +77,11 @@ public class TaskService {
         }
     }
 
+    //get annotation have not reject by task
+    public List<Annotation> getAnnotationsNotRejected(Task task){
+        return annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED );
+    }
+
     // ================= GET TASK BY ASSIGNMENT_ID =================
     public List<TaskResponse> getTasksByAssignmentId(String assignmentId) {
         //check assignment exist
@@ -85,6 +93,13 @@ public class TaskService {
         List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
         if (tasks.isEmpty()) {
             throw new AppException(ErrorCode.TASK_NOT_FOUND);
+        }
+
+        for (Task task: tasks){
+            if(task.getAnnotations().size() == getAnnotationsNotRejected(task).size()){
+                task.setFlagForReview(true);
+                reviewService.createReviews(task);
+            }
         }
 
         return taskMapper.toTaskResponse(tasks);

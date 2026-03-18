@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 public enum ReviewStatus {
 
-    PENDING,
     APPROVED,
     CORRECTED,
     REJECTED;

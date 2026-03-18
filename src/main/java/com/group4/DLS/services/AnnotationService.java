@@ -9,6 +9,7 @@ import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Label;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AnnotationMapper;
@@ -61,6 +62,19 @@ public class AnnotationService {
         }
 
         return Collections.emptyList();
+    }
+
+    //public all annnotation by task and not status
+    public List<Annotation> getAnnotationsByTaskAndNotStatus(Task task,AnnotationStatus status){
+        if(task == null){
+            throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
+        }
+
+        if(status.equals(AnnotationStatus.REJECTED)){
+            throw new AppException(ErrorCode.ANNOTATION_STATUS_HAVE_REJECTED);
+        }
+
+        return annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
     }
 
     // ================= CREATE NEW ANNOTATION =================
