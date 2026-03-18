@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -34,13 +33,11 @@ public class ProjectService {
     ProjectMapper projectMapper;
     ProjectMemberRepository projectMemberRepository;
 
-
     ActivityLogService logService;
 
-    //Lấy user hiện tại từ SecurityContextHolder
+    // Lấy user hiện tại từ SecurityContextHolder
     private User getCurrentUser() {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return (User) authentication.getPrincipal();
     }
@@ -49,12 +46,9 @@ public class ProjectService {
     public List<ProjectResponse> getAllProjects() {
         List<Project> projects = projectRepository.findByStatusIn(List.of(
                 ProjectStatus.INACTIVE,
-                ProjectStatus.ACTIVE,
-                ProjectStatus.CANCELLED,
                 ProjectStatus.COMPLETED,
                 ProjectStatus.IN_PROGRESS,
-                ProjectStatus.NOT_STARTED,
-                ProjectStatus.ON_HOLD));
+                ProjectStatus.NOT_STARTED));
         return projectMapper.toProjectResponse(projects);
     }
 
@@ -63,12 +57,9 @@ public class ProjectService {
         Project project = projectRepository.findByProjectIdAndStatusIn(projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
-                        ProjectStatus.ACTIVE,
-                        ProjectStatus.CANCELLED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.ON_HOLD))
+                        ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         return projectMapper.toProjectResponse(project);
@@ -79,9 +70,8 @@ public class ProjectService {
         User manager = getCurrentUser();
 
         boolean existsActiveProject = projectRepository.existsByProjectNameAndStatusNot(
-            request.getProjectName(), 
-            ProjectStatus.INACTIVE
-        );
+                request.getProjectName(),
+                ProjectStatus.INACTIVE);
 
         if (existsActiveProject) {
             throw new AppException(ErrorCode.PROJECT_ALREADY_EXISTS);
@@ -113,12 +103,10 @@ public class ProjectService {
         Project project = projectRepository.findByProjectIdAndStatusIn(
                 projectId,
                 List.of(
-                        ProjectStatus.ACTIVE,
-                        ProjectStatus.CANCELLED,
+                        ProjectStatus.INACTIVE,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.ON_HOLD))
+                        ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         projectMapper.updateProjectFromRequest(request, project);
@@ -140,12 +128,9 @@ public class ProjectService {
                 projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
-                        ProjectStatus.ACTIVE,
-                        ProjectStatus.CANCELLED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.ON_HOLD))
+                        ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         if (project != null) {
@@ -169,12 +154,10 @@ public class ProjectService {
         Project project = projectRepository.findByProjectIdAndStatusIn(
                 projectId,
                 List.of(
-                        ProjectStatus.ACTIVE,
-                        ProjectStatus.CANCELLED,
+                        ProjectStatus.INACTIVE,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.ON_HOLD))
+                        ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         project.setStatus(ProjectStatus.INACTIVE);

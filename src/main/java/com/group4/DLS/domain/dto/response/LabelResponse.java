@@ -6,6 +6,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+import com.group4.DLS.domain.enums.LabelStatus;
+
 @Builder
 @Getter
 @Setter
@@ -19,5 +21,6 @@ public class LabelResponse {
     String labelName;
     String color;
     String description;
+    LabelStatus labelStatus;
     LocalDateTime createdAt;
 }

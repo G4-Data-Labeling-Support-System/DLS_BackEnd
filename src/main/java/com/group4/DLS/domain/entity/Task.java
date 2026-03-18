@@ -20,7 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -53,15 +52,11 @@ public class Task {
     int completedCount;
 
     @Column(name = "flagForReview")
-    boolean flagForReview;
+    boolean flagForReview = false;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "task_status")
-    TaskStatus taskStatus;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "review_status")
-    ReviewStatus reviewStatus;
+    TaskStatus taskStatus = TaskStatus.NOT_STARTED;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;

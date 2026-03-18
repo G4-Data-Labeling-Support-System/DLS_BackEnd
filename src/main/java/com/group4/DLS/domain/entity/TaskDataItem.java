@@ -42,7 +42,7 @@ public class TaskDataItem {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "item_status")
-    TaskDataItemStatus taskDataItemStatus;
+    TaskDataItemStatus taskDataItemStatus = TaskDataItemStatus.IN_PROGRESS;
 
     @Column(name = "assigned_at")
     LocalDateTime assignedAt;
@@ -54,7 +54,7 @@ public class TaskDataItem {
     protected void onAssign() {
         this.assignedAt = LocalDateTime.now();
         if (this.taskDataItemStatus == null) {
-            this.taskDataItemStatus = TaskDataItemStatus.PENDING;
+            this.taskDataItemStatus = TaskDataItemStatus.IN_PROGRESS;
         }
     }
 }

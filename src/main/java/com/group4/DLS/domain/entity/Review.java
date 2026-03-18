@@ -28,7 +28,7 @@ public class Review {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "review_status")
-    ReviewStatus reviewStatus;
+    ReviewStatus reviewStatus = ReviewStatus.IN_PROGRESS;
 
     @Column(name = "comment")
     String comment;

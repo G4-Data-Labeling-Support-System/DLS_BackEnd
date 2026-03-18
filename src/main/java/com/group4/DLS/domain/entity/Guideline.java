@@ -2,6 +2,7 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDateTime;
 
+import com.group4.DLS.domain.enums.DatasetStatus;
 import com.group4.DLS.domain.enums.GuidelineStatus;
 
 import jakarta.persistence.*;
@@ -33,12 +34,12 @@ public class Guideline {
     @Column(name = "version", nullable = false)
     int version;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "guideline_status")
+    GuidelineStatus guidelineStatus = GuidelineStatus.ACTIVE;
+
     @Column(name = "created_at")
     LocalDateTime createdAt;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status")
-    GuidelineStatus status;
 
     @PrePersist
     protected void onCreate() {

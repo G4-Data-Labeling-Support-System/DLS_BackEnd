@@ -51,9 +51,13 @@ public class ActivityLog {
     @Column(name = "timestamp", nullable = false)
     LocalDateTime timestamp;
 
+    @Column(name = "is_active")
+    boolean active;
+
     @PrePersist
     protected void onAction() {
         this.timestamp = LocalDateTime.now();
+        this.active = true;
     }
 
     // Many Activity Logs belongs to One user

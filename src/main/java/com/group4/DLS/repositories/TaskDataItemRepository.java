@@ -1,6 +1,7 @@
 package com.group4.DLS.repositories;
 
 import com.group4.DLS.domain.entity.TaskDataItem;
+import com.group4.DLS.domain.enums.TaskDataItemStatus;
 
 import jakarta.transaction.Transactional;
 
@@ -14,30 +15,32 @@ import java.util.List;
 
 @Repository
 public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, String> {
+        
+        // Find all TaskDataItem that belongs to a specific Task
         List<TaskDataItem> findByTask_TaskId(String taskId);
 
-        //đếm item trong task
-    int countByTaskTaskId(String taskId);
+        // đếm item trong task
+        int countByTaskTaskId(String taskId);
 
-    void deleteByDataitem_Dataset_DatasetId(String datasetId);
+        void deleteByDataitem_Dataset_DatasetId(String datasetId);
 
-    @Modifying
-    @Query("""
-            UPDATE TaskDataItem t
-            SET t.itemIndex = t.itemIndex - 1
-            WHERE t.task.taskId = :taskId
-            AND t.itemIndex > :index
-            """)
-    void decreaseIndexAfter(@Param("taskId") String taskId,
-            @Param("index") int index);
+        @Modifying
+        @Query("""
+                        UPDATE TaskDataItem t
+                        SET t.itemIndex = t.itemIndex - 1
+                        WHERE t.task.taskId = :taskId
+                        AND t.itemIndex > :index
+                        """)
+        void decreaseIndexAfter(@Param("taskId") String taskId,
+                        @Param("index") int index);
 
-    @Modifying
-    @Query("""
-            DELETE FROM TaskDataItem t
-            WHERE t.dataitem.itemId = :dataitemId
-            """)
-    void deleteByDataitemId(@Param("dataitemId") String dataitemId);
+        @Modifying
+        @Query("""
+                        DELETE FROM TaskDataItem t
+                        WHERE t.dataitem.itemId = :dataitemId
+                        """)
+        void deleteByDataitemId(@Param("dataitemId") String dataitemId);
 
-    @Transactional
-    List<TaskDataItem> findByTask_Assignment_AssignmentId(String assignmentId);
+        @Transactional
+        List<TaskDataItem> findByTask_Assignment_AssignmentId(String assignmentId);
 }

@@ -1,6 +1,5 @@
 package com.group4.DLS.domain.dto.response;
 
-import com.group4.DLS.domain.enums.DatasetStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.group4.DLS.domain.enums.DatasetStatus;
 
 @Builder
 @Getter
@@ -22,11 +23,12 @@ public class DatasetResponse {
     String datasetId;
     String datasetName;
     String description;
-    DatasetStatus datasetStatus;
     int totalItems;
     LocalDateTime createdAt;
     ProjectResponse project;
     String assignmentId;
+    DatasetStatus datasetStatus;
+
     // List all dataItems
     List<DataItemResponse> dataitems;
     List<LabelResponse> labels;
