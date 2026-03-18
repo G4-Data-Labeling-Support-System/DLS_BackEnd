@@ -25,7 +25,7 @@ public class ReviewService {
     public void removeReviewByAnnotationId(List<String> annotationIds) {
 
         // Get all reviews for current annotation
-        List<Review> reviews = reviewRepository.findByAnnotation_AnnotationId(annotationIds);
+        // List<Review> reviews = reviewRepository.findByAnnotation_AnnotationId(annotationIds);
 
         reviewRepository.deleteByAnnotation_AnnotationIdIn(annotationIds);
     }
