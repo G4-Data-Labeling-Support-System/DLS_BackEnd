@@ -52,15 +52,11 @@ public class Task {
     int completedCount;
 
     @Column(name = "flagForReview")
-    boolean flagForReview;
+    boolean flagForReview = false;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "task_status")
     TaskStatus taskStatus = TaskStatus.NOT_STARTED;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "review_status")
-    ReviewStatus reviewStatus;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;

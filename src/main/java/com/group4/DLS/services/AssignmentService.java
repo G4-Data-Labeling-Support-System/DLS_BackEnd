@@ -140,15 +140,13 @@ public class AssignmentService {
 
         User manager = userRepository.findById(request.getAssignedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-        if (!"MANAGER".equalsIgnoreCase(manager.getRole().toString())) {
-            throw new AppException(ErrorCode.USER_NOT_MANAGER);
-        }
 
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         Dataset dataset = datasetRepository.findById(request.getDatasetId())
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+
         // Optional: kiểm tra dataset có thuộc project không
         if (dataset.getProject() == null ||
                 !dataset.getProject().getProjectId().equals(projectId)) {
@@ -241,7 +239,7 @@ public class AssignmentService {
         annotationService.removeAnnotationByAssignmentId(assignmentId);
 
         // Unmap Task and Dataitem from TaskItem
-        taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
+        // taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
 
         // Remove related Tasks
         taskService.removeTasksByAssignmentId(assignmentId);

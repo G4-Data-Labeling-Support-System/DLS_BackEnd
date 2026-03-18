@@ -1,6 +1,5 @@
 package com.group4.DLS.repositories;
 
-import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Task;
 
 import jakarta.transaction.Transactional;

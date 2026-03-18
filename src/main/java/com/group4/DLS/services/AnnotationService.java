@@ -9,6 +9,7 @@ import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Label;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AnnotationMapper;
@@ -118,19 +119,22 @@ public class AnnotationService {
         // Get all annotation related to task and assignment
         List<Annotation> annotations = annotationRepository.findByTask_Assignment_AssignmentId(assignmentId);
 
-        if (annotations.isEmpty()) {
-            return;
-        }
+        // if (annotations.isEmpty()) {
+        //     return;
+        // }
 
         // Extract annotationIds
-        List<String> annotationIds = annotations.stream()
-                .map(Annotation::getAnnotationId)
-                .toList();
+        // List<String> annotationIds = annotations.stream()
+        //         .map(Annotation::getAnnotationId)
+        //         .toList();
 
         // Delete reviews in batch
-        reviewService.removeReviewByAnnotationId(annotationIds);
+        // reviewService.removeReviewByAnnotationId(annotationIds);
 
         // Delete annotations in batch
-        annotationRepository.deleteAll(annotations);
+        for (Annotation annotation : annotations) {
+            annotation.setAnnotationStatus(AnnotationStatus.INACTIVE);
+        }
+        annotationRepository.saveAll(annotations);
     }
 }

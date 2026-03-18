@@ -45,6 +45,7 @@ public class DatasetService {
     DatasetMapper datasetMapper;
 
     DataitemService dataitemService;
+    AnnotationService annotationService;
     AssignmentService assignmentService;
 
     // ===== LIST ALL DATASET =====
@@ -160,43 +161,39 @@ public class DatasetService {
 
     // ===== DELETE DATASET =====
     @Transactional
-    public void deleteDataset(String datasetId) {
+    public DatasetResponse deleteDataset(String datasetId) {
         // Check dataset exists (current dataset)
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-        // Check Assignment status (Only assignment with status INACTIVE then the
+        // Check Assignment status (Only assignment with status ASSIGNED then the
         // dataset can delete)
         Assignment assignment = assignmentRepository.findByDatasetDatasetId(datasetId);
 
         // for (Assignment assignment : assignments) {
-            if (assignment.getAssignmentStatus().equals(AssignmentStatus.INACTIVE)) {
+            if (assignment.getAssignmentStatus().equals(AssignmentStatus.ASSIGNED)
+        ) {
 
-                // Remove TaskDataItem
-                // Get tasks for current assignment
-                List<Task> tasks = assignment.getTasks();
-                for (Task task : tasks) {
-                    // Get a list of taskitem related to current task
-                    List<TaskDataItem> taskDataItems = taskDataItemRepository.findByTask_TaskId(task.getTaskId());
-                    for (TaskDataItem taskItem : taskDataItems) {
-                        taskItem.setTaskDataItemStatus(TaskDataItemStatus.INACTIVE);
-                    }
-                }
-
-                // Soft remove assignment
-                assignmentService.removeAssignment(assignment.getAssignmentId());
-
-                // Soft remove DataItems
+                // Remove Dataitem
+                // Get dataitem for current dataset and set inactive
                 List<Dataitem> dataitems = dataItemRepository.findByDataset_DatasetId(datasetId);
                 for (Dataitem dataitem : dataitems) {
                     dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
                 }
 
+                // Soft remove assignment
+                // assignmentService.removeAssignment(assignment.getAssignmentId());
+
+                // Soft remove related annotation
+                annotationService.removeAnnotationByAssignmentId(datasetId);
+
                 // Set dataset status to INACTIVE
                 dataset.setDatasetStatus(DatasetStatus.INACTIVE);
+            } else {
+                throw new AppException(ErrorCode.ASSIGNMENT_BUSY);
             }
         // }
 
-        datasetRepository.save(dataset);
+        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
     }
 }

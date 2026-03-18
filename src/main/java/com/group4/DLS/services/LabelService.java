@@ -139,6 +139,6 @@ public class LabelService {
 
         label.setStatus(LabelStatus.INACTIVE);
 
-        labelRepository.delete(label);
+        labelRepository.save(label);
     }
 }

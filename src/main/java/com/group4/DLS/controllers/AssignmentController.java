@@ -70,6 +70,7 @@ public class AssignmentController {
 
     // 2 Create assignment
     @PostMapping("/projects/{projectId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Create new assignment",
         description = "Create a new assignment linking a project with a dataset")
