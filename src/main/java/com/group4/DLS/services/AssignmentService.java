@@ -246,8 +246,7 @@ public class AssignmentService {
 
         // Remove assignment reference from dataset
         if (!datasetRepository.findById(assignment.getDataset().getDatasetId()).isEmpty()) {
-            Dataset dataset = datasetRepository.findById(assignment.getDataset().getDatasetId())
-                    .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+            Dataset dataset = assignment.getDataset();
 
             dataset.setAssignment(null);
 

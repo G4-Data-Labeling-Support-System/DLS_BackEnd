@@ -36,7 +36,11 @@ public class ReviewService {
         // Get all reviews for current annotation
         List<Review> reviews = reviewRepository.findByAnnotation_AnnotationIdIn(annotationIds);
 
-        reviewRepository.deleteByAnnotation_AnnotationIdIn(annotationIds);
+        for (Review review : reviews) {
+            review.setReviewStatus(ReviewStatus.INACTIVE);
+        }
+
+        reviewRepository.saveAll(reviews);
     }
 
     // create when flagForReview of task is true;

@@ -78,13 +78,14 @@ public class TaskService {
         }
     }
 
-    //get annotation have not reject by task
-    public List<Annotation> getAnnotationsNotRejected(Task task){
-        return annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED );
+    // get annotation have not reject by task
+    public List<Annotation> getAnnotationsNotRejected(Task task) {
+        return annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED);
     }
 
     // ================= GET TASK BY ASSIGNMENT_ID =================
     public List<TaskResponse> getTasksByAssignmentId(String assignmentId) {
+
         // check assignment exist
         if (!assignmentRepository.existsById(assignmentId)) {
             throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
@@ -96,11 +97,17 @@ public class TaskService {
             throw new AppException(ErrorCode.TASK_NOT_FOUND);
         }
 
-        for (Task task: tasks){
-            if(task.getAnnotations().size() == getAnnotationsNotRejected(task).size()){
-                task.setFlagForReview(true);
-                reviewService.createReviews(task);
-            }
+        // Only tasks with NO rejected annotation
+        List<Task> validTasks = tasks.stream()
+                .filter(task -> task.getAnnotations().stream()
+                        .noneMatch(a -> a.getAnnotationStatus() == AnnotationStatus.REJECTED))
+                .toList();
+
+        for (Task task : validTasks) {
+            // if(task.getAnnotations().size() == getAnnotationsNotRejected(task).size()){
+            // }
+            task.setFlagForReview(true);
+            reviewService.createReviews(task);
         }
 
         return taskMapper.toTaskResponse(tasks);
