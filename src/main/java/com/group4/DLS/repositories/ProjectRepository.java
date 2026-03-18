@@ -9,16 +9,16 @@ import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.enums.ProjectStatus;
 
 public interface ProjectRepository extends JpaRepository<Project, String> {
-    boolean existsByProjectNameAndStatusNot(
+    boolean existsByProjectNameAndProjectStatusNot(
         String projectName,
         ProjectStatus status
     );
     
-    List<Project> findByStatusIn(
+    List<Project> findByProjectStatusIn(
         List<ProjectStatus> statuses
     );
     
-    Optional<Project> findByProjectIdAndStatusIn(
+    Optional<Project> findByProjectIdAndProjectStatusIn(
         String projectId,
         List<ProjectStatus> statuses
     );
