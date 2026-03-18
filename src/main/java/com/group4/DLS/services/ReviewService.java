@@ -24,4 +24,6 @@ public class ReviewService {
     public void removeReviewByAnnotationId(List<String> annotationIds) {
         reviewRepository.deleteByAnnotation_AnnotationIdIn(annotationIds);
     }
+
+
 }
