@@ -12,7 +12,6 @@ management:
 
 jwt:
   secret: ${JWT_SECRET:default-dev-secret}
-  # secret: rP0Q3Q1hh2YEOjD9hrloTfhphgq2vK7SwT3ctd30YQw
   expiration: 3600000
 
 seaweedfs:
