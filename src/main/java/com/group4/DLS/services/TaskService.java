@@ -85,7 +85,6 @@ public class TaskService {
 
     // ================= GET TASK BY ASSIGNMENT_ID =================
     public List<TaskResponse> getTasksByAssignmentId(String assignmentId) {
-
         // check assignment exist
         if (!assignmentRepository.existsById(assignmentId)) {
             throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
@@ -97,17 +96,16 @@ public class TaskService {
             throw new AppException(ErrorCode.TASK_NOT_FOUND);
         }
 
-        // Only tasks with NO rejected annotation
-        List<Task> validTasks = tasks.stream()
-                .filter(task -> task.getAnnotations().stream()
-                        .noneMatch(a -> a.getAnnotationStatus() == AnnotationStatus.REJECTED))
-                .toList();
-
-        for (Task task : validTasks) {
-            // if(task.getAnnotations().size() == getAnnotationsNotRejected(task).size()){
-            // }
-            task.setFlagForReview(true);
-            reviewService.createReviews(task);
+        for (Task task: tasks){
+            //so sánh số item trong task với số annotation đã submitted + approved
+            //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
+            //case2: nếu 10 item approved và 10 item submitted sau khi sửa
+            // nếu có annatation có status là rejected thì không set lại
+            if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size()){
+                reviewService.createReviews(task);
+                task.setTaskStatus(TaskStatus.IN_PROGRESS);
+                task.setFlagForReview(true);
+            }
         }
 
         return taskMapper.toTaskResponse(tasks);

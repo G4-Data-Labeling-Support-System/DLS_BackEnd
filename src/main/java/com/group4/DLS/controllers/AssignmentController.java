@@ -40,6 +40,7 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
     @GetMapping("/annotators/{annotatorId}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR')")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
         response.setCode(200);
