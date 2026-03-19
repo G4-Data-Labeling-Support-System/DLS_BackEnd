@@ -68,7 +68,7 @@ public class AssignmentService {
                 .stream()
                 .map(assignmentMapper::toResponse)
                 .toList();
-        
+
         // check if empty
         if (assignments.isEmpty()) {
             throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
