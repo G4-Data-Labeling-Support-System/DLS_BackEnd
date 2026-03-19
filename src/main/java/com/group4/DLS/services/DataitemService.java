@@ -184,8 +184,9 @@ public class DataitemService {
                 taskDataItemRepository.decreaseIndexAfter(updateIndexTaskItem.getTaskItemId(), index);
             }
         }
+        dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
         //  xóa dataitem
-        dataitemRepository.delete(dataitem);
+        dataitemRepository.save(dataitem);
         // xóa file trên storage
         seaweedFilerUploadService.deleteImageByUrl(dataitem.getUrl());
     }
