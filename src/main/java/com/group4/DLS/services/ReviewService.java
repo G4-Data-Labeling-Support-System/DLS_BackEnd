@@ -91,7 +91,7 @@ public class ReviewService {
             Annotation annotation = annotationRepository.findById(item.getAnnotationId())
                     .orElseThrow(() -> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
 
-            Review review = reviewRepository.findReviewByAnnotation_AnnotationIdAndReviewedAt(annotation.getAnnotationId());
+            Review review = reviewRepository.findTopByAnnotation_AnnotationIdOrderByReviewedAtDesc(annotation.getAnnotationId());
 
             review.setReviewedAt(LocalDateTime.now());//set time
             review.setComment(item.getComment()); // set comment

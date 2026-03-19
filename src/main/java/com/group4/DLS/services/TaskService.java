@@ -97,6 +97,7 @@ public class TaskService {
         }
 
         for (Task task: tasks){
+            setCompletedAnnotationAnDataItem(task);
             //so sánh số item trong task với số annotation đã submitted + approved
             //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
             //case2: nếu 10 item approved và 10 item submitted sau khi sửa
@@ -114,8 +115,11 @@ public class TaskService {
         return taskMapper.toTaskResponse(tasks);
     }
 
-    //get number annotation of task is aprroved
-    public int getAnnotationStatusApproved(Task)
+    //set number annotation of task is aprroved
+    public void setCompletedAnnotationAnDataItem(Task task){
+        task.setCompletedCount(annotationService.getNumberAnnotationIsApproved(task));
+        taskRepository.save(task);
+    }
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
     public void removeTasksByAssignmentId(String assignmentId) {
