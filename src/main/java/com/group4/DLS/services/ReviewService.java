@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +17,9 @@ import com.group4.DLS.domain.enums.ReviewStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 
+import com.group4.DLS.mappers.ReviewMapper;
+import com.group4.DLS.repositories.TaskRepository;
+import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.stereotype.Service;
 
 import com.group4.DLS.domain.entity.Review;
@@ -25,6 +29,7 @@ import com.group4.DLS.repositories.ReviewRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,9 @@ import lombok.experimental.FieldDefaults;
 public class ReviewService {
     ReviewRepository reviewRepository;
     AnnotationRepository annotationRepository;
+    SeaweedFilerUploadService seaweedFilerUploadService;
+    ReviewMapper reviewMapper;
+    private final TaskRepository taskRepository;
 
     // ================= REMOVE REVIEW BY ANNOTATION_ID =================
     @Transactional
@@ -75,24 +83,37 @@ public class ReviewService {
 
     }
 
-    public List<ReviewResponse> isReviewing(ReviewUpdateRequest request){
-        List<ReviewResponse> reviews = new ArrayList<>();
-        int count = 0;
+    public List<ReviewResponse> isReviewing(ReviewUpdateRequest request) throws IOException {
+        List<Review> reviews = new ArrayList<>();
+
         for (ReviewItemRequest item : request.getReviews()) {
 
-            Review review = reviewRepository.findById((item.getAnnotationId()))
-                    .orElseThrow(()-> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+            Annotation annotation = annotationRepository.findById(item.getAnnotationId())
+                    .orElseThrow(() -> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
 
-            review.setReviewedAt(LocalDateTime.now());
-            review.setComment(item.getComment());
-            if(item.setReviewStatus(ReviewStatus.)){
-                count++;
-            }
+            Review review = reviewRepository.findByAnnotation_AnnotationId(annotation.getAnnotationId());
+
+            review.setReviewedAt(LocalDateTime.now());//set time
+            review.setComment(item.getComment()); // set comment
             review.setReviewStatus(item.getReviewStatus());
+            List<String> envidences = new ArrayList<>();
+            for(MultipartFile url: item.getEnvidence()){
+                envidences.add(seaweedFilerUploadService.uploadImage(url, "Envidence"));//tạo chuỗi string ảnh
+            }
+            review.setEvidences(envidences);
 
+            //số annotation được approved
+            if(item.getReviewStatus().equals(ReviewStatus.APPROVED)){
+                Task task = annotation.getTask();
+                task.setCompletedCount(task.getCompletedCount()+1);
+            }
 
-
+            reviews.add(review);
         }
+        reviewRepository.saveAll(reviews);
+
+        return reviewMapper.toReviewResponse(reviews);
+
     }
 
 }
