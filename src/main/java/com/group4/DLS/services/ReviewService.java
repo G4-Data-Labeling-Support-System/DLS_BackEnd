@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +77,19 @@ public class ReviewService {
 
     public List<ReviewResponse> isReviewing(ReviewUpdateRequest request){
         List<ReviewResponse> reviews = new ArrayList<>();
-        for (ReviewItemRequest item : request) {
+        int count = 0;
+        for (ReviewItemRequest item : request.getReviews()) {
+
+            Review review = reviewRepository.findById((item.getAnnotationId()))
+                    .orElseThrow(()-> new AppException(ErrorCode.REVIEW_NOT_FOUND));
+
+            review.setReviewedAt(LocalDateTime.now());
+            review.setComment(item.getComment());
+            if(item.setReviewStatus(ReviewStatus.)){
+                count++;
+            }
+            review.setReviewStatus(item.getReviewStatus());
+
 
 
         }
