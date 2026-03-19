@@ -103,8 +103,11 @@ public class TaskService {
             // nếu có annatation có status là rejected thì không set lại
             if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size() && !task.getAnnotations().isEmpty()){
                 reviewService.createReviews(task);
-                task.setTaskStatus(TaskStatus.IN_PROGRESS);
+                task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
+            }else{
+                task.setTaskStatus(TaskStatus.IN_PROGRESS);
+                task.setFlagForReview(false);
             }
         }
 
