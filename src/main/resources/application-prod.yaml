@@ -6,7 +6,7 @@ spring:
     name: DLS
 
   datasource:
-    url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS-PROD"
+    url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS_PROD"
     username: root
     password: ${DB_PASSWORD}
 

@@ -25,7 +25,9 @@ def call(config) {
 
             sh """
                 docker run -d --name ${containerName} \
-                -p ${config.testPort}:${config.testPort} ${imageTagged}
+                -p ${config.testPort}:${config.testPort} \
+                -e SPRING_PROFILES_ACTIVE=test \
+                ${imageTagged}
 
                 echo "Waiting for Spring Boot health check..."
 

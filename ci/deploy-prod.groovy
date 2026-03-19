@@ -22,8 +22,8 @@ def call(config) {
                     --name ${config.appName} \
                     --restart unless-stopped \
                     -e SPRING_PROFILES_ACTIVE=prod \
-                    -e DB_PASSWORD='${DB_PASSWORD}' \
-                    -e JWT_SECRET='${JWT_SECRET}' \
+                    -e DB_PASSWORD="${DB_PASSWORD}" \
+                    -e JWT_SECRET="${JWT_SECRET}" \
                     ${imageTagged}"
                 """
             }
