@@ -1,9 +1,22 @@
-server:
-  port: 8080
-
 spring:
   profiles:
-    active:
-      - dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
   application:
     name: DLS
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+jwt:
+  secret: ${JWT_SECRET:default-dev-secret}
+  # secret: rP0Q3Q1hh2YEOjD9hrloTfhphgq2vK7SwT3ctd30YQw
+  expiration: 3600000
+
+seaweedfs:
+  master:
+    url: https://master-seaweed.hikarimoon.pro
+  filer:
+    url: https://filer-seaweed.hikarimoon.pro
