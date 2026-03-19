@@ -91,7 +91,7 @@ public class ReviewService {
             Annotation annotation = annotationRepository.findById(item.getAnnotationId())
                     .orElseThrow(() -> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
 
-            Review review = reviewRepository.findTopByAnnotation_AnnotationIdOrderByReviewedAtDesc(annotation.getAnnotationId());
+            Review review = reviewRepository.findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
 
             review.setReviewedAt(LocalDateTime.now());//set time
             review.setComment(item.getComment()); // set comment
@@ -110,6 +110,7 @@ public class ReviewService {
             reviews.add(review);
         }
         annotationRepository.saveAll(annotations);
+        for(Annotation annotation: annotations)
         reviewRepository.saveAll(reviews);
 
         return reviewMapper.toReviewResponse(reviews);
@@ -120,4 +121,5 @@ public class ReviewService {
         List<Review> reviews = reviewRepository.findByAnnotation_AnnotationId(annotationId);
         return reviewMapper.toReviewResponse(reviews);
     }
+
 }
