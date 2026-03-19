@@ -78,9 +78,9 @@ public class TaskService {
         }
     }
 
-    //get annotation have not reject by task
-    public List<Annotation> getAnnotationsNotRejected(Task task){
-        return annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED );
+    // get annotation have not reject by task
+    public List<Annotation> getAnnotationsNotRejected(Task task) {
+        return annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED);
     }
 
     // ================= GET TASK BY ASSIGNMENT_ID =================

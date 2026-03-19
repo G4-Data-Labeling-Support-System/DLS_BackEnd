@@ -9,10 +9,12 @@ import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.ReviewStatus;
-import org.springframework.stereotype.Service;
-
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
+
+import org.springframework.stereotype.Service;
+
+import com.group4.DLS.domain.entity.Review;
 import com.group4.DLS.repositories.AnnotationRepository;
 import com.group4.DLS.repositories.ReviewRepository;
 
@@ -30,16 +32,23 @@ public class ReviewService {
     // ================= REMOVE REVIEW BY ANNOTATION_ID =================
     @Transactional
     public void removeReviewByAnnotationId(List<String> annotationIds) {
-        reviewRepository.deleteByAnnotation_AnnotationIdIn(annotationIds);
+
+        // Get all reviews for current annotation
+        List<Review> reviews = reviewRepository.findByAnnotation_AnnotationIdIn(annotationIds);
+
+        for (Review review : reviews) {
+            review.setReviewStatus(ReviewStatus.INACTIVE);
+        }
+
+        reviewRepository.saveAll(reviews);
     }
 
-
-    //create when flagForReview of task is true;
-    public void createReviews(Task task){
+    // create when flagForReview of task is true;
+    public void createReviews(Task task) {
         List<Annotation> annotations = annotationRepository.findAnnotationsByTask(task);
 
         User reviewer = task.getAssignment().getReviewedBy();
-        if(annotations.isEmpty()){
+        if (annotations.isEmpty()) {
             throw new AppException(ErrorCode.ANNOTATIONS_NOT_HAVE);
         }
         List<Review> reviewsToSave = new ArrayList<>();

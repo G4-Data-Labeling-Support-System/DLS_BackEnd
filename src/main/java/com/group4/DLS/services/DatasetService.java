@@ -47,6 +47,7 @@ public class DatasetService {
     DataitemService dataitemService;
     AnnotationService annotationService;
     AssignmentService assignmentService;
+    LabelService labelService;
 
     // ===== LIST ALL DATASET =====
     public List<DatasetResponse> getAllDatasets() {
@@ -162,38 +163,44 @@ public class DatasetService {
     // ===== DELETE DATASET =====
     @Transactional
     public DatasetResponse deleteDataset(String datasetId) {
+        
         // Check dataset exists (current dataset)
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-        // Check Assignment status (Only assignment with status ASSIGNED then the
-        // dataset can delete)
         Assignment assignment = assignmentRepository.findByDatasetDatasetId(datasetId);
 
-        // for (Assignment assignment : assignments) {
-            if (assignment.getAssignmentStatus().equals(AssignmentStatus.ASSIGNED)
-        ) {
-
-                // Remove Dataitem
-                // Get dataitem for current dataset and set inactive
-                List<Dataitem> dataitems = dataItemRepository.findByDataset_DatasetId(datasetId);
-                for (Dataitem dataitem : dataitems) {
-                    dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
-                }
-
-                // Soft remove assignment
-                // assignmentService.removeAssignment(assignment.getAssignmentId());
-
-                // Soft remove related annotation
-                annotationService.removeAnnotationByAssignmentId(datasetId);
-
-                // Set dataset status to INACTIVE
-                dataset.setDatasetStatus(DatasetStatus.INACTIVE);
-            } else {
-                throw new AppException(ErrorCode.ASSIGNMENT_BUSY);
-            }
-        // }
+        // Case 1: No assignment -> allow to delete
+        if (assignment == null) {
+            performDelete(datasetId, dataset);
+        } 
+        // Case 2: Assignment exists but not BUSY -> allow to delete
+        else if (assignment.getAssignmentStatus().equals(AssignmentStatus.ASSIGNED)) {
+            performDelete(datasetId, dataset);
+        } 
+        // Case 3: Assignment BUSY -> not allow to delete
+        else {
+            throw new AppException(ErrorCode.ASSIGNMENT_BUSY);
+        }
 
         return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+    }
+
+    public void performDelete(String datasetId, Dataset dataset) {
+
+        // Remove Dataitem
+        List<Dataitem> dataitems = dataItemRepository.findByDataset_DatasetId(datasetId);
+        for (Dataitem dataitem : dataitems) {
+            dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
+        }
+
+        // Soft remove related annotation
+        annotationService.removeAnnotationByAssignmentId(datasetId);
+
+        // Soft remove related labels
+        labelService.deleteLabelsByDatasetId(datasetId);
+
+        // Set dataset status to INACTIVE
+        dataset.setDatasetStatus(DatasetStatus.INACTIVE);
     }
 }

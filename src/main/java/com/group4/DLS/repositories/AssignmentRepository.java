@@ -13,6 +13,8 @@ public interface AssignmentRepository extends JpaRepository<Assignment, String> 
 
     boolean existsByAssignmentName(String assignmentName);
 
+    boolean existsByDataset_DatasetIdAndAssignmentIdNot(String datasetId, String assignmentId);
+
     List<Assignment> findByProject_ProjectId(String projectId);
 
     List<Assignment> findByAssignedTo_UserId(String userId);

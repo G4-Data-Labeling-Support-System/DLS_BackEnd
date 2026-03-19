@@ -19,6 +19,7 @@ public interface ProjectMapper {
     List<ProjectResponse> toProjectResponse(List<Project> projects);
 
     @Mapping(target = "projectId", ignore = true)
+    @Mapping(target = "projectStatus", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "assignments", ignore = true)
@@ -29,7 +30,7 @@ public interface ProjectMapper {
     );
 
     @Mapping(target = "projectId", ignore = true)
-    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "projectStatus", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "assignments", ignore = true)

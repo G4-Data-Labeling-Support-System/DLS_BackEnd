@@ -49,6 +49,7 @@ public enum ErrorCode {
     DATASETNAME_CANNOT_BE_NULL(400, "Dataset name cannot be null"),
     DATASETNAME_ALREADY_EXSITS(400, "Dataset name already exists"),
     ASSIGNMENT_BUSY(400, "Assignment is currently being used"),
+    DATASET_ALREADY_IN_USE(400, "Dataset already in use"),
 
     LABEL_NOT_FOUND(3001, "Label not found"),
     LABEL_ALREADY_EXISTS(3002, "Label already exists in this dataset"),

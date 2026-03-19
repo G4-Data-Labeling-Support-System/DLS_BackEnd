@@ -44,8 +44,9 @@ public class ProjectService {
 
     // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
     public List<ProjectResponse> getAllProjects() {
-        List<Project> projects = projectRepository.findByStatusIn(List.of(
+        List<Project> projects = projectRepository.findByProjectStatusIn(List.of(
                 ProjectStatus.INACTIVE,
+                ProjectStatus.NOT_STARTED,
                 ProjectStatus.COMPLETED,
                 ProjectStatus.IN_PROGRESS,
                 ProjectStatus.NOT_STARTED));
@@ -54,9 +55,10 @@ public class ProjectService {
 
     // ================= GET PROJECT BY ID =================
     public ProjectResponse getProjectById(String projectId) {
-        Project project = projectRepository.findByProjectIdAndStatusIn(projectId,
+        Project project = projectRepository.findByProjectIdAndProjectStatusIn(projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
                         ProjectStatus.NOT_STARTED))
@@ -69,7 +71,7 @@ public class ProjectService {
     public ProjectResponse createProject(ProjectCreationRequest request) {
         User manager = getCurrentUser();
 
-        boolean existsActiveProject = projectRepository.existsByProjectNameAndStatusNot(
+        boolean existsActiveProject = projectRepository.existsByProjectNameAndProjectStatusNot(
                 request.getProjectName(),
                 ProjectStatus.INACTIVE);
 
@@ -100,10 +102,11 @@ public class ProjectService {
 
     // ================= UPDATE PROJECT =================
     public ProjectResponse updateProject(String projectId, ProjectUpdateRequest request) {
-        Project project = projectRepository.findByProjectIdAndStatusIn(
+        Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
                         ProjectStatus.NOT_STARTED))
@@ -124,10 +127,11 @@ public class ProjectService {
 
     // ================= UPDATE PROJECT STATUS =================
     public ProjectResponse updateProjectStatus(String projectId, ProjectStatusUpdateRequest request) {
-        Project project = projectRepository.findByProjectIdAndStatusIn(
+        Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
                         ProjectStatus.NOT_STARTED))
@@ -151,16 +155,17 @@ public class ProjectService {
 
     // ================= DELETE PROJECT =================
     public void deleteProject(String projectId) {
-        Project project = projectRepository.findByProjectIdAndStatusIn(
+        Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
                         ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        project.setStatus(ProjectStatus.INACTIVE);
+        project.setProjectStatus(ProjectStatus.INACTIVE);
         projectRepository.save(project);
 
         // Log action

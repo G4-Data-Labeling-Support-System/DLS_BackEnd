@@ -127,12 +127,8 @@ public class LabelService {
         return labelMapper.toLabelResponse(updated);
     }
 
-    /*
-     * ======================
-     * DELETE
-     * ======================
-     */
-    public void delete(String labelId) {
+    // ===== DELETE LABEL BY LABEL_ID =====
+    public void deleteLabelByLabelId(String labelId) {
 
         Label label = labelRepository.findById(labelId)
                 .orElseThrow(() -> new AppException(ErrorCode.LABEL_NOT_FOUND));
@@ -140,5 +136,16 @@ public class LabelService {
         label.setStatus(LabelStatus.INACTIVE);
 
         labelRepository.save(label);
+    }
+
+    // ===== DELETE LABELS BY DATASET_ID =====
+    public void deleteLabelsByDatasetId(String datasetId) {
+
+        // Find all labels that current dataset have
+        List<Label> labels = labelRepository.findByDataset_DatasetId(datasetId);
+
+        for (Label label : labels) {
+            label.setStatus(LabelStatus.INACTIVE);
+        }
     }
 }

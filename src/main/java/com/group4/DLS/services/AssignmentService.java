@@ -1,6 +1,7 @@
 package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
+import com.group4.DLS.domain.dto.request.AssignmentDatasetChangeRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
@@ -232,6 +233,29 @@ public class AssignmentService {
         return assignmentMapper.toResponse(assignment);
     }
 
+    // ================= CHANGE DATASET FOR CURRENT ASSIGNMENT =================
+    public AssignmentResponse changeDatasetForCurrentAssignment(String assignmentId, AssignmentDatasetChangeRequest request) {
+
+        // Get current assignment
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        // Get new dataset
+        Dataset dataset = datasetRepository.findById(request.getDatasetId())
+                .orElseThrow(() ->  new AppException(ErrorCode.DATASET_NOT_FOUND));
+
+        // Check if current dataset is being use by other assignment
+        boolean isUsed = assignmentRepository.existsByDataset_DatasetIdAndAssignmentIdNot(dataset.getDatasetId(), assignmentId);
+
+        if (isUsed) {
+            throw new AppException(ErrorCode.DATASET_ALREADY_IN_USE);
+        }
+
+        assignment.setDataset(dataset);
+
+        return assignmentMapper.toResponse(assignmentRepository.save(assignment));
+    }
+
     // ================= REMOVE CURRENT ASSIGNMENT =================
     public void removeAssignment(String assignmentId) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
@@ -248,8 +272,7 @@ public class AssignmentService {
 
         // Remove assignment reference from dataset
         if (!datasetRepository.findById(assignment.getDataset().getDatasetId()).isEmpty()) {
-            Dataset dataset = datasetRepository.findById(assignment.getDataset().getDatasetId())
-                    .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+            Dataset dataset = assignment.getDataset();
 
             dataset.setAssignment(null);
 
