@@ -101,7 +101,7 @@ public class TaskService {
             //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
             //case2: nếu 10 item approved và 10 item submitted sau khi sửa
             // nếu có annatation có status là rejected thì không set lại
-            if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size()){
+            if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size() && !task.getAnnotations().isEmpty()){
                 reviewService.createReviews(task);
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(true);
