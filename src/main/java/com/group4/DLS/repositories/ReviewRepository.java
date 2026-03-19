@@ -1,6 +1,5 @@
 package com.group4.DLS.repositories;
 
-import com.group4.DLS.domain.entity.Annotation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,5 +18,7 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
     @Transactional
     void deleteByAnnotation_AnnotationIdIn(List<String> annotationIds);
 
-    Review findByAnnotation_AnnotationId(String annotationId);
+    Review findReviewByAnnotation_AnnotationIdAndReviewedAt(String annotationId);
+
+    List<Review> findByAnnotation_AnnotationId(String annotationId);
 }

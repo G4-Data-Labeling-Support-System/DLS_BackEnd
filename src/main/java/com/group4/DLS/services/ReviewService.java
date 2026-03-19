@@ -19,10 +19,8 @@ import com.group4.DLS.exceptions.enums.ErrorCode;
 
 import com.group4.DLS.mappers.ReviewMapper;
 import com.group4.DLS.repositories.TaskRepository;
-import org.hibernate.cache.spi.support.AbstractReadWriteAccess;
 import org.springframework.stereotype.Service;
 
-import com.group4.DLS.domain.entity.Review;
 import com.group4.DLS.repositories.AnnotationRepository;
 import com.group4.DLS.repositories.ReviewRepository;
 
@@ -83,15 +81,17 @@ public class ReviewService {
 
     }
 
-    public List<ReviewResponse> isReviewing(ReviewUpdateRequest request) throws IOException {
+    //after reviewer reviews success
+    public List<ReviewResponse> reviewed(ReviewUpdateRequest request) throws IOException {
         List<Review> reviews = new ArrayList<>();
+        List<Annotation> annotations = new ArrayList<>();
 
         for (ReviewItemRequest item : request.getReviews()) {
 
             Annotation annotation = annotationRepository.findById(item.getAnnotationId())
                     .orElseThrow(() -> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
 
-            Review review = reviewRepository.findByAnnotation_AnnotationId(annotation.getAnnotationId());
+            Review review = reviewRepository.findReviewByAnnotation_AnnotationIdAndReviewedAt(annotation.getAnnotationId());
 
             review.setReviewedAt(LocalDateTime.now());//set time
             review.setComment(item.getComment()); // set comment
@@ -102,18 +102,20 @@ public class ReviewService {
             }
             review.setEvidences(envidences);
 
-            //số annotation được approved
-            if(item.getReviewStatus().equals(ReviewStatus.APPROVED)){
-                Task task = annotation.getTask();
-                task.setCompletedCount(task.getCompletedCount()+1);
-            }
-
+            String status = item.getReviewStatus().toString();
+            annotation.setAnnotationStatus(AnnotationStatus.valueOf(status));
+            annotations.add(annotation);
             reviews.add(review);
         }
+        annotationRepository.saveAll(annotations);
         reviewRepository.saveAll(reviews);
 
         return reviewMapper.toReviewResponse(reviews);
-
     }
 
+    //get reviews by AnnotationId
+    public List<ReviewResponse> reviewsOfAnntation(String annotationId){
+        List<Review> reviews = reviewRepository.findByAnnotation_AnnotationId(annotationId);
+        return reviewMapper.toReviewResponse(reviews);
+    }
 }

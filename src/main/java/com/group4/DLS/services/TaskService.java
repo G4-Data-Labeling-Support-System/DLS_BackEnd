@@ -114,6 +114,9 @@ public class TaskService {
         return taskMapper.toTaskResponse(tasks);
     }
 
+    //get number annotation of task is aprroved
+    public int getAnnotationStatusApproved(Task)
+
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
     public void removeTasksByAssignmentId(String assignmentId) {
 
