@@ -36,11 +36,6 @@ public class Review {
     @Column(name = "reviewed_at")
     LocalDateTime reviewedAt;
 
-    @PrePersist
-    protected void onCreate() {
-        this.reviewedAt = LocalDateTime.now();
-    }
-
     // Many Review belongs to One User
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reviewer_id", nullable = false)
