@@ -3,6 +3,9 @@ package com.group4.DLS.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.dto.request.ReviewItemRequest;
+import com.group4.DLS.domain.dto.request.ReviewUpdateRequest;
+import com.group4.DLS.domain.dto.response.ReviewResponse;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Review;
 import com.group4.DLS.domain.entity.Task;
@@ -69,6 +72,14 @@ public class ReviewService {
         // Lưu tất cả review vào database
         reviewRepository.saveAll(reviewsToSave);
 
+    }
+
+    public List<ReviewResponse> isReviewing(ReviewUpdateRequest request){
+        List<ReviewResponse> reviews = new ArrayList<>();
+        for (ReviewItemRequest item : request) {
+
+
+        }
     }
 
 }
