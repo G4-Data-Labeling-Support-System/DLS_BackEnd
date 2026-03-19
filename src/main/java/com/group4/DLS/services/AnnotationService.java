@@ -72,7 +72,7 @@ public class AnnotationService {
 
         List<Annotation> annotations = annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
 
-        if(annotations.isEmpty()){
+        if(annotations.isEmpty() && !task.getAnnotations().isEmpty()){
             throw new AppException(ErrorCode.ANNOTATION_STATUS_HAVE_REJECTED);
         }
 
