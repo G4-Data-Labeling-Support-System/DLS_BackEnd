@@ -41,11 +41,11 @@ node {
         def deployProd = load "ci/deploy-prod.groovy"
         deployProd.call(config)
     } else if (env.BRANCH_NAME == "development") {
-        def deployDev = load "ci/deploy-beta.groovy"
-        deployDev.call(config)
+        def deployBeta = load "ci/deploy-beta.groovy"
+        deployBeta.call(config)
     } else {
-        def deployStaging = load "ci/deploy-dev.groovy"
-        deployStaging.call(config)
+        def deployDev = load "ci/deploy-dev.groovy"
+        deployDev.call(config)
     }
 
     // Clean up workspace after run the pipeline

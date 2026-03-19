@@ -1,6 +1,6 @@
 def call(config) {
     stage('Maven Build') {
-        echo 'Running Maven Build...'
+        echo "Building ${config.appName}..."
 
         script {
             String mavenHome = tool 'maven'
