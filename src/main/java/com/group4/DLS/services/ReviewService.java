@@ -104,6 +104,8 @@ public class ReviewService {
 
             String status = item.getReviewStatus().toString();
             annotation.setAnnotationStatus(AnnotationStatus.valueOf(status));
+            List<Review> reviewsOfAnntation = reviewRepository.findByAnnotation_AnnotationId(annotation.getAnnotationId());
+            annotation.setReviews(reviewsOfAnntation);
             annotations.add(annotation);
             reviews.add(review);
         }
