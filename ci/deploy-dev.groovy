@@ -5,7 +5,7 @@ def call(config) {
 
         withCredentials([
             string(credentialsId: 'dls-db-password', variable: 'DB_PASSWORD'),
-            string(credentialsId: 'dls-jwt-password', variable: 'JWT_SECRET')
+            string(credentialsId: 'dls-jwt-secret', variable: 'JWT_SECRET')
         ]) {
             sshagent(['development-srv']) {
                 sh"""
