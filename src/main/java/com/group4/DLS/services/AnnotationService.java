@@ -17,7 +17,6 @@ import com.group4.DLS.repositories.AnnotationRepository;
 import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.LabelRepository;
 import com.group4.DLS.repositories.TaskRepository;
-import com.group4.DLS.repositories.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
