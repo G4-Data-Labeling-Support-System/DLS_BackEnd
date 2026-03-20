@@ -13,6 +13,7 @@ import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DatasetStatus;
 import com.group4.DLS.domain.enums.TaskDataItemStatus;
+import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DatasetMapper;
@@ -21,6 +22,8 @@ import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectRepository;
 import com.group4.DLS.repositories.TaskDataItemRepository;
+import com.group4.DLS.repositories.TaskRepository;
+
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
@@ -41,6 +44,7 @@ public class DatasetService {
     TaskDataItemRepository taskDataItemRepository;
     AssignmentRepository assignmentRepository;
     DataItemRepository dataItemRepository;
+    TaskRepository taskRepository;
 
     DatasetMapper datasetMapper;
 
@@ -172,11 +176,11 @@ public class DatasetService {
 
         // Case 1: No assignment -> allow to delete
         if (assignment == null) {
-            performDelete(datasetId, dataset);
+            performDelete(datasetId, dataset, assignment);
         } 
         // Case 2: Assignment exists but not BUSY -> allow to delete
         else if (assignment.getAssignmentStatus().equals(AssignmentStatus.ASSIGNED)) {
-            performDelete(datasetId, dataset);
+            performDelete(datasetId, dataset, assignment);
         } 
         // Case 3: Assignment BUSY -> not allow to delete
         else {
@@ -186,7 +190,7 @@ public class DatasetService {
         return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
     }
 
-    public void performDelete(String datasetId, Dataset dataset) {
+    public void performDelete(String datasetId, Dataset dataset, Assignment assignment) {
 
         // Remove Dataitem
         List<Dataitem> dataitems = dataItemRepository.findByDataset_DatasetId(datasetId);
@@ -199,6 +203,12 @@ public class DatasetService {
 
         // Soft remove related labels
         labelService.deleteLabelsByDatasetId(datasetId);
+
+        // Remove tasks that related to this assignment
+        List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignment.getAssignmentId());
+        for (Task task : tasks) {
+            task.setTaskStatus(TaskStatus.INACTIVE);
+        }
 
         // Set dataset status to INACTIVE
         dataset.setDatasetStatus(DatasetStatus.INACTIVE);

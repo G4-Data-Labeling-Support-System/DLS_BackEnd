@@ -21,6 +21,8 @@ import com.group4.DLS.mappers.DatasetMapper;
 import com.group4.DLS.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -254,8 +256,8 @@ public class AssignmentService {
             List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
             for (Task task : tasks) {
                 task.setTaskStatus(TaskStatus.INACTIVE);
-                task.setAssignment(null);
             }
+            taskRepository.saveAll(tasks);
 
             // Remove related TaskDataItem
             taskDataItemRepository.deleteByTask_Assignment_AssignmentId(assignmentId);
@@ -270,9 +272,18 @@ public class AssignmentService {
             if (isUsed) {
                 throw new AppException(ErrorCode.DATASET_ALREADY_IN_USE);
             }
+            
+            // Clear old dataset
+            Dataset oldDataset = assignment.getDataset();
+            if (oldDataset != null) {
+                oldDataset.setAssignment(null);
+            } 
 
-            // Set new dataset
+            // Set new dataset for assignment
             assignment.setDataset(dataset);
+
+            // Set new assignment for dataset
+            dataset.setAssignment(assignment);
 
             // Recreate task for current assignment
             taskService.createTasksForAssignment(assignment.getAssignmentId());
