@@ -10,6 +10,7 @@ import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
+import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.domain.enums.TaskStatus;
@@ -36,6 +37,7 @@ public class AssignmentService {
     DatasetRepository datasetRepository;
     UserRepository userRepository;
     TaskDataItemRepository taskDataItemRepository;
+    TaskRepository taskRepository;
 
     TaskService taskService;
     LabelService labelService;
@@ -249,9 +251,10 @@ public class AssignmentService {
         if (assignmentStatus.equals(AssignmentStatus.ASSIGNED)) {
 
             // Remove tasks that related to this assignment
-            List<TaskResponse> tasks = taskService.getTasksByAssignmentId(assignmentId);
-            for (TaskResponse task : tasks) {
+            List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
+            for (Task task : tasks) {
                 task.setTaskStatus(TaskStatus.INACTIVE);
+                task.setAssignment(null);
             }
 
             // Remove related TaskDataItem

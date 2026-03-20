@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.group4.DLS.domain.entity.ActivityLog;
 import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.enums.ActionType;
 import com.group4.DLS.repositories.ActivityLogRepository;
 import com.group4.DLS.security.CurrentUserProvider;
 
@@ -18,35 +19,26 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ActivityLogService {
-    
+
     ActivityLogRepository activityLogRepository;
-    HttpServletRequest httpServletRequest;
-    CurrentUserProvider currentUserProvider;
 
     // Get All Logs
-    public List<ActivityLog> getAllLogs() {
-        return activityLogRepository.findAll();
-    }
-
-    public void log(String action,
-                String entityName,
-                String entityId,
-                String description) {
-                    
-        User user = currentUserProvider.getCurrentUser();
-        String ip = httpServletRequest.getRemoteAddr();
-
+    public void log(
+            ActionType actionType,
+            String entityName,
+            String entityId,
+            String description,
+            String ipAddress,
+            User user) {
         ActivityLog log = ActivityLog.builder()
-                // .username(user.getUsername())
-                .action(action)
+                .actionType(actionType)
                 .entityName(entityName)
                 .entityId(entityId)
                 .description(description)
-                .ipAddress(ip)
+                .ipAddress(ipAddress)
+                .user(user)
                 .build();
 
-        if (log != null) {
-            activityLogRepository.save(log);
-        }
+        activityLogRepository.save(log);
     }
 }

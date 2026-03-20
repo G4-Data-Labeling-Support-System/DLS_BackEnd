@@ -31,19 +31,19 @@ public class ActivityLogController {
     * Get All Logs
     * ===============
     */
-    @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN')")
-    @Operation(
-        summary = "Get all logs",
-        description = "Retrieve a list of all activity logs in the system"
-    )
-    public ApiResponse<List<ActivityLog>> getAllLogs() {
-        ApiResponse<List<ActivityLog>> response = new ApiResponse<>();
+    // @GetMapping
+    // @PreAuthorize("hasAnyRole('ADMIN')")
+    // @Operation(
+    //     summary = "Get all logs",
+    //     description = "Retrieve a list of all activity logs in the system"
+    // )
+    // public ApiResponse<List<ActivityLog>> getAllLogs() {
+    //     ApiResponse<List<ActivityLog>> response = new ApiResponse<>();
         
-        response.setCode(200);
-        response.setData(activityLogService.getAllLogs());
-        response.setMessage("Logs retrieved successfully");
+    //     response.setCode(200);
+    //     response.setData(activityLogService.log());
+    //     response.setMessage("Logs retrieved successfully");
 
-        return response;
-    }
+    //     return response;
+    // }
 }
