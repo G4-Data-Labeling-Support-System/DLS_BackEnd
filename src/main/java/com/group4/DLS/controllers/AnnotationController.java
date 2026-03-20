@@ -1,10 +1,8 @@
 package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
-import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.dto.response.ApiResponse;
-import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.services.AnnotationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,6 +25,7 @@ public class AnnotationController {
 
     private final AnnotationService annotationService;
 
+    // ================= CREATE NEW ANNOTATION =================
     @PostMapping("/submit")
     @PreAuthorize("hasAnyRole('ANNOTATOR')")
     @Operation(

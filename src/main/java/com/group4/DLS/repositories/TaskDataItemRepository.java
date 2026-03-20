@@ -1,7 +1,6 @@
 package com.group4.DLS.repositories;
 
 import com.group4.DLS.domain.entity.TaskDataItem;
-import com.group4.DLS.domain.enums.TaskDataItemStatus;
 
 import jakarta.transaction.Transactional;
 
@@ -22,6 +21,7 @@ public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, Stri
         // đếm item trong task
         int countByTaskTaskId(String taskId);
 
+        // Remove TaskDataItem for current Dataset
         void deleteByDataitem_Dataset_DatasetId(String datasetId);
 
         @Modifying
@@ -43,4 +43,9 @@ public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, Stri
 
         @Transactional
         List<TaskDataItem> findByTask_Assignment_AssignmentId(String assignmentId);
+
+        // Delete TaskDataItem for current Assignment
+        @Transactional
+        @Modifying
+        void deleteByTask_Assignment_AssignmentId(String assignmentId);
 }

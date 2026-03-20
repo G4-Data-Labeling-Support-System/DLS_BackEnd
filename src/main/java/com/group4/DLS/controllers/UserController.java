@@ -10,6 +10,8 @@ import com.group4.DLS.domain.dto.response.UserResponse;
 import com.group4.DLS.services.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -18,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -175,38 +178,59 @@ public class UserController {
         return response;
     }
 
-    @PutMapping("/{id}/avatar")
+    // ================= UPLOAD NEW AVATAR =================
+    @PutMapping(
+        value = "/{userId}/avatar",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
+    @Operation(
+        summary = "Upload new avatar",
+        description = "Upload new avatar"
+    )
     public ApiResponse<UserResponse> uploadAvatar(
-            @PathVariable String id,
-            @RequestParam MultipartFile file) throws Exception {
+            @PathVariable String userId,
+            @RequestPart("file") MultipartFile file) throws Exception {
         ApiResponse<UserResponse> response = new ApiResponse<>();
         response.setCode(200);
         response.setMessage("Avatar user upload successfully");
-        response.setData(userService.uploadAvatar(id, file));
+        response.setData(userService.uploadAvatar(userId, file));
         return response ;
     }
 
-    @PutMapping("/{id}/avatar/edit")
+    // ================= CHANGE AVATAR =================
+    @PutMapping(
+        value = "/{userId}/avatar/edit",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
+    @Operation(
+        summary = "Change avatar",
+        description = "Change avatar"
+    )
     public ApiResponse<UserResponse> editAvatar(
-            @PathVariable String id,
-            @RequestParam MultipartFile file) throws Exception {
+            @PathVariable String userId,
+            @RequestPart("file") MultipartFile file) throws Exception {
         ApiResponse<UserResponse> response = new ApiResponse<>();
         response.setCode(200);
         response.setMessage("Avatar user edit successfully");
-        response.setData(userService.editAvatar(id, file));
+        response.setData(userService.editAvatar(userId, file));
         return response ;
     }
 
-    @DeleteMapping("/{id}/avatar/delete")
+    // ================= REMOVE AVATAR =================
+    @DeleteMapping("/{userId}/avatar/remove")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
+    @Operation(
+        summary = "Remove current user avatar",
+        description = "Remove current user avatar"
+    )
     public ApiResponse<UserResponse> deleteAvatar(
-            @PathVariable String id) throws Exception {
+            @PathVariable String userId) throws Exception {
         ApiResponse<UserResponse> response = new ApiResponse<>();
         response.setCode(200);
         response.setMessage("Avatar user delete successfully");
-        response.setData(userService.deleteAvatar(id));
+        response.setData(userService.deleteAvatar(userId));
         return response ;
     }
-
-
-
 }

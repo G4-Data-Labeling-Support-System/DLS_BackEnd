@@ -6,11 +6,14 @@ import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.dto.response.LabelResponse;
+import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
+import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.enums.AssignmentStatus;
+import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AssignmentMapper;
@@ -33,6 +36,8 @@ public class AssignmentService {
     ProjectMemberRepository projectMemberRepository;
     DatasetRepository datasetRepository;
     UserRepository userRepository;
+    TaskDataItemRepository taskDataItemRepository;
+    TaskRepository taskRepository;
 
     TaskService taskService;
     LabelService labelService;
@@ -240,18 +245,41 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        // Get new dataset
-        Dataset dataset = datasetRepository.findById(request.getDatasetId())
-                .orElseThrow(() ->  new AppException(ErrorCode.DATASET_NOT_FOUND));
+        // Check assignment status, if in-progress then not allow to change
+        AssignmentStatus assignmentStatus = assignment.getAssignmentStatus();
 
-        // Check if current dataset is being use by other assignment
-        boolean isUsed = assignmentRepository.existsByDataset_DatasetIdAndAssignmentIdNot(dataset.getDatasetId(), assignmentId);
+        if (assignmentStatus.equals(AssignmentStatus.ASSIGNED)) {
 
-        if (isUsed) {
-            throw new AppException(ErrorCode.DATASET_ALREADY_IN_USE);
+            // Remove tasks that related to this assignment
+            List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
+            for (Task task : tasks) {
+                task.setTaskStatus(TaskStatus.INACTIVE);
+                task.setAssignment(null);
+            }
+
+            // Remove related TaskDataItem
+            taskDataItemRepository.deleteByTask_Assignment_AssignmentId(assignmentId);
+
+            // Get new dataset
+            Dataset dataset = datasetRepository.findById(request.getDatasetId())
+                    .orElseThrow(() ->  new AppException(ErrorCode.DATASET_NOT_FOUND));
+
+            // Check if current dataset is being use by other assignment
+            boolean isUsed = assignmentRepository.existsByDataset_DatasetIdAndAssignmentIdNot(dataset.getDatasetId(), assignmentId);
+
+            if (isUsed) {
+                throw new AppException(ErrorCode.DATASET_ALREADY_IN_USE);
+            }
+
+            // Set new dataset
+            assignment.setDataset(dataset);
+
+            // Recreate task for current assignment
+            taskService.createTasksForAssignment(assignment.getAssignmentId());
+
+        } else {
+            throw new AppException(ErrorCode.ASSIGNMENT_BUSY);
         }
-
-        assignment.setDataset(dataset);
 
         return assignmentMapper.toResponse(assignmentRepository.save(assignment));
     }
