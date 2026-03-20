@@ -172,6 +172,7 @@ public class DatasetService {
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
+        // Assignment that have this dataset
         Assignment assignment = assignmentRepository.findByDatasetDatasetId(datasetId);
 
         // Case 1: No assignment -> allow to delete
@@ -198,17 +199,23 @@ public class DatasetService {
             dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
         }
 
-        // Soft remove related annotation
-        annotationService.removeAnnotationByAssignmentId(datasetId);
+        if (assignment != null) {
+            // Soft remove related annotation
+            annotationService.removeAnnotationByAssignmentId(assignment.getAssignmentId());
+
+            // Remove related TaskDataItem
+            taskDataItemRepository.deleteByTask_Assignment_AssignmentId(assignment.getAssignmentId());
+
+            // Remove tasks that related to this assignment
+            List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignment.getAssignmentId());
+            for (Task task : tasks) {
+                task.setTaskStatus(TaskStatus.INACTIVE);
+            }
+            taskRepository.saveAll(tasks);
+        }
 
         // Soft remove related labels
         labelService.deleteLabelsByDatasetId(datasetId);
-
-        // Remove tasks that related to this assignment
-        List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignment.getAssignmentId());
-        for (Task task : tasks) {
-            task.setTaskStatus(TaskStatus.INACTIVE);
-        }
 
         // Set dataset status to INACTIVE
         dataset.setDatasetStatus(DatasetStatus.INACTIVE);
