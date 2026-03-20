@@ -72,7 +72,7 @@ public class Task {
     private Assignment assignment;
 
     // One task has Many Annotation
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Annotation> annotations = new ArrayList<>();
 
     // One Task has Many TaskDataitems

@@ -32,20 +32,20 @@ public class UserService {
     ActivityLogService logService;
     SeaweedFilerUploadService seaweedFilerUploadService;
 
-    // Get all users
+    // ================= GET ALL USERS =================
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
 
         return userMapper.toUserResponses(users);
     }
 
-    // Get user by ID
+    // ================= GET USER BY ID =================
     public UserResponse getUserById(String id) {
         return userMapper.toUserResponse(userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND)));
     }
 
-    // Create user with email uniqueness check
+    // ================= CREATE USER WITH EMAIL UNIQUENESS CHECK =================
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByEmail(request.getEmail()) && request.getUserStatus() == UserStatus.INACTIVE) {
             throw new AppException(ErrorCode.USER_EXISTS);
@@ -58,7 +58,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    // Update user details
+    // ================= UPDATE USER DETAILS =================
     public UserResponse updateUser(String id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -79,7 +79,7 @@ public class UserService {
         return null;
     }
 
-    // Update user password
+    // ================= UPDATE USER PASSWORD =================
     public UserResponse updateUserPassword(String id, UserPasswordChangeRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -117,7 +117,7 @@ public class UserService {
 
     }
 
-    // Deactivate user by ID
+    // ================= DEACTIVATE USER BY ID =================
     public UserResponse deactivateUser(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -138,7 +138,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }    
     
-    // Avtivate user by ID
+    // ================= ACTIVATE USER BY ID =================
     public UserResponse avtivateUser(String id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
@@ -159,11 +159,12 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    // ================= UPLOAD NEW AVATAR =================
     @Transactional
     public UserResponse uploadAvatar(String userId, MultipartFile file) throws Exception {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
         if (file.getSize() > 10 * 1024 * 1024) {
             throw new AppException(ErrorCode.OVER_SIZE_FILE);
@@ -179,6 +180,7 @@ public class UserService {
 
     }
 
+    // ================= UPDATE AVATAR =================
     @Transactional
     public UserResponse editAvatar(String userId, MultipartFile file) throws Exception {
 
@@ -189,28 +191,16 @@ public class UserService {
             throw new AppException(ErrorCode.OVER_SIZE_FILE);
         }
 
-//        // Lưu ảnh cũ
-//        String oldImageUrl = user.getCoverImage();
-
         // Upload ảnh mới
         String newImageUrl = seaweedFilerUploadService.uploadImage(file, "avatars");
 
         // Update DB
         user.setCoverImage(newImageUrl);
 
-//        // Xóa ảnh cũ (sau khi DB update thành công)
-//        if (oldImageUrl != null && !oldImageUrl.isBlank()) {
-//            try {
-//                seaweedFilerUploadService.deleteImageByUrl(oldImageUrl);
-//            } catch (Exception e) {
-//                // log lại, không throw để tránh rollback transaction
-//                System.out.println("Cannot delete old avatar: " + e.getMessage());
-//            }
-//        }
-
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    // ================= REMOVE CURRENT AVATAR =================
     @Transactional
     public UserResponse deleteAvatar(String userId) throws Exception {
 
