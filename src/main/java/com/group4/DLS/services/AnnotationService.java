@@ -70,11 +70,13 @@ public class AnnotationService {
             throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
         }
 
-        if(status.equals(AnnotationStatus.REJECTED)){
+        List<Annotation> annotations = annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
+
+        if(annotations.isEmpty() && !task.getAnnotations().isEmpty()){
             throw new AppException(ErrorCode.ANNOTATION_STATUS_HAVE_REJECTED);
         }
 
-        return annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
+        return annotations;
     }
 
     // ================= CREATE NEW ANNOTATION =================
@@ -137,12 +139,12 @@ public class AnnotationService {
         // }
 
         // Extract annotationIds
-        List<String> annotationIds = annotations.stream()
-                .map(Annotation::getAnnotationId)
-                .toList();
+        // List<String> annotationIds = annotations.stream()
+        //         .map(Annotation::getAnnotationId)
+        //         .toList();
 
         // Delete reviews in batch
-        reviewService.removeReviewByAnnotationId(annotationIds);
+        // reviewService.removeReviewByAnnotationId(annotationIds);
 
         // Delete annotations in batch
         for (Annotation annotation : annotations) {
