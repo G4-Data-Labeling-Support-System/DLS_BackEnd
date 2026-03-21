@@ -129,6 +129,12 @@
 			<version>2.8.5</version>
 		</dependency>
 
+		<!-- AOP-based activity logging -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+		</dependency>
+
 		<!-- To Load env file -->
 		<dependency>
 			<groupId>me.paulschwarz</groupId>

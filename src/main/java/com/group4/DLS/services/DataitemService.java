@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.entity.*;
 import com.group4.DLS.domain.enums.*;
@@ -33,14 +34,13 @@ public class DataitemService {
     private final SeaweedFilerUploadService seaweedFilerUploadService;
     private final DataItemMapper dataItemMapper;
 
-
-    //get dataitem by id
+    // ================= GET DATAITEM BY DATAITEM ID =================
     public DataItemResponse getDataitemById(String dataitemId) {
         Dataitem dataitem = dataitemRepository.findById(dataitemId).orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
         return dataItemMapper.toDataItemResponse(dataitem);
     }
 
-    //get all dataitem for dataset
+    // ================= GET DATAITEM BY DATASET ID =================
     public List<DataItemResponse> getAllDataitemForDataset(String datasetId) {
         //check dataset exist
         if(datasetRepository.findById(datasetId).isEmpty()){
@@ -52,8 +52,14 @@ public class DataitemService {
         return dataItemMapper.toDataItemResponse(dataitems);
     }
 
-    //create dataitem for dataset
+    // ================= CREATE NEW DATAITEM BY DATASET ID =================
     @Transactional
+    @LogActivity(
+        action = "CREATE",
+        entity = "Dataitem",
+        description = "Create dataitem by datasetId",
+        entityIdField = "DatasetId"
+    )
     public int createDataitem(String datasetId, List<MultipartFile> files) throws IOException {
         //check dataset exist
         Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
@@ -102,9 +108,14 @@ public class DataitemService {
         return count;
     }
 
-
-    //add new dataitem
+    // ================= ASSIGN NEW DATAITEM =================
     @Transactional
+    @LogActivity(
+        action = "CREATE",
+        entity = "Dataitem",
+        description = "Assign new dataitems by datasetid",
+        entityIdField = "datasetId"
+    )
     public void assignNewDataItems(String datasetId) {
 
         Assignment assignment = assignmentRepository.findByDatasetDatasetId(datasetId);
@@ -163,8 +174,14 @@ public class DataitemService {
         taskDataItemRepository.saveAll(taskItems);
     }
 
-
+    // ================= REMOVE DATAITEM =================
     @Transactional
+    @LogActivity(
+        action = "DELETE",
+        entity = "Dataitem",
+        description = "Delete dataitem",
+        entityIdField = "dataitemId"
+    )
     public void deleteDataitem(String dataitemId) {
 
         Dataitem dataitem = dataitemRepository.findById(dataitemId)

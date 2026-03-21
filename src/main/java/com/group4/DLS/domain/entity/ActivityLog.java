@@ -36,7 +36,7 @@ public class ActivityLog {
     String logId;
 
     @Column(name = "action_type", nullable = false)
-    ActionType actionType;
+    String actionType;
 
     @Column(name = "entity_name", nullable = false)
     String entityName;

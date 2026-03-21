@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
@@ -8,13 +9,18 @@ import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.ProjectMember;
 import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.enums.ActionType;
 import com.group4.DLS.domain.enums.ProjectStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
+import com.group4.DLS.helper.RequestUtils;
 import com.group4.DLS.mappers.ProjectMapper;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectMemberRepository;
 import com.group4.DLS.repositories.ProjectRepository;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -79,7 +85,15 @@ public class ProjectService {
     }
 
     // ================= CREATE PROJECT =================
-    public ProjectResponse createProject(ProjectCreationRequest request) {
+    @LogActivity(
+        action = "CREATE",
+        entity = "Project",
+        description = "Create project",
+        entityIdField = "projectId"
+    )
+    public ProjectResponse createProject(
+        ProjectCreationRequest request
+    ) {
         User manager = getCurrentUser();
 
         boolean existsActiveProject = projectRepository.existsByProjectNameAndProjectStatusNot(
@@ -101,16 +115,15 @@ public class ProjectService {
         member.setJoinAt(LocalDateTime.now());
         projectMemberRepository.save(member);
 
-        // Log action
-        // logService.log(
-        // "CREATE_PROJECT",
-        // "PROJECT",
-        // project.getProjectId(),
-        // "Created project: " + project.getProjectName());
-
         return projectMapper.toProjectResponse(project);
     }
 
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Project",
+        description = "Update project",
+        entityIdParam = "projectId"
+    )
     // ================= UPDATE PROJECT =================
     public ProjectResponse updateProject(String projectId, ProjectUpdateRequest request) {
         Project project = projectRepository.findByProjectIdAndProjectStatusIn(
@@ -126,17 +139,16 @@ public class ProjectService {
         projectMapper.updateProjectFromRequest(request, project);
         project = projectRepository.save(project);
 
-        // Log action
-        // logService.log(
-        // "UPDATE_PROJECT",
-        // "PROJECT",
-        // project.getProjectId(),
-        // "Updated project: " + project.getProjectName());
-
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= UPDATE PROJECT STATUS =================
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Project",
+        description = "Update project status",
+        entityIdParam = "projectId"
+    )
     public ProjectResponse updateProjectStatus(String projectId, ProjectStatusUpdateRequest request) {
         Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
@@ -151,20 +163,18 @@ public class ProjectService {
         if (project != null) {
             projectMapper.updateProjectStatusFromRequest(request, project);
             project = projectRepository.save(project);
-
-            // Log action
-            // logService.log(
-            // "UPDATE_PROJECT_STATUS",
-            // "PROJECT",
-            // project.getProjectId(),
-            // "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
-            // );
         }
 
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= DELETE PROJECT =================
+    @LogActivity(
+        action = "DELETE",
+        entity = "Project",
+        description = "Delete project",
+        entityIdParam = "projectId"
+    )
     public void deleteProject(String projectId) {
         Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
@@ -177,13 +187,7 @@ public class ProjectService {
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         project.setProjectStatus(ProjectStatus.INACTIVE);
+        
         projectRepository.save(project);
-
-        // Log action
-        // logService.log(
-        // "REMOVE_PROJECT",
-        // "PROJECT",
-        // project.getProjectId(),
-        // "Project removed: " + project.getProjectName());
     }
 }
