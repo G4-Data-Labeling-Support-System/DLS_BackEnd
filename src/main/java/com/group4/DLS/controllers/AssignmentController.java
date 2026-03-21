@@ -51,6 +51,7 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT FOR PRORJECT =================
     @GetMapping("/projects/{projectId}")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForProject( @PathVariable String projectId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
@@ -59,8 +60,10 @@ public class AssignmentController {
         response.setMessage("Get all assignment for project successfully");
         return response;
     }
-    // 1 Get all assignments
+
+    // ================= GET ALL ASSIGNMENT =================
     @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
     public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
@@ -70,7 +73,7 @@ public class AssignmentController {
         return response;
     }
 
-    // 2 Create assignment
+    // ================= CREATE NEW ASSIGNMENT =================
     @PostMapping("/projects/{projectId}")
     @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
@@ -86,8 +89,9 @@ public class AssignmentController {
                 .build();
     }
 
-    // 3️ Update assignment (name + status)
+    // ================= UPDATE ASSIGNMENT (NAME + STATUS) =================
     @PutMapping("/{assignmentId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Update assignment",
         description = "Update an existing assignment by its ID")
@@ -101,8 +105,9 @@ public class AssignmentController {
                 .build();
     }
 
-    // ================= GET ASSIGNMENT FOR PRORJECT =================
+    // ================= CHANGE DATASET FOR CURRENT ASSIGNMENT =================
     @PutMapping("/change-dataset/assignment/{assignmentId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Change Assignment dataset",
         description = "Change Assignment dataset")
@@ -116,8 +121,9 @@ public class AssignmentController {
                 .build();
     }
 
-    // 4️ Delete assignment
-    @PatchMapping("/remove/{assignmentId}")
+    // ================= REMOVE ASSIGNMENT =================
+    @DeleteMapping("/remove/{assignmentId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Delete assignment",
         description = "Delete an assignment by its ID")
@@ -158,6 +164,4 @@ public class AssignmentController {
                 .data(assignmentService.getDatasetByAssignmentId(assignmentId))
                 .build();
     }
-
-
 }

@@ -1,5 +1,4 @@
 def call(config) {
-
     String image = "${config.dockerUser}/${config.appName}"
 
     // Version tags
@@ -19,13 +18,39 @@ def call(config) {
         docker.build("${imageTagged}")
     }
 
+    stage('Trivy Docker Image Scan') {
+            script {
+                def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
+
+                sh """
+                    trivy image --no-progress --format json \
+                    --severity UNKNOWN,HIGH,CRITICAL ${env.IMAGE_TAGGED} > trivyimage.txt || true \
+                    --exit-code 1
+                """
+
+                sh """
+                    trivy image --no-progress --format json \
+                        --severity ${securityLevel} \
+                        --output trivyimage.json ${env.IMAGE_TAGGED}
+                    trivy image --no-progress --format table \
+                        --severity ${securityLevel} \
+                        --output trivyimage.txt ${env.IMAGE_TAGGED}
+
+                    cat trivyimage.txt
+                """
+            }
+            archiveArtifacts artifacts: 'trivyimage.txt', allowEmptyArchive: true
+    }
+
     stage('Docker Test') {
         script {
             String containerName = "test-${config.appName}-${env.BUILD_NUMBER}"
 
             sh """
                 docker run -d --name ${containerName} \
-                -p ${config.testPort}:${config.testPort} ${imageTagged}
+                -p ${config.testPort}:${config.testPort} \
+                -e SPRING_PROFILES_ACTIVE=test \
+                ${imageTagged}
 
                 echo "Waiting for Spring Boot health check..."
 
@@ -57,14 +82,14 @@ def call(config) {
         ) {
             def dockerImage = docker.image("${image}:${version}")
 
-            if (env.BRANCH_NAME == "main") {
+            if (env.BRANCH_NAME == 'main') {
                 dockerImage.push()         // version tag
-                dockerImage.push("release-latest") // production latest
-            } else if (env.BRANCH_NAME == "development") {
+                dockerImage.push('release-latest') // production latest
+            } else if (env.BRANCH_NAME == 'development') {
                 dockerImage.push()            // version tag
-                dockerImage.push("beta-latest") // beta latest
+                dockerImage.push('beta-latest') // beta latest
             } else {
-                dockerImage.push("dev-latest") // dev latest
+                dockerImage.push('dev-latest') // dev latest
             }
         }
     }

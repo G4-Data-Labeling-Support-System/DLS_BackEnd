@@ -6,7 +6,7 @@ def call(config) {
     stage('Deploy to Production Server') {
         withCredentials([
             string(credentialsId: 'dls-db-password', variable: 'DB_PASSWORD'),
-            string(credentialsId: 'dls-jwt-password', variable: 'JWT_SECRET')
+            string(credentialsId: 'dls-jwt-secret', variable: 'JWT_SECRET')
         ]) {
             sshagent(['production-srv']) {
                 sh"""
@@ -22,8 +22,8 @@ def call(config) {
                     --name ${config.appName} \
                     --restart unless-stopped \
                     -e SPRING_PROFILES_ACTIVE=prod \
-                    -e DB_PASSWORD='${DB_PASSWORD}' \
-                    -e JWT_SECRET='${JWT_SECRET}' \
+                    -e DB_PASSWORD="${DB_PASSWORD}" \
+                    -e JWT_SECRET="${JWT_SECRET}" \
                     ${imageTagged}"
                 """
             }

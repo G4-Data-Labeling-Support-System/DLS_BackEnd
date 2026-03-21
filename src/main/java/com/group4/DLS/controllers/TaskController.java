@@ -5,8 +5,6 @@ import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.dto.response.TaskDataITemResponse;
 import com.group4.DLS.domain.dto.response.TaskResponse;
-import com.group4.DLS.domain.entity.Dataitem;
-import com.group4.DLS.domain.entity.TaskDataItem;
 import com.group4.DLS.services.TaskDataItemService;
 import com.group4.DLS.services.TaskService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
