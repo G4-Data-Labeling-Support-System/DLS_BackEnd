@@ -24,17 +24,17 @@ def call(config) {
 
                 sh """
                     trivy image --no-progress --format json \
-                    --severity UNKNOWN,HIGH,CRITICAL ${env.IMAGE_TAGGED} > trivyimage.txt || true \
+                    --severity UNKNOWN,HIGH,CRITICAL ${imageTagged} > trivyimage.txt || true \
                     --exit-code 1
                 """
 
                 sh """
                     trivy image --no-progress --format json \
                         --severity ${securityLevel} \
-                        --output trivyimage.json ${env.IMAGE_TAGGED}
+                        --output trivyimage.json ${imageTagged}
                     trivy image --no-progress --format table \
                         --severity ${securityLevel} \
-                        --output trivyimage.txt ${env.IMAGE_TAGGED}
+                        --output trivyimage.txt ${imageTagged}
 
                     cat trivyimage.txt
                 """
