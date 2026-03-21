@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
@@ -8,11 +9,9 @@ import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.Task;
-import com.group4.DLS.domain.entity.TaskDataItem;
 import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DatasetStatus;
-import com.group4.DLS.domain.enums.TaskDataItemStatus;
 import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
@@ -50,7 +49,6 @@ public class DatasetService {
 
     DataitemService dataitemService;
     AnnotationService annotationService;
-    AssignmentService assignmentService;
     LabelService labelService;
 
     // ===== LIST ALL DATASET =====
@@ -88,6 +86,12 @@ public class DatasetService {
     }
 
     // ===== CREATE DATASET =====
+    @LogActivity(
+        action = "CREATE",
+        entity = "Dataset",
+        description = "Create dataset",
+        entityIdField = "datasetId"
+    )
     public DatasetResponse createDataset(DatasetCreationRequest request) throws IOException {
 
         // Validate project exist
@@ -113,6 +117,12 @@ public class DatasetService {
     }
 
     // ===== UPDATE DATASET =====
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Dataset",
+        description = "Update dataset",
+        entityIdParam = "datasetId"
+    )
     public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request) throws IOException {
 
         Dataset dataset = datasetRepository.findById(datasetId)
@@ -165,6 +175,12 @@ public class DatasetService {
     }
 
     // ===== DELETE DATASET =====
+    @LogActivity(
+        action = "REMOVE",
+        entity = "Dataset",
+        description = "Remove dataset",
+        entityIdParam = "datasetId"
+    )
     @Transactional
     public DatasetResponse deleteDataset(String datasetId) {
         

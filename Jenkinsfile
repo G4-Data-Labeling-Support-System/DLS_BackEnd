@@ -8,28 +8,34 @@ node {
     def config = [
         appName: 'data-labeling-be',
         dockerUser: 'fleeforezz',
+
         release: '1.0.0',
         beta: '1.0.0',
+        
         containerPort: '8081',
         testPort: '8081',
         devPort: '8082',
         betaPort: '8083',
         prodPort: '8084',
+        
         devServer: "jso@10.0.1.74",
         prodServer: "jso@10.0.1.23"
     ]
     def buildPipeline = load "ci/build.groovy"
     def sonarqubePipeline = load "ci/sonarqube.groovy"
+    def trivyFilesystemScan = load "ci/trivy-filesystem-scan.groovy"
     def dockerPipeline = load "ci/docker.groovy"
 
     // Call functions base on branch
     if (env.BRANCH_NAME == "main") {
         buildPipeline.call(config)
-        // sonarqubePipeline.call(config)
+        sonarqubePipeline.call(config)
+        trivyFilesystemScan.call()
         dockerPipeline.call(config)
     } else if (env.BRANCH_NAME == "development") {
         buildPipeline.call(config)
-        // sonarqubePipeline.call(config)
+        sonarqubePipeline.call(config)
+        trivyFilesystemScan.call()
         dockerPipeline.call(config)
     } else {
         buildPipeline.call(config)

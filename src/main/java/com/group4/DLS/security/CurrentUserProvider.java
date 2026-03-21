@@ -5,6 +5,7 @@ import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.repositories.UserRepository;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.Authentication;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 @Component
+@Getter
 @RequiredArgsConstructor
 public class CurrentUserProvider {
 
@@ -27,11 +29,13 @@ public class CurrentUserProvider {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
     }
 
-    // public static String getCurrentUsername() {
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    private User getCurrentUserInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-    //     if (authentication == null) return "SYSTEM";
+        if (authentication == null || !(authentication.getPrincipal() instanceof User)) {
+            return null;
+        }
 
-    //     return authentication.getName();
-    // }
+        return (User) authentication.getPrincipal();
+    }
 }

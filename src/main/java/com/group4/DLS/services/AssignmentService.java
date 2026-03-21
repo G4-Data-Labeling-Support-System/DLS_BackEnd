@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentDatasetChangeRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
@@ -13,6 +14,7 @@ import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.enums.AssignmentStatus;
+import com.group4.DLS.domain.enums.ProjectStatus;
 import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
@@ -22,7 +24,6 @@ import com.group4.DLS.repositories.*;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Data;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -42,12 +43,10 @@ public class AssignmentService {
     TaskRepository taskRepository;
 
     TaskService taskService;
-    LabelService labelService;
-    ActivityLogService logService;
-    AnnotationService annotationService;
     TaskDataItemService taskDataItemService;
+    LabelService labelService;
+    AnnotationService annotationService;
     ProjectMemberService projectMemberService;
-    ReviewService reviewService;
 
     AssignmentMapper assignmentMapper;
     DatasetMapper datasetMapper;
@@ -146,14 +145,23 @@ public class AssignmentService {
     }
 
     // ================= CREATE NEW ASSIGNMENT =================
+    @LogActivity(
+        action = "CREATE",
+        entity = "Assignment",
+        description = "Create assignment",
+        entityIdField = "assignmentId"
+    )
     public AssignmentResponse createAssignment(String projectId, @RequestBody AssignmentCreateRequest request) {
 
+        // Get current user info
         User manager = userRepository.findById(request.getAssignedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        // Get current project
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
+        // Get current dataset
         Dataset dataset = datasetRepository.findById(request.getDatasetId())
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
@@ -169,6 +177,7 @@ public class AssignmentService {
         User reviewedBy = userRepository.findById(request.getReviewedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        // Create new assignment
         Assignment assignment = assignmentMapper.toAssignment(request);
         assignment.setAssignedTo(assignedTo);
         assignment.setAssignedBy(manager);
@@ -195,20 +204,22 @@ public class AssignmentService {
         datasetRepository.save(dataset);
 
         taskService.createTasksForAssignment(assignment.getAssignmentId());
-        
+
         assignmentRepository.save(assignment);
 
-        // // Log action
-        // logService.log(
-        // "CREATE_ASSIGNMENT",
-        // "ASSIGNMENT",
-        // assignment.getAssignmentId(),
-        // "Created assignment: " + assignment.getAssignmentName());
+        // Update project status after create new assignment
+        project.setProjectStatus(ProjectStatus.IN_PROGRESS);
 
         return assignmentMapper.toResponse(assignment);
     }
 
     // ================= UPDATE CURRENT ASSIGNMENT =================
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Assignment",
+        description = "Update assignment",
+        entityIdParam = "assignmentId"
+    )
     public AssignmentResponse updateAssignment(String assignmentId, AssignmentUpdateRequest request) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
@@ -230,17 +241,16 @@ public class AssignmentService {
 
         assignmentRepository.save(assignment);
 
-        // Log action
-        // logService.log(
-        //         "UPDATE_ASSIGNMENT",
-        //         "ASSIGNMENT",
-        //         assignment.getAssignmentId(),
-        //         "Assignment updated: " + assignment.getAssignmentName());
-
         return assignmentMapper.toResponse(assignment);
     }
 
     // ================= CHANGE DATASET FOR CURRENT ASSIGNMENT =================
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Assignment",
+        description = "Change assignment dataset",
+        entityIdParam = "assignmentId"
+    )
     public AssignmentResponse changeDatasetForCurrentAssignment(String assignmentId, AssignmentDatasetChangeRequest request) {
 
         // Get current assignment
@@ -296,6 +306,12 @@ public class AssignmentService {
     }
 
     // ================= REMOVE CURRENT ASSIGNMENT =================
+    @LogActivity(
+        action = "DELETE",
+        entity = "Assignment",
+        description = "Delete assignment",
+        entityIdParam = "assignmentId"
+    )
     public void removeAssignment(String assignmentId) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
@@ -304,7 +320,7 @@ public class AssignmentService {
         annotationService.removeAnnotationByAssignmentId(assignmentId);
 
         // Unmap Task and Dataitem from TaskItem
-        // taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
+        taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
 
         // Remove related Tasks
         taskService.removeTasksByAssignmentId(assignmentId);
@@ -321,12 +337,5 @@ public class AssignmentService {
         assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);// Soft delete assignment
         
         assignmentRepository.save(assignment);
-
-        // // Log action
-        // logService.log(
-        // "REMOVE_ASSIGNMENT",
-        // "ASSIGNMENT",
-        // assignment.getAssignmentId(),
-        // "Assignment removed: " + assignment.getAssignmentName());
     }
 }
