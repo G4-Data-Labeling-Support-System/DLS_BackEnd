@@ -23,23 +23,22 @@ def call(config) {
                 def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
 
                 sh """
-                    trivy image --no-progress --format json \
-                    --severity UNKNOWN,HIGH,CRITICAL ${imageTagged} > trivyimage.txt || true \
-                    --exit-code 1
-                """
+                    trivy image --no-progress \
+                    --format json \
+                    --severity ${securityLevel} \
+                    --output trivyimage.json \
+                    ${imageTagged} || true
 
-                sh """
-                    trivy image --no-progress --format json \
-                        --severity ${securityLevel} \
-                        --output trivyimage.json ${imageTagged}
-                    trivy image --no-progress --format table \
-                        --severity ${securityLevel} \
-                        --output trivyimage.txt ${imageTagged}
+                    trivy image --no-progress \
+                    --format table \
+                    --severity ${securityLevel} \
+                    --output trivyimage.txt \
+                    ${imageTagged}
 
                     cat trivyimage.txt
                 """
             }
-            archiveArtifacts artifacts: 'trivyimage.txt', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'trivyimage.txt,trivyimage.json', allowEmptyArchive: true
     }
 
     stage('Docker Test') {
