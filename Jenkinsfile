@@ -1,7 +1,6 @@
 node {
 
     def buildStatus = 'SUCCESS'
-    def slackNotify = load "ci/slack.groovy"
 
     try {
         stage('Checkout') {
@@ -25,6 +24,7 @@ node {
             devServer: "jso@10.0.1.74",
             prodServer: "jso@10.0.1.23"
         ]
+        def slackNotify = load "ci/slack.groovy"
         def buildPipeline = load "ci/build.groovy"
         def sonarqubePipeline = load "ci/sonarqube.groovy"
         def trivyFilesystemScan = load "ci/trivy-filesystem-scan.groovy"
