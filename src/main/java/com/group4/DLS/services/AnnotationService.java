@@ -1,6 +1,7 @@
 package com.group4.DLS.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
@@ -38,8 +39,6 @@ public class AnnotationService {
     TaskRepository taskRepository;
     DataItemRepository dataItemRepository;
     LabelRepository labelRepository;
-
-    ReviewService reviewService;
 
     AnnotationMapper annotationMapper;
 
@@ -80,6 +79,12 @@ public class AnnotationService {
 
     // ================= CREATE NEW ANNOTATION =================
     @Transactional
+    @LogActivity(
+        action = "CREATE",
+        entity = "Annotation",
+        description = "Create annotation",
+        entityIdField = "annotationId"
+    )
     public List<AnnotationResponse> createAnnotation(AnnotationCreationRequest request) {
 
         // Get current task
@@ -128,6 +133,12 @@ public class AnnotationService {
     }
 
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================
+    @LogActivity(
+        action = "DELETE",
+        entity = "Annotation",
+        description = "Delete annotation",
+        entityIdParam = "annotationId"
+    )
     public void removeAnnotationByAssignmentId(String assignmentId) {
 
         // Get all annotation related to task and assignment

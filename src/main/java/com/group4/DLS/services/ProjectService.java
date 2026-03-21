@@ -102,16 +102,6 @@ public class ProjectService {
         member.setJoinAt(LocalDateTime.now());
         projectMemberRepository.save(member);
 
-        // Log action
-        // activityLogService.log(
-        //     ActionType.CREATE, 
-        //     "Project", 
-        //     project.getProjectId(), 
-        //     "Create new project", 
-        //     requestUtils.getClientIp(httpServletRequest), 
-        //     manager
-        // );
-
         return projectMapper.toProjectResponse(project);
     }
 
@@ -136,17 +126,16 @@ public class ProjectService {
         projectMapper.updateProjectFromRequest(request, project);
         project = projectRepository.save(project);
 
-        // Log action
-        // logService.log(
-        // "UPDATE_PROJECT",
-        // "PROJECT",
-        // project.getProjectId(),
-        // "Updated project: " + project.getProjectName());
-
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= UPDATE PROJECT STATUS =================
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Project",
+        description = "Update project status",
+        entityIdParam = "projectId"
+    )
     public ProjectResponse updateProjectStatus(String projectId, ProjectStatusUpdateRequest request) {
         Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
@@ -161,14 +150,6 @@ public class ProjectService {
         if (project != null) {
             projectMapper.updateProjectStatusFromRequest(request, project);
             project = projectRepository.save(project);
-
-            // Log action
-            // logService.log(
-            // "UPDATE_PROJECT_STATUS",
-            // "PROJECT",
-            // project.getProjectId(),
-            // "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
-            // );
         }
 
         return projectMapper.toProjectResponse(project);
@@ -193,13 +174,7 @@ public class ProjectService {
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         project.setProjectStatus(ProjectStatus.INACTIVE);
+        
         projectRepository.save(project);
-
-        // Log action
-        // logService.log(
-        // "REMOVE_PROJECT",
-        // "PROJECT",
-        // project.getProjectId(),
-        // "Project removed: " + project.getProjectName());
     }
 }
