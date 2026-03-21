@@ -1,6 +1,7 @@
 node {
 
     def buildStatus = 'SUCCESS'
+    def slackNotify
 
     try {
         stage('Checkout') {
@@ -63,7 +64,11 @@ node {
         currentBuild.result = 'FAILURE'
         throw err // keep pipeline failed
     } finally {
-        slackNotify.call(buildStatus)
+        if (slackNotify != null) {
+            slackNotify.call(buildStatus)
+        } else {
+            echo "Slack notify not loaded"
+        }
 
         // Clean up workspace after run the pipeline
         stage('Cleanup') {
