@@ -19,6 +19,32 @@ def call(config) {
         docker.build("${imageTagged}")
     }
 
+    stage('Trivy Docker Image Scan') {
+        steps {
+            script {
+                def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
+
+                sh """
+                    trivy image --no-progress --format json \
+                    --severity UNKNOWN,HIGH,CRITICAL ${env.IMAGE_TAGGED} > trivyimage.txt || true \
+                    --exit-code 1
+                """
+
+                sh """
+                    trivy image --no-progress --format json \
+                        --severity ${securityLevel} \
+                        --output trivyimage.json ${env.IMAGE_TAGGED}
+                    trivy image --no-progress --format table \
+                        --severity ${securityLevel} \
+                        --output trivyimage.txt ${env.IMAGE_TAGGED}
+
+                    cat trivyimage.txt
+                """
+                }
+            archiveArtifacts artifacts: 'trivyimage.txt', allowEmptyArchive: true
+        }
+    }
+
     stage('Docker Test') {
         script {
             String containerName = "test-${config.appName}-${env.BUILD_NUMBER}"

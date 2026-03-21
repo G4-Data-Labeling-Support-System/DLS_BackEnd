@@ -23,16 +23,19 @@ node {
     ]
     def buildPipeline = load "ci/build.groovy"
     def sonarqubePipeline = load "ci/sonarqube.groovy"
+    def trivyFilesystemScan = load "ci/trivy-filesystem-scan.groovy"
     def dockerPipeline = load "ci/docker.groovy"
 
     // Call functions base on branch
     if (env.BRANCH_NAME == "main") {
         buildPipeline.call(config)
-        // sonarqubePipeline.call(config)
+        sonarqubePipeline.call(config)
+        trivyFilesystemScan.call()
         dockerPipeline.call(config)
     } else if (env.BRANCH_NAME == "development") {
         buildPipeline.call(config)
         sonarqubePipeline.call(config)
+        trivyFilesystemScan.call()
         dockerPipeline.call(config)
     } else {
         buildPipeline.call(config)
