@@ -97,18 +97,28 @@ public class TaskService {
         }
 
         for (Task task: tasks){
+            setCompletedAnnotationAnDataItem(task);
             //so sánh số item trong task với số annotation đã submitted + approved
             //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
             //case2: nếu 10 item approved và 10 item submitted sau khi sửa
             // nếu có annatation có status là rejected thì không set lại
             if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size() && !task.getAnnotations().isEmpty()){
                 reviewService.createReviews(task);
-                task.setTaskStatus(TaskStatus.IN_PROGRESS);
+                task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
+            }else{
+                task.setTaskStatus(TaskStatus.IN_PROGRESS);
+                task.setFlagForReview(false);
             }
         }
 
         return taskMapper.toTaskResponse(tasks);
+    }
+
+    //set number annotation of task is aprroved
+    public void setCompletedAnnotationAnDataItem(Task task){
+        task.setCompletedCount(annotationService.getNumberAnnotationIsApproved(task));
+        taskRepository.save(task);
     }
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================

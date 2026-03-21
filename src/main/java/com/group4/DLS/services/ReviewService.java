@@ -1,8 +1,13 @@
 package com.group4.DLS.services;
 
+import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.dto.request.ReviewItemRequest;
+import com.group4.DLS.domain.dto.request.ReviewUpdateRequest;
+import com.group4.DLS.domain.dto.response.ReviewResponse;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Review;
 import com.group4.DLS.domain.entity.Task;
@@ -12,15 +17,17 @@ import com.group4.DLS.domain.enums.ReviewStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 
+import com.group4.DLS.mappers.ReviewMapper;
+import com.group4.DLS.repositories.TaskRepository;
 import org.springframework.stereotype.Service;
 
-import com.group4.DLS.domain.entity.Review;
 import com.group4.DLS.repositories.AnnotationRepository;
 import com.group4.DLS.repositories.ReviewRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +35,9 @@ import lombok.experimental.FieldDefaults;
 public class ReviewService {
     ReviewRepository reviewRepository;
     AnnotationRepository annotationRepository;
+    SeaweedFilerUploadService seaweedFilerUploadService;
+    ReviewMapper reviewMapper;
+    private final TaskRepository taskRepository;
 
     // ================= REMOVE REVIEW BY ANNOTATION_ID =================
     @Transactional
@@ -69,6 +79,47 @@ public class ReviewService {
         // Lưu tất cả review vào database
         reviewRepository.saveAll(reviewsToSave);
 
+    }
+
+    //after reviewer reviews success
+    public List<ReviewResponse> reviewed(ReviewUpdateRequest request) throws IOException {
+        List<Review> reviews = new ArrayList<>();
+        List<Annotation> annotations = new ArrayList<>();
+
+        for (ReviewItemRequest item : request.getReviews()) {
+
+            Annotation annotation = annotationRepository.findById(item.getAnnotationId())
+                    .orElseThrow(() -> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
+
+            Review review = reviewRepository.findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
+
+            review.setReviewedAt(LocalDateTime.now());//set time
+            review.setComment(item.getComment()); // set comment
+            review.setReviewStatus(item.getReviewStatus());
+            List<String> envidences = new ArrayList<>();
+            for(MultipartFile url: item.getEnvidence()){
+                envidences.add(seaweedFilerUploadService.uploadImage(url, "Envidence"));//tạo chuỗi string ảnh
+            }
+            review.setEvidences(envidences);
+
+            String status = item.getReviewStatus().toString();
+            annotation.setAnnotationStatus(AnnotationStatus.valueOf(status));
+            List<Review> reviewsOfAnntation = reviewRepository.findByAnnotation_AnnotationId(annotation.getAnnotationId());
+            annotation.setReviews(reviewsOfAnntation);
+            annotations.add(annotation);
+            reviews.add(review);
+        }
+        annotationRepository.saveAll(annotations);
+        for(Annotation annotation: annotations)
+        reviewRepository.saveAll(reviews);
+
+        return reviewMapper.toReviewResponse(reviews);
+    }
+
+    //get reviews by AnnotationId
+    public List<ReviewResponse> reviewsOfAnntation(String annotationId){
+        List<Review> reviews = reviewRepository.findByAnnotation_AnnotationId(annotationId);
+        return reviewMapper.toReviewResponse(reviews);
     }
 
 }

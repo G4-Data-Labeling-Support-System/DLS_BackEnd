@@ -1,9 +1,6 @@
 package com.group4.DLS.mappers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
-import com.group4.DLS.domain.dto.request.AnnotationSaveRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.Annotation;
 import org.mapstruct.Mapper;
@@ -40,6 +37,6 @@ public interface AnnotationMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "annotationStatus", ignore = true)
     @Mapping(target = "annotationData", ignore = true)
-    void updateAnnotation(AnnotationSaveRequest request, @MappingTarget Annotation annotation);
+    void updateAnnotation(AnnotationItemRequest request, @MappingTarget Annotation annotation);
 
 }

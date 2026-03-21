@@ -6,6 +6,7 @@ public enum TaskStatus {
     
     NOT_STARTED, // Default status when a task is created
     IN_PROGRESS, // Indicates that the task is currently being worked on
+    IN_REVIEW, //
     COMPLETED, // Indicates that the task has been finished successfully
     INACTIVE;
 

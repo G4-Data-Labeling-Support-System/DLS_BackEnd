@@ -17,4 +17,11 @@ public interface ReviewRepository extends JpaRepository<Review, String> {
     // Remove review by annotation_id
     @Transactional
     void deleteByAnnotation_AnnotationIdIn(List<String> annotationIds);
+
+    //hiện cái nào create mới nhất
+    Review findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(String annotationId);
+
+    List<Review> findByAnnotation_AnnotationId(String annotationId);
+
+
 }

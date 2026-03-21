@@ -132,6 +132,18 @@ public class AnnotationService {
         return annotationMapper.toAnnotationResponses(annotationRepository.saveAll(annotationsToSave));
     }
 
+    //get Number of Anntation having Approved status
+    public int getNumberAnnotationIsApproved(Task task){
+        int count = 0;
+        List<Annotation> annotations = annotationRepository.findAnnotationsByTask(task);
+        for(Annotation annotation: annotations){
+            if(annotation.getAnnotationStatus().equals(AnnotationStatus.APPROVED)){
+                count++;
+            }
+        }
+        return count;
+    }
+
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================
     @LogActivity(
         action = "DELETE",
