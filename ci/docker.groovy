@@ -1,5 +1,4 @@
 def call(config) {
-
     String image = "${config.dockerUser}/${config.appName}"
 
     // Version tags
@@ -20,7 +19,6 @@ def call(config) {
     }
 
     stage('Trivy Docker Image Scan') {
-        steps {
             script {
                 def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
 
@@ -40,9 +38,8 @@ def call(config) {
 
                     cat trivyimage.txt
                 """
-                }
+            }
             archiveArtifacts artifacts: 'trivyimage.txt', allowEmptyArchive: true
-        }
     }
 
     stage('Docker Test') {
@@ -85,14 +82,14 @@ def call(config) {
         ) {
             def dockerImage = docker.image("${image}:${version}")
 
-            if (env.BRANCH_NAME == "main") {
+            if (env.BRANCH_NAME == 'main') {
                 dockerImage.push()         // version tag
-                dockerImage.push("release-latest") // production latest
-            } else if (env.BRANCH_NAME == "development") {
+                dockerImage.push('release-latest') // production latest
+            } else if (env.BRANCH_NAME == 'development') {
                 dockerImage.push()            // version tag
-                dockerImage.push("beta-latest") // beta latest
+                dockerImage.push('beta-latest') // beta latest
             } else {
-                dockerImage.push("dev-latest") // dev latest
+                dockerImage.push('dev-latest') // dev latest
             }
         }
     }
