@@ -8,9 +8,6 @@ import com.group4.DLS.domain.entity.ActivityLog;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.enums.ActionType;
 import com.group4.DLS.repositories.ActivityLogRepository;
-import com.group4.DLS.security.CurrentUserProvider;
-
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,7 +21,7 @@ public class ActivityLogService {
 
     // Get All Logs
     public void log(
-            ActionType actionType,
+            String actionType,
             String entityName,
             String entityId,
             String description,

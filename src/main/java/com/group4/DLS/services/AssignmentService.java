@@ -13,6 +13,7 @@ import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.enums.AssignmentStatus;
+import com.group4.DLS.domain.enums.ProjectStatus;
 import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
@@ -148,12 +149,15 @@ public class AssignmentService {
     // ================= CREATE NEW ASSIGNMENT =================
     public AssignmentResponse createAssignment(String projectId, @RequestBody AssignmentCreateRequest request) {
 
+        // Get current user info
         User manager = userRepository.findById(request.getAssignedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        // Get current project
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
+        // Get current dataset
         Dataset dataset = datasetRepository.findById(request.getDatasetId())
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
@@ -169,6 +173,7 @@ public class AssignmentService {
         User reviewedBy = userRepository.findById(request.getReviewedBy())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
 
+        // Create new assignment
         Assignment assignment = assignmentMapper.toAssignment(request);
         assignment.setAssignedTo(assignedTo);
         assignment.setAssignedBy(manager);
@@ -195,8 +200,11 @@ public class AssignmentService {
         datasetRepository.save(dataset);
 
         taskService.createTasksForAssignment(assignment.getAssignmentId());
-        
+
         assignmentRepository.save(assignment);
+
+        // Update project status after create new assignment
+        project.setProjectStatus(ProjectStatus.IN_PROGRESS);
 
         // // Log action
         // logService.log(
