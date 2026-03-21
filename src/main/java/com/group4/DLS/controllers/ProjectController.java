@@ -148,5 +148,19 @@ public class ProjectController {
                 .build();
     }
 
+    //get all member of project
+    @GetMapping("/datasets/{datasetId}")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+            summary = "Get project by dataset",
+            description = "Retrieve project associated with a datasetId")
+    public ApiResponse<ProjectResponse> getProjectByDatasetId(@PathVariable String datasetId){
+        return ApiResponse.<ProjectResponse>builder()
+                .code(200)
+                .message("Get project members successfully")
+                .data(projectService.getProjectByDatasetId(datasetId))
+                .build();
+    }
+
 
 }

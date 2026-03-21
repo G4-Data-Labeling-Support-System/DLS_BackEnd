@@ -4,6 +4,7 @@ import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
+import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.ProjectMember;
 import com.group4.DLS.domain.entity.User;
@@ -11,6 +12,7 @@ import com.group4.DLS.domain.enums.ProjectStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.ProjectMapper;
+import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectMemberRepository;
 import com.group4.DLS.repositories.ProjectRepository;
 import org.springframework.security.core.Authentication;
@@ -34,12 +36,21 @@ public class ProjectService {
     ProjectMemberRepository projectMemberRepository;
 
     ActivityLogService logService;
+    DatasetRepository datasetRepository;
 
     // Lấy user hiện tại từ SecurityContextHolder
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         return (User) authentication.getPrincipal();
+    }
+
+    //get project by dataset
+    public ProjectResponse getProjectByDatasetId(String datasetId){
+        Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+
+        Project project = dataset.getProject();
+        return projectMapper.toProjectResponse(project);
     }
 
     // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
