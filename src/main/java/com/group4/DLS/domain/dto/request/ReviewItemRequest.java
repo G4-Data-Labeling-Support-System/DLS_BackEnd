@@ -16,6 +16,6 @@ import java.util.List;
 public class ReviewItemRequest {
     String annotationId;
     String comment;
-    ReviewStatus reviewStatus;
+    String reviewStatus;
     List<MultipartFile> envidence;
 }

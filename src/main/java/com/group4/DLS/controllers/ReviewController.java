@@ -5,6 +5,7 @@ import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ReviewResponse;
 import com.group4.DLS.services.ReviewService;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -30,10 +31,10 @@ public class ReviewController {
 
 
     //after reviewer is reviewed
-    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/update")
     @PreAuthorize("hasAnyRole('REVIEWER','MANAGER')")
     public ApiResponse<List<ReviewResponse>> reviewTask(
-            @ModelAttribute ReviewUpdateRequest request
+            @RequestBody ReviewUpdateRequest request
     ) throws IOException {
 
         ApiResponse<List<ReviewResponse>> response = new ApiResponse<>();

@@ -83,6 +83,10 @@ public class ReviewService {
 
     //after reviewer reviews success
     public List<ReviewResponse> reviewed(ReviewUpdateRequest request) throws IOException {
+        Task task = taskRepository.findById(request.getTaskId()).
+                orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+        int countCompleted = 0;
+
         List<Review> reviews = new ArrayList<>();
         List<Annotation> annotations = new ArrayList<>();
 
@@ -93,25 +97,32 @@ public class ReviewService {
 
             Review review = reviewRepository.findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
 
+            if(review == null){
+                throw new AppException(ErrorCode.REVIEW_NOT_FOUND);
+            }
             review.setReviewedAt(LocalDateTime.now());//set time
             review.setComment(item.getComment()); // set comment
-            review.setReviewStatus(item.getReviewStatus());
+            review.setReviewStatus(ReviewStatus.valueOf(item.getReviewStatus()));
             List<String> envidences = new ArrayList<>();
             for(MultipartFile url: item.getEnvidence()){
                 envidences.add(seaweedFilerUploadService.uploadImage(url, "Envidence"));//tạo chuỗi string ảnh
             }
             review.setEvidences(envidences);
 
-            String status = item.getReviewStatus().toString();
-            annotation.setAnnotationStatus(AnnotationStatus.valueOf(status));
+
+            if(AnnotationStatus.valueOf(item.getReviewStatus()) == AnnotationStatus.APPROVED){
+                countCompleted++;
+            }
+            annotation.setAnnotationStatus(AnnotationStatus.valueOf(item.getReviewStatus()));//change string to staus of Anotation
             List<Review> reviewsOfAnntation = reviewRepository.findByAnnotation_AnnotationId(annotation.getAnnotationId());
             annotation.setReviews(reviewsOfAnntation);
             annotations.add(annotation);
             reviews.add(review);
         }
         annotationRepository.saveAll(annotations);
-        for(Annotation annotation: annotations)
         reviewRepository.saveAll(reviews);
+        task.setCompletedCount(countCompleted);// set coutComplete
+        taskRepository.save(task);
 
         return reviewMapper.toReviewResponse(reviews);
     }

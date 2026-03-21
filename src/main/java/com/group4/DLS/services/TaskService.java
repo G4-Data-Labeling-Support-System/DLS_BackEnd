@@ -110,6 +110,7 @@ public class TaskService {
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }
+            taskRepository.save(task);
         }
 
         return taskMapper.toTaskResponse(tasks);
