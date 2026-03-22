@@ -65,14 +65,22 @@ public class ReviewService {
 
         for (Annotation annotation : annotations) {
            if(annotation.getAnnotationStatus().equals(AnnotationStatus.SUBMITTED)){
-               // Tạo review lần đầu cho annotation
-               Review review = new Review();
-               review.setComment(""); // comment rỗng lần đầu
-               review.setUser(reviewer); // map reviewer
-               review.setAnnotation(annotation); // map annotation
-               review.setEvidences(new ArrayList<>()); // tạo list evidences rỗng
+               // lấy review mới nhất
+               Review latestReview = reviewRepository
+                       .findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
 
-               reviewsToSave.add(review);
+               // nếu chưa có review hoặc review trước đã xử lý xong
+               if (latestReview == null || latestReview.getReviewStatus() == ReviewStatus.REJECTED) {
+
+                   Review review = new Review();
+                   review.setComment("");
+                   review.setUser(reviewer);
+                   review.setAnnotation(annotation);
+                   review.setEvidences(new ArrayList<>());
+                   review.setReviewStatus(ReviewStatus.IN_PROGRESS); //  quan trọng
+
+                   reviewsToSave.add(review);
+               }
            }
         }
 

@@ -107,7 +107,7 @@ public class AnnotationService {
 
             annotation.setAnnotationData(convertToJson(item.getAnnotationData()));
             annotation.setAnnotationType(item.getAnnotationType());
-            annotation.setAnnotationStatus(item.getAnnotationStatus());
+            annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
             annotation.setAnnotationConfidence(item.getAnnotationConfidence());
             annotation.setComment(item.getComment());
 

@@ -106,10 +106,11 @@ public class TaskService {
                 reviewService.createReviews(task);
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
-            }else{
+            }else {
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }
+
             taskRepository.save(task);
         }
 
