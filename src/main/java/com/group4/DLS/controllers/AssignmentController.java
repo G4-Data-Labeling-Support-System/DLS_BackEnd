@@ -122,7 +122,7 @@ public class AssignmentController {
     }
 
     // ================= REMOVE ASSIGNMENT =================
-    @DeleteMapping("/remove/{assignmentId}")
+    @PatchMapping("/remove/{assignmentId}")
     @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Delete assignment",
