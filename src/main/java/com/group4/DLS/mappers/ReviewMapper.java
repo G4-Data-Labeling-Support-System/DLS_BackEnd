@@ -21,7 +21,6 @@ public interface ReviewMapper {
     @Mapping(source = "comment", target = "comment")
     @Mapping(source = "reviewedAt", target = "reviewedAt")
     @Mapping(source = "evidences", target = "evidences")
-    @Mapping(source = "annotation", target = "annotation")
     ReviewResponse toReviewResponse(Review review);
 
     List<ReviewResponse> toReviewResponse(List<Review> reviews);

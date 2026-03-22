@@ -82,9 +82,11 @@ public class ReviewService {
     }
 
     //after reviewer reviews success
-    public List<ReviewResponse> reviewed(ReviewUpdateRequest request) throws IOException {
-        Task task = taskRepository.findById(request.getTaskId()).
-                orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+    public List<ReviewResponse> reviewed(ReviewUpdateRequest request, List<MultipartFile> files) throws IOException {
+
+        Task task = taskRepository.findById(request.getTaskId())
+                .orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+
         int countCompleted = 0;
 
         List<Review> reviews = new ArrayList<>();
@@ -95,33 +97,51 @@ public class ReviewService {
             Annotation annotation = annotationRepository.findById(item.getAnnotationId())
                     .orElseThrow(() -> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
 
-            Review review = reviewRepository.findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
+            Review review = reviewRepository
+                    .findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
 
-            if(review == null){
+            if (review == null) {
                 throw new AppException(ErrorCode.REVIEW_NOT_FOUND);
             }
-            review.setReviewedAt(LocalDateTime.now());//set time
-            review.setComment(item.getComment()); // set comment
+
+            review.setReviewedAt(LocalDateTime.now());
+            review.setComment(item.getComment());
             review.setReviewStatus(ReviewStatus.valueOf(item.getReviewStatus()));
-            List<String> envidences = new ArrayList<>();
-            for(MultipartFile url: item.getEnvidence()){
-                envidences.add(seaweedFilerUploadService.uploadImage(url, "Envidence"));//tạo chuỗi string ảnh
+
+            // 🔥 xử lý file theo index
+            List<String> evidences = new ArrayList<>();
+
+            if (item.getFileIndexes() != null && files != null) {
+                for (Integer index : item.getFileIndexes()) {
+
+                    if (index < files.size()) {
+                        MultipartFile file = files.get(index);
+
+                        String url = seaweedFilerUploadService.uploadImage(file, "Evidence");
+                        evidences.add(url);
+                    }
+                }
             }
-            review.setEvidences(envidences);
 
+            review.setEvidences(evidences);
 
-            if(AnnotationStatus.valueOf(item.getReviewStatus()) == AnnotationStatus.APPROVED){
+            // update status
+            String status = item.getReviewStatus();
+
+            if (AnnotationStatus.valueOf(status) == AnnotationStatus.APPROVED) {
                 countCompleted++;
             }
-            annotation.setAnnotationStatus(AnnotationStatus.valueOf(item.getReviewStatus()));//change string to staus of Anotation
-            List<Review> reviewsOfAnntation = reviewRepository.findByAnnotation_AnnotationId(annotation.getAnnotationId());
-            annotation.setReviews(reviewsOfAnntation);
+
+            annotation.setAnnotationStatus(AnnotationStatus.valueOf(status));
+
             annotations.add(annotation);
             reviews.add(review);
         }
+
         annotationRepository.saveAll(annotations);
         reviewRepository.saveAll(reviews);
-        task.setCompletedCount(countCompleted);// set coutComplete
+
+        task.setCompletedCount(countCompleted);
         taskRepository.save(task);
 
         return reviewMapper.toReviewResponse(reviews);

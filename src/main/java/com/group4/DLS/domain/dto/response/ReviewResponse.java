@@ -27,5 +27,4 @@ public class ReviewResponse {
     String comment;
     LocalDateTime reviewedAt;
     List<String> evidences;
-    AnnotationResponse annotation;
 }

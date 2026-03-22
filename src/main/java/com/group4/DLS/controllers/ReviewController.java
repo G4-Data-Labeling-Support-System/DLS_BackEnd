@@ -1,11 +1,11 @@
 package com.group4.DLS.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.DLS.domain.dto.request.ReviewUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ReviewResponse;
 import com.group4.DLS.services.ReviewService;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -30,18 +31,21 @@ public class ReviewController {
     ReviewService reviewService;
 
 
-    //after reviewer is reviewed
-    @PutMapping(value = "/update")
+    @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('REVIEWER','MANAGER')")
     public ApiResponse<List<ReviewResponse>> reviewTask(
-            @RequestBody ReviewUpdateRequest request
+            @RequestPart("data") String json,
+            @RequestPart(value = "files", required = false) List<MultipartFile> files
     ) throws IOException {
+
+        ObjectMapper mapper = new ObjectMapper();
+        ReviewUpdateRequest request = mapper.readValue(json, ReviewUpdateRequest.class);
 
         ApiResponse<List<ReviewResponse>> response = new ApiResponse<>();
 
         response.setCode(200);
         response.setMessage("Review updated successfully");
-        response.setData(reviewService.reviewed(request));
+        response.setData(reviewService.reviewed(request, files));
 
         return response;
     }

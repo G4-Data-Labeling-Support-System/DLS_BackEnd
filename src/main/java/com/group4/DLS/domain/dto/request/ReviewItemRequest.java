@@ -17,5 +17,5 @@ public class ReviewItemRequest {
     String annotationId;
     String comment;
     String reviewStatus;
-    List<MultipartFile> envidence;
+    List<Integer> fileIndexes; // mapping file
 }
