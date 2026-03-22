@@ -65,14 +65,22 @@ public class ReviewService {
 
         for (Annotation annotation : annotations) {
            if(annotation.getAnnotationStatus().equals(AnnotationStatus.SUBMITTED)){
-               // Tạo review lần đầu cho annotation
-               Review review = new Review();
-               review.setComment(""); // comment rỗng lần đầu
-               review.setUser(reviewer); // map reviewer
-               review.setAnnotation(annotation); // map annotation
-               review.setEvidences(new ArrayList<>()); // tạo list evidences rỗng
+               // lấy review mới nhất
+               Review latestReview = reviewRepository
+                       .findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
 
-               reviewsToSave.add(review);
+               // nếu chưa có review hoặc review trước đã xử lý xong
+               if (latestReview == null || latestReview.getReviewStatus() == ReviewStatus.REJECTED) {
+
+                   Review review = new Review();
+                   review.setComment("");
+                   review.setUser(reviewer);
+                   review.setAnnotation(annotation);
+                   review.setEvidences(new ArrayList<>());
+                   review.setReviewStatus(ReviewStatus.IN_PROGRESS); //  quan trọng
+
+                   reviewsToSave.add(review);
+               }
            }
         }
 
@@ -82,7 +90,13 @@ public class ReviewService {
     }
 
     //after reviewer reviews success
-    public List<ReviewResponse> reviewed(ReviewUpdateRequest request) throws IOException {
+    public List<ReviewResponse> reviewed(ReviewUpdateRequest request, List<MultipartFile> files) throws IOException {
+
+        Task task = taskRepository.findById(request.getTaskId())
+                .orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+
+        int countCompleted = 0;
+
         List<Review> reviews = new ArrayList<>();
         List<Annotation> annotations = new ArrayList<>();
 
@@ -91,27 +105,52 @@ public class ReviewService {
             Annotation annotation = annotationRepository.findById(item.getAnnotationId())
                     .orElseThrow(() -> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
 
-            Review review = reviewRepository.findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
+            Review review = reviewRepository
+                    .findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
 
-            review.setReviewedAt(LocalDateTime.now());//set time
-            review.setComment(item.getComment()); // set comment
-            review.setReviewStatus(item.getReviewStatus());
-            List<String> envidences = new ArrayList<>();
-            for(MultipartFile url: item.getEnvidence()){
-                envidences.add(seaweedFilerUploadService.uploadImage(url, "Envidence"));//tạo chuỗi string ảnh
+            if (review == null) {
+                throw new AppException(ErrorCode.REVIEW_NOT_FOUND);
             }
-            review.setEvidences(envidences);
 
-            String status = item.getReviewStatus().toString();
+            review.setReviewedAt(LocalDateTime.now());
+            review.setComment(item.getComment());
+            review.setReviewStatus(ReviewStatus.valueOf(item.getReviewStatus()));
+
+            // xử lý file theo index
+            List<String> evidences = new ArrayList<>();
+
+            if (item.getFileIndexes() != null && files != null) {
+                for (Integer index : item.getFileIndexes()) {
+
+                    if (index < files.size()) {
+                        MultipartFile file = files.get(index);
+
+                        String url = seaweedFilerUploadService.uploadImage(file, "Evidence");
+                        evidences.add(url);
+                    }
+                }
+            }
+
+            review.setEvidences(evidences);
+
+            // update status
+            String status = item.getReviewStatus();
+
+            if (AnnotationStatus.valueOf(status) == AnnotationStatus.APPROVED) {
+                countCompleted++;
+            }
+
             annotation.setAnnotationStatus(AnnotationStatus.valueOf(status));
-            List<Review> reviewsOfAnntation = reviewRepository.findByAnnotation_AnnotationId(annotation.getAnnotationId());
-            annotation.setReviews(reviewsOfAnntation);
+
             annotations.add(annotation);
             reviews.add(review);
         }
+
         annotationRepository.saveAll(annotations);
-        for(Annotation annotation: annotations)
         reviewRepository.saveAll(reviews);
+
+        task.setCompletedCount(countCompleted);
+        taskRepository.save(task);
 
         return reviewMapper.toReviewResponse(reviews);
     }

@@ -12,6 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class ReviewUpdateRequest {
-
+    String taskId;
     List<ReviewItemRequest> reviews;
 }

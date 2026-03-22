@@ -41,6 +41,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     public ApiResponse<List<DataItemResponse>> getTaskById(@PathVariable String taskId) {
         ApiResponse<List<DataItemResponse>> response = new ApiResponse<>();
         response.setCode(200);
@@ -50,6 +51,7 @@ public class TaskController {
     }
 
     @GetMapping("/{taskId}/taskDataitems")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     public ApiResponse<List<TaskDataITemResponse>> getTaskDataItemsByTaskId(@PathVariable String taskId) {
         ApiResponse<List<TaskDataITemResponse>> response = new ApiResponse<>();
         response.setCode(200);
