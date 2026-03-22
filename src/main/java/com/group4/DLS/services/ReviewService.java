@@ -108,7 +108,7 @@ public class ReviewService {
             review.setComment(item.getComment());
             review.setReviewStatus(ReviewStatus.valueOf(item.getReviewStatus()));
 
-            // 🔥 xử lý file theo index
+            // xử lý file theo index
             List<String> evidences = new ArrayList<>();
 
             if (item.getFileIndexes() != null && files != null) {
