@@ -133,7 +133,7 @@ public class LabelService {
         Label label = labelRepository.findById(labelId)
                 .orElseThrow(() -> new AppException(ErrorCode.LABEL_NOT_FOUND));
 
-        label.setStatus(LabelStatus.INACTIVE);
+        label.setLabelStatus(LabelStatus.INACTIVE);
 
         labelRepository.save(label);
     }
@@ -145,7 +145,7 @@ public class LabelService {
         List<Label> labels = labelRepository.findByDataset_DatasetId(datasetId);
 
         for (Label label : labels) {
-            label.setStatus(LabelStatus.INACTIVE);
+            label.setLabelStatus(LabelStatus.INACTIVE);
         }
     }
 }

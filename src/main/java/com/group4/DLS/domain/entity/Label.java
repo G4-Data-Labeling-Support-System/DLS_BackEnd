@@ -47,7 +47,7 @@ public class Label {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "label_status", nullable = false)
-    LabelStatus status = LabelStatus.ACTIVE;
+    LabelStatus labelStatus = LabelStatus.ACTIVE;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;
