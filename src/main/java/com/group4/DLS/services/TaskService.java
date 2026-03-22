@@ -111,17 +111,18 @@ public class TaskService {
                 task.setFlagForReview(false);
             }
 
+            if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){
+                task.setTaskStatus(TaskStatus.COMPLETED);
+                task.setFlagForReview(false);
+            }
+
             taskRepository.save(task);
         }
 
         return taskMapper.toTaskResponse(tasks);
     }
 
-    //set number annotation of task is aprroved
-    public void setCompletedAnnotationAnDataItem(Task task){
-        task.setCompletedCount(annotationService.getNumberAnnotationIsApproved(task));
-        taskRepository.save(task);
-    }
+
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
     public void removeTasksByAssignmentId(String assignmentId) {

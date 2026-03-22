@@ -139,6 +139,7 @@ public class AssignmentController {
 
     // ================= GET LABELS BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/labels")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     @Operation(
         summary = "Get labels for assignment",
         description = "Retrieve all labels associated with a specific assignment")
@@ -153,6 +154,7 @@ public class AssignmentController {
 
     // ================= GET DATASET BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/dataset")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     @Operation(
             summary = "Get dataset for assignment",
             description = "Retrieve all dataset associated with a specific assignment")
