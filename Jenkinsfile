@@ -26,8 +26,8 @@ node {
             prodServer: 'jso@10.0.1.23',
 
             manifestRepo: 'https://github.com/G4-Data-Labeling-Support-System/Infrastructure.git',
-            env: '${env.BRANCH_NAME == 'main' ? 'production' : 'development'}',
-            k8sNamespace: '${env.BRANCH_NAME == 'main' ? 'prod' : 'dev'}'
+            // env: '${env.BRANCH_NAME == 'main' ? 'production' : 'development'}',
+            // k8sNamespace: '${env.BRANCH_NAME == 'main' ? 'prod' : 'dev'}'
         ]
 
         // Env variables
