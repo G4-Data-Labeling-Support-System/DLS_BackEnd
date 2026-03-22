@@ -105,15 +105,15 @@ public class TaskService {
                 reviewService.createReviews(task);
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
-            }else {
+            }else if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){
+                task.setTaskStatus(TaskStatus.COMPLETED);
+                task.setFlagForReview(false);
+            }else{
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }
 
-            if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){
-                task.setTaskStatus(TaskStatus.COMPLETED);
-                task.setFlagForReview(false);
-            }
+
 
             taskRepository.save(task);
         }
