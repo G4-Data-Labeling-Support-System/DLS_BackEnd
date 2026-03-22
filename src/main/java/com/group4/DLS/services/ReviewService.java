@@ -161,4 +161,17 @@ public class ReviewService {
         return reviewMapper.toReviewResponse(reviews);
     }
 
+    public void removeReviewByAnnotation(String annotationId){
+        Annotation annotation = annotationRepository.findById(annotationId)
+                .orElseThrow(()-> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
+
+        List<Review> reviews = annotation.getReviews();
+
+        for(Review review: reviews){
+            review.setReviewStatus(ReviewStatus.INACTIVE);
+        }
+
+        reviewRepository.saveAll(reviews);
+    }
+
 }

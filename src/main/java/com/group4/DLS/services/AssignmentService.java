@@ -334,6 +334,7 @@ public class AssignmentService {
             datasetRepository.save(dataset);
         }
 
+        assignment.setDataset(null);
         assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);// Soft delete assignment
         
         assignmentRepository.save(assignment);
