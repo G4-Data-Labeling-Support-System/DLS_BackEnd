@@ -5,19 +5,12 @@ import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
-import com.group4.DLS.domain.entity.Annotation;
-import com.group4.DLS.domain.entity.Dataitem;
-import com.group4.DLS.domain.entity.Label;
-import com.group4.DLS.domain.entity.Task;
-import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.entity.*;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AnnotationMapper;
-import com.group4.DLS.repositories.AnnotationRepository;
-import com.group4.DLS.repositories.DataItemRepository;
-import com.group4.DLS.repositories.LabelRepository;
-import com.group4.DLS.repositories.TaskRepository;
+import com.group4.DLS.repositories.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +34,7 @@ public class AnnotationService {
     LabelRepository labelRepository;
 
     AnnotationMapper annotationMapper;
+    ReviewService reviewService;
 
     // function to change to jason to save database
     private String convertToJson(Object value) {
@@ -91,7 +85,7 @@ public class AnnotationService {
         Task task = taskRepository.findById(request.getTaskId())
                 .orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
 
-        // Get logged in user
+        // Get logged-in user
         var auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
 
@@ -171,6 +165,7 @@ public class AnnotationService {
         // Delete annotations in batch
         for (Annotation annotation : annotations) {
             annotation.setAnnotationStatus(AnnotationStatus.INACTIVE);
+            reviewService.removeReviewByAnnotation(annotation.getAnnotationId());
         }
         annotationRepository.saveAll(annotations);
     }
