@@ -28,4 +28,10 @@ public interface DatasetRepository extends JpaRepository<Dataset, String> {
         String projectId
     );
 
+
+    //list all dataset not have assignment in project
+    List<Dataset> findByAssignmentIsNullAndProject_ProjectIdAndDatasetStatus(
+            String projectId,
+            DatasetStatus status
+    );
 }

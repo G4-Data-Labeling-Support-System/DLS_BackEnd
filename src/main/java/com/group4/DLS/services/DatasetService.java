@@ -176,6 +176,24 @@ public class DatasetService {
         return datasetMapper.toDatasetResponse(dataset);
     }
 
+    //get dataset have not assignment
+    public List<DatasetResponse> getDatasetsNotHaveAssignmentInProject(String projectId){
+        try {
+            if (projectId == null) {
+                throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
+            }
+
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+            List<Dataset> datasets = datasetRepository.findByAssignmentIsNullAndProject_ProjectIdAndDatasetStatus(project.getProjectId(), DatasetStatus.ACTIVE);
+
+            return datasetMapper.toDatasetResponse(datasets);
+        } catch (AppException ex) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
+    }
+
     // ===== DELETE DATASET =====
     @LogActivity(
         action = "REMOVE",

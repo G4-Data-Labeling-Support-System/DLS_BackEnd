@@ -111,4 +111,20 @@ public class DatasetController {
         
         return response;
     }
+
+
+    //get datasets not have assignment of project
+    @GetMapping("/notassignment/project/{projectId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @Operation(summary = "Get datasets not have assignment by project", description = "Retrieve all datasets belonging to a specific project")
+    public ApiResponse<List<DatasetResponse>> getDatasetsByAssignmentIsNullAndProject(
+            @PathVariable String projectId) {
+        ApiResponse<List<DatasetResponse>> response = new ApiResponse<>();
+
+        response.setCode(200);
+        response.setData(datasetService.getDatasetsNotHaveAssignmentInProject(projectId));
+        response.setMessage("Dataset not have assignment successfully");
+
+        return response;
+    }
 }
