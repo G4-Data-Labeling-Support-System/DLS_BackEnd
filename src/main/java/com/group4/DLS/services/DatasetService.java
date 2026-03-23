@@ -152,6 +152,7 @@ public class DatasetService {
 
             for (String dataItemId : request.getDeleteDataItemId()) {
                 dataitemService.deleteDataitem(dataItemId);
+                dataset.setTotalItems(dataset.getTotalItems()-1);
             }
         }
 
