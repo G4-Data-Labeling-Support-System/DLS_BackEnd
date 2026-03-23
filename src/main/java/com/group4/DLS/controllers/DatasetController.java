@@ -81,19 +81,19 @@ public class DatasetController {
      * Update a dataset
      * ================
      */
-    @PutMapping(value = "/{datasetId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @PreAuthorize("hasRole('MANAGER')")
-    @Operation(summary = "Update current dataset", description = "Update dataset")
-    public ApiResponse<DatasetResponse> update(@PathVariable String datasetId,
-            @ModelAttribute DatasetUpdateRequest request) throws IOException {
-        ApiResponse<DatasetResponse> response = new ApiResponse<>();
+        @PutMapping(value = "/{datasetId}")
+        @PreAuthorize("hasRole('MANAGER')")
+        @Operation(summary = "Update current dataset", description = "Update dataset")
+        public ApiResponse<DatasetResponse> update(@PathVariable String datasetId,
+                @ModelAttribute DatasetUpdateRequest request) throws IOException {
+            ApiResponse<DatasetResponse> response = new ApiResponse<>();
 
-        response.setCode(200);
-        response.setData(datasetService.updateDataset(datasetId, request));
-        response.setMessage("Dataset updated successfully");
+            response.setCode(200);
+            response.setData(datasetService.updateDataset(datasetId, request));
+            response.setMessage("Dataset updated successfully");
 
-        return response;
-    }
+            return response;
+        }
 
     /*
      * ================
