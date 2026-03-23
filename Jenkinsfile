@@ -33,7 +33,7 @@ node {
         // Env variables
         slackNotify = load "ci/slack.groovy"
         def buildPipeline = load "ci/build.groovy"
-        def sonarqubePipeline = load "ci/sonarqube.groovy"
+        // def sonarqubePipeline = load "ci/sonarqube.groovy"
         def trivyFilesystemScan = load "ci/trivy-filesystem-scan.groovy"
         def dockerPipeline = load "ci/docker.groovy"
 
@@ -41,7 +41,7 @@ node {
         def deployBeta = load "ci/deploy-beta.groovy"
         def deployDev = load "ci/deploy-dev.groovy"
 
-        def updateManifest = load "ci/update-manifest.groovy"
+        // def updateManifest = load "ci/update-manifest.groovy"
 
         // Call functions base on branch
         if (env.BRANCH_NAME == "main") {
@@ -56,7 +56,7 @@ node {
             // Step 5: Deploy to Docker production server
             deployProd.call(config)
             // Step 6: Update Manifestfile
-            updateManifest.call(config)
+            // updateManifest.call(config)
         } else if (env.BRANCH_NAME == "development") {
             // Step 1: Build project
             buildPipeline.call(config)
@@ -69,7 +69,7 @@ node {
             // Step 5: Deploy to Docker production server
             deployBeta.call(config)
             // Step 6: Update Manifestfile
-            updateManifest.call(config)
+            // updateManifest.call(config)
         } else {
             buildPipeline.call(config)
             dockerPipeline.call(config)
