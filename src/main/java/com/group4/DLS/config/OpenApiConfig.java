@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Configuration;
         ),
         @Server(
             description = "Prod Server",
-            url = "https://dls-beta.hikarimoon.pro/"
+            url = "https://dls-be-dev.hikarimoon.pro/"
         )
     }
 )

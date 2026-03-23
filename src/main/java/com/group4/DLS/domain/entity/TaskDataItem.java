@@ -4,19 +4,7 @@ import java.time.LocalDateTime;
 
 import com.group4.DLS.domain.enums.TaskDataItemStatus;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,19 +27,22 @@ public class TaskDataItem {
     @Column(name = "task_item_id")
     String taskItemId;
 
+    @Column(name= "item_index")
+    Integer itemIndex;
+
     // Many TaskItem belongs to One Task
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id", nullable = false)
+    @JoinColumn(name = "task_id", nullable = true)
     Task task;
 
-    // Many TaskItem belongs to One Dataitem
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "dataitem_id", nullable = false)
+    // One TaskItem belongs to One Dataitem
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "dataitem_id", nullable = true)
     Dataitem dataitem;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "item_status")
-    TaskDataItemStatus taskDataItemStatus;
+    TaskDataItemStatus taskDataItemStatus = TaskDataItemStatus.IN_PROGRESS;
 
     @Column(name = "assigned_at")
     LocalDateTime assignedAt;
@@ -63,7 +54,7 @@ public class TaskDataItem {
     protected void onAssign() {
         this.assignedAt = LocalDateTime.now();
         if (this.taskDataItemStatus == null) {
-            this.taskDataItemStatus = TaskDataItemStatus.PENDING;
+            this.taskDataItemStatus = TaskDataItemStatus.IN_PROGRESS;
         }
     }
 }

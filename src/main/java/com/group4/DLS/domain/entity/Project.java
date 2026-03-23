@@ -46,7 +46,7 @@ public class Project {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "project_status", nullable = false)
-    ProjectStatus status = ProjectStatus.NOT_STARTED;
+    ProjectStatus projectStatus = ProjectStatus.NOT_STARTED;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;
@@ -58,10 +58,6 @@ public class Project {
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
-
-        if (status == null) {
-            this.status = ProjectStatus.NOT_STARTED;
-        }
     }
 
     @PreUpdate

@@ -4,22 +4,29 @@ def call(config) {
     String imageTagged = "${image}:${version}"
 
     stage('Deploy to Production Server') {
+        withCredentials([
+            string(credentialsId: 'dls-db-password', variable: 'DB_PASSWORD'),
+            string(credentialsId: 'dls-jwt-secret', variable: 'JWT_SECRET')
+        ]) {
+            sshagent(['production-srv']) {
+                sh"""
+                    ssh -o StrictHostKeyChecking=no ${config.prodServer} \
+                    "echo "Deploying to version ${version}"
 
-        sshagent(['development-srv']) {
-            sh"""
-                ssh -o StrictHostKeyChecking=no ${config.devServer} \
-                'echo "Deploying to version ${version}"
+                    sudo docker pull ${imageTagged} && 
 
-                sudo docker pull ${imageTagged} && 
+                    sudo docker stop ${config.appName} || true && 
+                    sudo docker rm ${config.appName} || true &&
 
-                sudo docker stop ${config.appName} || true && 
-                sudo docker rm ${config.appName} || true &&
-
-                sudo docker run -d -p ${config.prodPort}:${config.port} \
-                --name ${config.appName} \
-                --restart unless-stopped \
-                ${imageTagged}'
-            """
+                    sudo docker run -d -p ${config.prodPort}:${config.containerPort} \
+                    --name ${config.appName} \
+                    --restart unless-stopped \
+                    -e SPRING_PROFILES_ACTIVE=prod \
+                    -e DB_PASSWORD="${DB_PASSWORD}" \
+                    -e JWT_SECRET="${JWT_SECRET}" \
+                    ${imageTagged}"
+                """
+            }
         }
     }
 }

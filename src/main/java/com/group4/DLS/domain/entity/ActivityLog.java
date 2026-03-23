@@ -2,6 +2,8 @@ package com.group4.DLS.domain.entity;
 
 import java.time.LocalDateTime;
 
+import com.group4.DLS.domain.enums.ActionType;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,8 +35,8 @@ public class ActivityLog {
     @Column(name = "log_id")
     String logId;
 
-    @Column(name = "action", nullable = false)
-    String action;
+    @Column(name = "action_type", nullable = false)
+    String actionType;
 
     @Column(name = "entity_name", nullable = false)
     String entityName;
@@ -51,9 +53,13 @@ public class ActivityLog {
     @Column(name = "timestamp", nullable = false)
     LocalDateTime timestamp;
 
+    @Column(name = "is_active")
+    boolean active;
+
     @PrePersist
     protected void onAction() {
         this.timestamp = LocalDateTime.now();
+        this.active = true;
     }
 
     // Many Activity Logs belongs to One user

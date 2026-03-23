@@ -5,6 +5,7 @@ import com.group4.DLS.domain.dto.request.LabelUpdateRequest;
 import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Label;
+import com.group4.DLS.domain.enums.LabelStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.LabelMapper;
@@ -126,16 +127,25 @@ public class LabelService {
         return labelMapper.toLabelResponse(updated);
     }
 
-    /*
-     * ======================
-     * DELETE
-     * ======================
-     */
-    public void delete(String labelId) {
+    // ===== DELETE LABEL BY LABEL_ID =====
+    public void deleteLabelByLabelId(String labelId) {
 
         Label label = labelRepository.findById(labelId)
                 .orElseThrow(() -> new AppException(ErrorCode.LABEL_NOT_FOUND));
 
-        labelRepository.delete(label);
+        label.setLabelStatus(LabelStatus.INACTIVE);
+
+        labelRepository.save(label);
+    }
+
+    // ===== DELETE LABELS BY DATASET_ID =====
+    public void deleteLabelsByDatasetId(String datasetId) {
+
+        // Find all labels that current dataset have
+        List<Label> labels = labelRepository.findByDataset_DatasetId(datasetId);
+
+        for (Label label : labels) {
+            label.setLabelStatus(LabelStatus.INACTIVE);
+        }
     }
 }

@@ -1,26 +1,34 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
+import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
 import com.group4.DLS.domain.entity.ProjectMember;
 import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.enums.ActionType;
 import com.group4.DLS.domain.enums.ProjectStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
+import com.group4.DLS.helper.RequestUtils;
 import com.group4.DLS.mappers.ProjectMapper;
+import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectMemberRepository;
 import com.group4.DLS.repositories.ProjectRepository;
-import com.group4.DLS.security.CurrentUserProvider;
+
+import jakarta.servlet.http.HttpServletRequest;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,47 +40,65 @@ public class ProjectService {
     ProjectRepository projectRepository;
     ProjectMapper projectMapper;
     ProjectMemberRepository projectMemberRepository;
-    CurrentUserProvider currentUserProvider;
 
     ActivityLogService logService;
+    DatasetRepository datasetRepository;
+
+    // Lấy user hiện tại từ SecurityContextHolder
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        return (User) authentication.getPrincipal();
+    }
+
+    //get project by dataset
+    public ProjectResponse getProjectByDatasetId(String datasetId){
+        Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+
+        Project project = dataset.getProject();
+        return projectMapper.toProjectResponse(project);
+    }
 
     // ================= GET ALL PROJECT THAT CURRETLY ACTIVE =================
     public List<ProjectResponse> getAllProjects() {
-        List<Project> projects = projectRepository.findByStatusIn(List.of(
+        List<Project> projects = projectRepository.findByProjectStatusIn(List.of(
                 ProjectStatus.INACTIVE,
-                ProjectStatus.ACTIVE,
-                ProjectStatus.CANCELLED,
+                ProjectStatus.NOT_STARTED,
                 ProjectStatus.COMPLETED,
                 ProjectStatus.IN_PROGRESS,
-                ProjectStatus.NOT_STARTED,
-                ProjectStatus.ON_HOLD));
+                ProjectStatus.NOT_STARTED));
         return projectMapper.toProjectResponse(projects);
     }
 
     // ================= GET PROJECT BY ID =================
     public ProjectResponse getProjectById(String projectId) {
-        Project project = projectRepository.findByProjectIdAndStatusIn(projectId,
+        Project project = projectRepository.findByProjectIdAndProjectStatusIn(projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
-                        ProjectStatus.ACTIVE,
-                        ProjectStatus.CANCELLED,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.ON_HOLD))
+                        ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= CREATE PROJECT =================
-    public ProjectResponse createProject(ProjectCreationRequest request) {
-        User manager = currentUserProvider.getCurrentUser();
+    @LogActivity(
+        action = "CREATE",
+        entity = "Project",
+        description = "Create project",
+        entityIdField = "projectId"
+    )
+    public ProjectResponse createProject(
+        ProjectCreationRequest request
+    ) {
+        User manager = getCurrentUser();
 
-        boolean existsActiveProject = projectRepository.existsByProjectNameAndStatusNot(
-            request.getProjectName(), 
-            ProjectStatus.INACTIVE
-        );
+        boolean existsActiveProject = projectRepository.existsByProjectNameAndProjectStatusNot(
+                request.getProjectName(),
+                ProjectStatus.INACTIVE);
 
         if (existsActiveProject) {
             throw new AppException(ErrorCode.PROJECT_ALREADY_EXISTS);
@@ -89,93 +115,79 @@ public class ProjectService {
         member.setJoinAt(LocalDateTime.now());
         projectMemberRepository.save(member);
 
-        // Log action
-        // logService.log(
-        // "CREATE_PROJECT",
-        // "PROJECT",
-        // project.getProjectId(),
-        // "Created project: " + project.getProjectName());
-
         return projectMapper.toProjectResponse(project);
     }
 
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Project",
+        description = "Update project",
+        entityIdParam = "projectId"
+    )
     // ================= UPDATE PROJECT =================
     public ProjectResponse updateProject(String projectId, ProjectUpdateRequest request) {
-        Project project = projectRepository.findByProjectIdAndStatusIn(
+        Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
                 List.of(
-                        ProjectStatus.ACTIVE,
-                        ProjectStatus.CANCELLED,
+                        ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.ON_HOLD))
+                        ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         projectMapper.updateProjectFromRequest(request, project);
         project = projectRepository.save(project);
 
-        // Log action
-        // logService.log(
-        // "UPDATE_PROJECT",
-        // "PROJECT",
-        // project.getProjectId(),
-        // "Updated project: " + project.getProjectName());
-
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= UPDATE PROJECT STATUS =================
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Project",
+        description = "Update project status",
+        entityIdParam = "projectId"
+    )
     public ProjectResponse updateProjectStatus(String projectId, ProjectStatusUpdateRequest request) {
-        Project project = projectRepository.findByProjectIdAndStatusIn(
+        Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
                 List.of(
                         ProjectStatus.INACTIVE,
-                        ProjectStatus.ACTIVE,
-                        ProjectStatus.CANCELLED,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.ON_HOLD))
+                        ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         if (project != null) {
             projectMapper.updateProjectStatusFromRequest(request, project);
             project = projectRepository.save(project);
-
-            // Log action
-            // logService.log(
-            // "UPDATE_PROJECT_STATUS",
-            // "PROJECT",
-            // project.getProjectId(),
-            // "Updated project: " + project.getProjectName() + " -> " + project.getStatus()
-            // );
         }
 
         return projectMapper.toProjectResponse(project);
     }
 
     // ================= DELETE PROJECT =================
+    @LogActivity(
+        action = "DELETE",
+        entity = "Project",
+        description = "Delete project",
+        entityIdParam = "projectId"
+    )
     public void deleteProject(String projectId) {
-        Project project = projectRepository.findByProjectIdAndStatusIn(
+        Project project = projectRepository.findByProjectIdAndProjectStatusIn(
                 projectId,
                 List.of(
-                        ProjectStatus.ACTIVE,
-                        ProjectStatus.CANCELLED,
+                        ProjectStatus.INACTIVE,
+                        ProjectStatus.NOT_STARTED,
                         ProjectStatus.COMPLETED,
                         ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.ON_HOLD))
+                        ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
-        project.setStatus(ProjectStatus.INACTIVE);
+        project.setProjectStatus(ProjectStatus.INACTIVE);
+        
         projectRepository.save(project);
-
-        // Log action
-        // logService.log(
-        // "REMOVE_PROJECT",
-        // "PROJECT",
-        // project.getProjectId(),
-        // "Project removed: " + project.getProjectName());
     }
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,6 +32,7 @@ public class GuidelineController {
      * ======================
      */
     @PostMapping("/project/{projectId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Create new guideline",
         description = "Create a new guideline for a project"
@@ -52,6 +54,7 @@ public class GuidelineController {
      * ======================
      */
     @PutMapping("/{guidelineId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Update guideline",
         description = "Update an existing guideline by its ID"
@@ -73,6 +76,7 @@ public class GuidelineController {
      * ======================
      */
     @GetMapping("/project/{projectId}")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     @Operation(
         summary = "Get all guidelines by project",
         description = "Retrieve all guidelines associated with a specific project"
@@ -88,7 +92,9 @@ public class GuidelineController {
     }
 
 
+//GET ALL
     @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     public ApiResponse<List<GuidelineResponse>> getAllGuideline() {
         ApiResponse<List<GuidelineResponse>> response = new ApiResponse<>();
 
@@ -99,7 +105,9 @@ public class GuidelineController {
         return response;
     }
 
+    //DELETE
     @PatchMapping("/{guidelineId}")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     public GuidelineResponse deleteGuideline(@PathVariable String guidelineId) {
         return guidelineService.deleteGuideline(guidelineId);
     }

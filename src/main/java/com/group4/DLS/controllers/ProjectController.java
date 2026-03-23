@@ -6,7 +6,6 @@ import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ProjectMemberResponse;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
-import com.group4.DLS.domain.dto.response.UserResponse;
 import com.group4.DLS.services.ProjectMemberService;
 import com.group4.DLS.services.ProjectService;
 
@@ -148,4 +147,20 @@ public class ProjectController {
                 .data(projectMemberService.getMembersByProjectId(projectId))
                 .build();
     }
+
+    //get all member of project
+    @GetMapping("/datasets/{datasetId}")
+    @PreAuthorize("hasRole('MANAGER')")
+    @Operation(
+            summary = "Get project by dataset",
+            description = "Retrieve project associated with a datasetId")
+    public ApiResponse<ProjectResponse> getProjectByDatasetId(@PathVariable String datasetId){
+        return ApiResponse.<ProjectResponse>builder()
+                .code(200)
+                .message("Get project members successfully")
+                .data(projectService.getProjectByDatasetId(datasetId))
+                .build();
+    }
+
+
 }

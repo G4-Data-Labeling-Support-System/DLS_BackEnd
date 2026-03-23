@@ -3,11 +3,9 @@ package com.group4.DLS.domain.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import com.group4.DLS.domain.enums.AssignmentStatus;
-import com.group4.DLS.domain.enums.Status;
 
 @Builder
 @Getter

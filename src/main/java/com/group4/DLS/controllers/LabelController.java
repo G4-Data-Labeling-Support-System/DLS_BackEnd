@@ -20,120 +20,102 @@ import java.util.List;
 @SecurityRequirement(name = "Bearer Authentication")
 public class LabelController {
 
-    private final LabelService labelService;
+        private final LabelService labelService;
 
-    /*
-     * ==============================
-     * GET ALL LABELS BY DATASET
-     * ==============================
-     */
-    @GetMapping("/api/v1/datasets/{datasetId}/labels")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')")
-    @Operation(
-            summary = "Get labels by dataset",
-            description = "Retrieve all labels belonging to a specific dataset"
-    )
-    public List<LabelResponse> getAllByDataset(
-            @PathVariable String datasetId) {
+        /*
+         * ==============================
+         * GET ALL LABELS BY DATASET
+         * ==============================
+         */
+        @GetMapping("/api/v1/datasets/{datasetId}/labels")
+        @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')")
+        @Operation(summary = "Get labels by dataset", description = "Retrieve all labels belonging to a specific dataset")
+        public List<LabelResponse> getAllByDataset(
+                        @PathVariable String datasetId) {
 
-        return labelService.getAllByDataset(datasetId);
-    }
+                return labelService.getAllByDataset(datasetId);
+        }
 
-    /*
-     * ==============================
-     * CREATE LABEL FOR DATASET
-     * ==============================
-     */
-    @PostMapping("/api/v1/datasets/{datasetId}/labels")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
-    @Operation(
-            summary = "Create new label",
-            description = "Create a new label for a dataset"
-    )
-    public ApiResponse<LabelResponse> createLabel(
-            @PathVariable String datasetId,
-            @RequestBody LabelCreationRequest request) {
+        /*
+         * ==============================
+         * CREATE LABEL FOR DATASET
+         * ==============================
+         */
+        @PostMapping("/api/v1/datasets/{datasetId}/labels")
+        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+        @Operation(summary = "Create new label", description = "Create a new label for a dataset")
+        public ApiResponse<LabelResponse> createLabel(
+                        @PathVariable String datasetId,
+                        @RequestBody LabelCreationRequest request) {
 
-        return ApiResponse.<LabelResponse>builder()
-                .code(200)
-                .message("Label created successfully")
-                .data(labelService.create(datasetId, request))
-                .build();
-    }
+                return ApiResponse.<LabelResponse>builder()
+                                .code(200)
+                                .message("Label created successfully")
+                                .data(labelService.create(datasetId, request))
+                                .build();
+        }
 
-    /*
-     * ==============================
-     * GET ALL LABELS
-     * ==============================
-     */
-    @GetMapping("/api/v1/labels")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
-    @Operation(
-            summary = "Get all labels",
-            description = "Retrieve all labels in system"
-    )
-    public List<LabelResponse> getAllLabels() {
+        /*
+         * ==============================
+         * GET ALL LABELS
+         * ==============================
+         */
+        @GetMapping("/api/v1/labels")
+        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+        @Operation(summary = "Get all labels", description = "Retrieve all labels in system")
+        public List<LabelResponse> getAllLabels() {
 
-        return labelService.getAllLabels();
-    }
+                return labelService.getAllLabels();
+        }
 
-    /*
-     * ==============================
-     * GET LABEL BY ID
-     * ==============================
-     */
-    @GetMapping("/api/v1/labels/{labelId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
-    @Operation(
-            summary = "Get label by ID",
-            description = "Retrieve a specific label by its ID"
-    )
-    public LabelResponse getById(@PathVariable String labelId) {
+        /*
+         * ==============================
+         * GET LABEL BY ID
+         * ==============================
+         */
+        @GetMapping("/api/v1/labels/{labelId}")
+        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+        @Operation(summary = "Get label by ID", description = "Retrieve a specific label by its ID")
+        public LabelResponse getById(@PathVariable String labelId) {
 
-        return labelService.getById(labelId);
-    }
+                return labelService.getById(labelId);
+        }
 
-    /*
-     * ==============================
-     * UPDATE LABEL
-     * ==============================
-     */
-    @PutMapping("/api/v1/labels/{labelId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
-    @Operation(
-            summary = "Update label",
-            description = "Update a label"
-    )
-    public ApiResponse<LabelResponse> update(
-            @PathVariable String labelId,
-            @RequestBody LabelUpdateRequest request) {
+        /*
+         * ==============================
+         * UPDATE LABEL
+         * ==============================
+         */
+        @PutMapping("/api/v1/labels/{labelId}")
+        @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
+        @Operation(summary = "Update label", description = "Update a label")
+        public ApiResponse<LabelResponse> update(
+                        @PathVariable String labelId,
+                        @RequestBody LabelUpdateRequest request) {
 
-        return ApiResponse.<LabelResponse>builder()
-                .code(200)
-                .message("Label updated successfully")
-                .data(labelService.update(labelId, request))
-                .build();
-    }
+                return ApiResponse.<LabelResponse>builder()
+                                .code(200)
+                                .message("Label updated successfully")
+                                .data(labelService.update(labelId, request))
+                                .build();
+        }
 
-    /*
-     * ==============================
-     * DELETE LABEL
-     * ==============================
-     */
-    @DeleteMapping("/api/v1/labels/{labelId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
-    @Operation(
-            summary = "Delete label",
-            description = "Delete a label by its ID"
-    )
-    public ApiResponse<Void> delete(@PathVariable String labelId) {
+        /*
+         * ==============================
+         * DELETE LABEL
+         * ==============================
+         */
+        @DeleteMapping("/api/v1/labels/{labelId}")
+        @PreAuthorize("hasAnyRole('MANAGER','ADMIN')")
+        @Operation(summary = "Delete label", description = "Delete a label by its ID")
+        public ApiResponse<Void> delete(@PathVariable String labelId) {
 
-        labelService.delete(labelId);
+                labelService.deleteLabelByLabelId(labelId);
 
-        return ApiResponse.<Void>builder()
-                .code(200)
-                .message("Label deleted successfully")
-                .build();
-    }
+                return ApiResponse.<Void>builder()
+                                .code(200)
+                                .message("Label deleted successfully")
+                                .build();
+        }
 
 }

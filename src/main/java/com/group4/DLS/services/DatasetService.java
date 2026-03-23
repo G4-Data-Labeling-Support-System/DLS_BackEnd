@@ -1,32 +1,57 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
+import com.group4.DLS.domain.entity.Assignment;
+import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
+import com.group4.DLS.domain.entity.Task;
+import com.group4.DLS.domain.enums.AssignmentStatus;
+import com.group4.DLS.domain.enums.DataItemStatus;
+import com.group4.DLS.domain.enums.DatasetStatus;
+import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.DatasetMapper;
+import com.group4.DLS.repositories.AssignmentRepository;
+import com.group4.DLS.repositories.DataItemRepository;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectRepository;
+import com.group4.DLS.repositories.TaskDataItemRepository;
+import com.group4.DLS.repositories.TaskRepository;
+
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class DatasetService {
 
-    private final DatasetRepository datasetRepository;
-    private final ProjectRepository projectRepository;
-    private final DatasetMapper datasetMapper;
-    private final DataitemService dataitemService;
+    DatasetRepository datasetRepository;
+    ProjectRepository projectRepository;
+    TaskDataItemRepository taskDataItemRepository;
+    AssignmentRepository assignmentRepository;
+    DataItemRepository dataItemRepository;
+    TaskRepository taskRepository;
 
+    DatasetMapper datasetMapper;
 
-    //List all dataset
+    DataitemService dataitemService;
+    AnnotationService annotationService;
+    LabelService labelService;
+
+    // ===== LIST ALL DATASET =====
     public List<DatasetResponse> getAllDatasets() {
         List<Dataset> datasets = datasetRepository.findAll();
         if (datasets.isEmpty()) {
@@ -61,6 +86,12 @@ public class DatasetService {
     }
 
     // ===== CREATE DATASET =====
+    @LogActivity(
+        action = "CREATE",
+        entity = "Dataset",
+        description = "Create dataset",
+        entityIdField = "datasetId"
+    )
     public DatasetResponse createDataset(DatasetCreationRequest request) throws IOException {
 
         // Validate project exist
@@ -68,7 +99,8 @@ public class DatasetService {
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
         // Check if this dataset name exist inside this project
-        if (datasetRepository.existsByProject_ProjectIdAndDatasetName(project.getProjectId(), request.getDatasetName())) {
+        if (datasetRepository.existsByProjectProjectIdAndDatasetNameAndDatasetStatusNot(project.getProjectId(),
+                request.getDatasetName(), DatasetStatus.INACTIVE)) {
             throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 
@@ -80,44 +112,148 @@ public class DatasetService {
         dataset.setTotalItems(dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles()));
         datasetRepository.save(dataset);
 
-
         // Save and return response
         return datasetMapper.toDatasetResponse(dataset);
     }
 
     // ===== UPDATE DATASET =====
-    public DatasetResponse updateDatasetResponse(String datasetId, DatasetUpdateRequest request) {
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Dataset",
+        description = "Update dataset",
+        entityIdParam = "datasetId"
+    )
+    public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request) throws IOException {
+
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
-
-        // Check duplicate name (If name change)
-        if (request.getDatasetName() != null && !request.getDatasetName().equals(dataset.getDatasetName())) {
-            throw new AppException(ErrorCode.DATASETNAME_ALREADY_EXSITS);
+        // Validate project exist
+        Project project = projectRepository.findById(request.getProjectId())
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+        // Check if this dataset name exist inside this project
+        if (!request.getDatasetName().equals(dataset.getDatasetName())
+                && datasetRepository.existsByProjectProjectIdAndDatasetNameAndDatasetStatusNot(project.getProjectId(),
+                        request.getDatasetName(), DatasetStatus.INACTIVE)) {
+            throw new AppException(ErrorCode.DATASET_ALREADY_EXISTS);
         }
 
-        // Capture old values for logging
-        String oldName = dataset.getDatasetName();
-        String oldDescription = dataset.getDescription();
-
-        // Update entity
+        // update basic info
         datasetMapper.updateDatasetFromRequest(request, dataset);
+        dataset.setProject(project);
 
-        // Save and return response
-        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+        // check do dataset have assignment
+        Assignment hasAssignment = dataset.getAssignment();
+
+        // delete dataitems
+        if (request.getDeleteDataItemId() != null && !request.getDeleteDataItemId().isEmpty()) {
+            if (hasAssignment != null) {
+                throw new AppException(ErrorCode.CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT);
+            }
+            int countDelete = 0;
+            for (String dataItemId : request.getDeleteDataItemId()) {
+                dataitemService.deleteDataitem(dataItemId);
+                countDelete++;
+            }
+            dataset.setTotalItems(dataset.getTotalItems()-countDelete);
+        }
+
+        List<MultipartFile> files = request.getFiles();
+
+        if (files != null && files.stream().anyMatch(file -> !file.isEmpty())) {
+            dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles());// insert and return new item
+            if (!(hasAssignment == null)) {
+                if (files.size() < 20) {
+                    // rule: chỉ được thêm và phải >=20
+                    throw new AppException(ErrorCode.DATAITEM_MINIMUM_REQUIRED);
+                }
+                dataitemService.assignNewDataItems(dataset.getDatasetId());// insert and return new item
+            }
+        }
+        datasetRepository.save(dataset);
+        dataset.setTotalItems(dataset.getDataitems().size());
+        datasetRepository.save(dataset);
+
+        return datasetMapper.toDatasetResponse(dataset);
+    }
+
+    //get dataset have not assignment
+    public List<DatasetResponse> getDatasetsNotHaveAssignmentInProject(String projectId){
+        try {
+            if (projectId == null) {
+                throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
+            }
+
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+            List<Dataset> datasets = datasetRepository.findByAssignmentIsNullAndProject_ProjectIdAndDatasetStatus(project.getProjectId(), DatasetStatus.ACTIVE);
+
+            return datasetMapper.toDatasetResponse(datasets);
+        } catch (AppException ex) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
     }
 
     // ===== DELETE DATASET =====
-    // public void deleteDataset(String datasetId) {
+    @LogActivity(
+        action = "REMOVE",
+        entity = "Dataset",
+        description = "Remove dataset",
+        entityIdParam = "datasetId"
+    )
+    @Transactional
+    public DatasetResponse deleteDataset(String datasetId) {
+        
+        // Check dataset exists (current dataset)
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
-    //     User currentUser = currentUserProvider.getCurrentUser();
+        // Assignment that have this dataset
+        Assignment assignment = assignmentRepository.findByDatasetDatasetId(datasetId);
 
-    //     if (currentUser.getUserRole() != UserRole.MANAGER) {
-    //         throw new AppException(ErrorCode.FORBIDDEN);
-    //     }
+        // Case 1: No assignment -> allow to delete
+        if (assignment == null) {
+            performDelete(datasetId, dataset, assignment);
+        } 
+        // Case 2: Assignment exists but not BUSY -> allow to delete
+        else if (assignment.getAssignmentStatus().equals(AssignmentStatus.ASSIGNED)) {
+            performDelete(datasetId, dataset, assignment);
+        } 
+        // Case 3: Assignment BUSY -> not allow to delete
+        else {
+            throw new AppException(ErrorCode.ASSIGNMENT_BUSY);
+        }
 
-    //     Dataset dataset = datasetRepository.findById(datasetId)
-    //             .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        return datasetMapper.toDatasetResponse(datasetRepository.save(dataset));
+    }
 
-    //     datasetRepository.delete(dataset);
-    // }
+    public void performDelete(String datasetId, Dataset dataset, Assignment assignment) {
+
+        // Remove Dataitem
+        List<Dataitem> dataitems = dataItemRepository.findByDataset_DatasetId(datasetId);
+        for (Dataitem dataitem : dataitems) {
+            dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
+        }
+
+        if (assignment != null) {
+            // Soft remove related annotation
+            annotationService.removeAnnotationByAssignmentId(assignment.getAssignmentId());
+
+            // Remove related TaskDataItem
+            taskDataItemRepository.deleteByTask_Assignment_AssignmentId(assignment.getAssignmentId());
+
+            // Remove tasks that related to this assignment
+            List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignment.getAssignmentId());
+            for (Task task : tasks) {
+                task.setTaskStatus(TaskStatus.INACTIVE);
+            }
+            taskRepository.saveAll(tasks);
+        }
+
+        // Soft remove related labels
+        labelService.deleteLabelsByDatasetId(datasetId);
+
+        // Set dataset status to INACTIVE
+        dataset.setDatasetStatus(DatasetStatus.INACTIVE);
+    }
 }

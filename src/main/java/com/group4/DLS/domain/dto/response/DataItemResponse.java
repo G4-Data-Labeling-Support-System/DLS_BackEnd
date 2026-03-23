@@ -2,6 +2,7 @@ package com.group4.DLS.domain.dto.response;
 
 import java.time.LocalDateTime;
 
+import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DataType;
 
 import lombok.AllArgsConstructor;
@@ -27,5 +28,6 @@ public class DataItemResponse {
     int width;
     int height;
     DataType dataType;
+    DataItemStatus dataItemStatus;
     LocalDateTime uploadedAt;
 }

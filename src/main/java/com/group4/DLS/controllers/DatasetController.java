@@ -34,51 +34,39 @@ public class DatasetController {
      */
     @GetMapping
     @PreAuthorize("hasRole('MANAGER')")
-    @Operation(
-            summary = "Get all datasets",
-            description = "Retrieve all datasets"
-    )
+    @Operation(summary = "Get all datasets", description = "Retrieve all datasets")
     public List<DatasetResponse> getAllDataset() {
         return datasetService.getAllDatasets();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{datasetId}")
     @PreAuthorize("hasRole('MANAGER')")
-    @Operation(
-            summary = "Get dataset by id",
-            description = "Retrieve dataset"
-    )
-    public DatasetResponse getDatasetById(@PathVariable String id) {
-        return datasetService.getDatasetById(id);
+    @Operation(summary = "Get dataset by dataset_id", description = "Retrieve dataset")
+    public DatasetResponse getDatasetById(@PathVariable String datasetId) {
+        return datasetService.getDatasetById(datasetId);
     }
 
     /*
-    * ==============================
-    * Get datasets for target project
-    * ==============================
-    */
+     * ==============================
+     * Get datasets for target project
+     * ==============================
+     */
     @GetMapping("/project/{projectId}")
     @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR')")
-    @Operation(
-        summary = "Get datasets by project",
-        description = "Retrieve all datasets belonging to a specific project"
-    )
+    @Operation(summary = "Get datasets by project", description = "Retrieve all datasets belonging to a specific project")
     public List<DatasetResponse> getAllByProjectDatasetResponses(
             @PathVariable String projectId) {
         return datasetService.getAllDatasetForProject(projectId);
     }
 
     /*
-    * ==================
-    * Create new dataset
-    * ==================
-    */
-    @PostMapping (value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+     * ==================
+     * Create new dataset
+     * ==================
+     */
+    @PostMapping(value = "", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('MANAGER')")
-    @Operation(
-        summary = "Create new dataset",
-        description = "Create a new dataset for a project"
-    )
+    @Operation(summary = "Create new dataset", description = "Create a new dataset for a project")
     public ApiResponse<DatasetResponse> createDatasetApiResponse(
             @ModelAttribute DatasetCreationRequest request) throws IOException {
         return ApiResponse.<DatasetResponse>builder()
@@ -89,38 +77,54 @@ public class DatasetController {
     }
 
     /*
-    * ================
-    * Update a dataset
-    * ================
-    */
-    @PutMapping("/{id}")
-    @PreAuthorize("hasRole('MANAGER')")
-    @Operation(
-        summary = "Update current dataset",
-        description = "Update dataset"
-    )
-    public ApiResponse<DatasetResponse> update(@PathVariable String id, @RequestBody DatasetUpdateRequest request) {
+     * ================
+     * Update a dataset
+     * ================
+     */
+        @PutMapping(value = "/{datasetId}")
+        @PreAuthorize("hasRole('MANAGER')")
+        @Operation(summary = "Update current dataset", description = "Update dataset")
+        public ApiResponse<DatasetResponse> update(@PathVariable String datasetId,
+                @ModelAttribute DatasetUpdateRequest request) throws IOException {
+            ApiResponse<DatasetResponse> response = new ApiResponse<>();
+
+            response.setCode(200);
+            response.setData(datasetService.updateDataset(datasetId, request));
+            response.setMessage("Dataset updated successfully");
+
+            return response;
+        }
+
+    /*
+     * ================
+     * Remove a dataset
+     * ================
+     */
+    @DeleteMapping("/remove/{datasetId}")
+    @Operation(summary = "Delete dataset", description = "Delete a dataset by its ID")
+    public ApiResponse<DatasetResponse> delete(@PathVariable String datasetId) {
         ApiResponse<DatasetResponse> response = new ApiResponse<>();
-
+        
         response.setCode(200);
-        response.setData(datasetService.updateDatasetResponse(id, request));
-        response.setMessage("Dataset updated successfully");
-
+        response.setData(datasetService.deleteDataset(datasetId));
+        response.setMessage("Dataset deleted successfully");
+        
         return response;
     }
 
-    /*
-    * ================
-    * Remove a dataset
-    * ================
-    */
-//     @DeleteMapping("/{id}")
-//     @Operation(
-//         summary = "Delete dataset",
-//         description = "Delete a dataset by its ID"
-//     )
-//     public ApiResponse<Void> delete(@PathVariable String id) {
-//         datasetService.deleteDataset(id);
-//         return ResponseEntity.noContent().build();
-//     }
+
+    //get datasets not have assignment of project
+    @GetMapping("/notassignment/project/{projectId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @Operation(summary = "Get datasets not have assignment by project", description = "Retrieve all datasets belonging to a specific project")
+    public ApiResponse<List<DatasetResponse>> getDatasetsByAssignmentIsNullAndProject(
+            @PathVariable String projectId) {
+        ApiResponse<List<DatasetResponse>> response = new ApiResponse<>();
+
+        response.setCode(200);
+        response.setData(datasetService.getDatasetsNotHaveAssignmentInProject(projectId));
+        response.setMessage("Dataset not have assignment successfully");
+
+        return response;
+    }
 }

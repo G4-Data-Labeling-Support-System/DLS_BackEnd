@@ -1,17 +1,44 @@
 def call(config) {
-
     String image = "${config.dockerUser}/${config.appName}"
-    String version = env.BRANCH_NAME == 'main' ?
-        "${config.release}-release.${env.BUILD_NUMBER}b" : // 1.1.2-release.78b
-        "${config.alpha}-alpha.${env.BUILD_NUMBER}" // 1.1.2-alpha.78b
 
-    String imageTagged = env.BRANCH_NAME == 'main' ?
-        "${image}:${version}" : // fleeforezz/data-labeling-be:1.1.2-release.78b
-        "${image}:${version}" // fleeforezz/data-labeling-be:1.1.2-alpha.78b
+    // Version tags
+    String version
+    if (env.BRANCH_NAME == 'main') {
+        version = "${config.release}-release.${env.BUILD_NUMBER}b" // 1.1.2-release.78b
+    } else if (env.BRANCH_NAME == 'development') {
+        version = "${config.beta}-beta.${env.BUILD_NUMBER}b" // 1.1.2-beta.78b
+    } else {
+        version = "dev-${env.BUILD_NUMBER}b" // dev-78b
+    }
+
+    String imageTagged = "${image}:${version}" // fleeforezz/data-labeling-be:1.1.2-release.78b
 
     stage('Docker Build') {
-        echo 'Building Docker image...'
+        echo "Building Docker image: ${imageTagged}"
         docker.build("${imageTagged}")
+    }
+
+    stage('Trivy Docker Image Scan') {
+            script {
+                def securityLevel = env.BRANCH_NAME == 'main' ? 'HIGH,CRITICAL' : 'CRITICAL'
+
+                sh """
+                    trivy image --no-progress \
+                    --format json \
+                    --severity ${securityLevel} \
+                    --output trivyimage.json \
+                    ${imageTagged} || true
+
+                    trivy image --no-progress \
+                    --format table \
+                    --severity ${securityLevel} \
+                    --output trivyimage.txt \
+                    ${imageTagged}
+
+                    cat trivyimage.txt
+                """
+            }
+            archiveArtifacts artifacts: 'trivyimage.txt,trivyimage.json', allowEmptyArchive: true
     }
 
     stage('Docker Test') {
@@ -20,7 +47,9 @@ def call(config) {
 
             sh """
                 docker run -d --name ${containerName} \
-                -p ${config.port}:${config.port} ${imageTagged}
+                -p ${config.testPort}:${config.testPort} \
+                -e SPRING_PROFILES_ACTIVE=test \
+                ${imageTagged}
 
                 echo "Waiting for Spring Boot health check..."
 
@@ -28,7 +57,7 @@ def call(config) {
                 SLEEP=3
 
                 for i in \$(seq 1 \$ATTEMPTS); do
-                    if curl -fs http://localhost:${config.port}/actuator/health > /dev/null; then
+                    if curl -fs http://localhost:${config.testPort}/actuator/health > /dev/null; then
                         echo "App is UP"
                         break
                     fi
@@ -37,7 +66,7 @@ def call(config) {
                     sleep \$SLEEP
                 done
 
-                curl -f http://localhost:${config.port}/actuator/health
+                curl -f http://localhost:${config.testPort}/actuator/health
 
                 docker stop ${containerName}
                 docker rm ${containerName}
@@ -52,12 +81,14 @@ def call(config) {
         ) {
             def dockerImage = docker.image("${image}:${version}")
 
-            if (env.BRANCH_NAME == "main") {
+            if (env.BRANCH_NAME == 'main') {
                 dockerImage.push()         // version tag
-                dockerImage.push("latest") // production latest
-            } else {
+                dockerImage.push('release-latest') // production latest
+            } else if (env.BRANCH_NAME == 'development') {
                 dockerImage.push()            // version tag
-                dockerImage.push("dev-latest") // dev latest
+                dockerImage.push('beta-latest') // beta latest
+            } else {
+                dockerImage.push('dev-latest') // dev latest
             }
         }
     }
