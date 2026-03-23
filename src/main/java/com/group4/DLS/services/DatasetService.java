@@ -149,10 +149,12 @@ public class DatasetService {
             if (hasAssignment != null) {
                 throw new AppException(ErrorCode.CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT);
             }
-
+            int countDelete = 0;
             for (String dataItemId : request.getDeleteDataItemId()) {
                 dataitemService.deleteDataitem(dataItemId);
+                countDelete++;
             }
+            dataset.setTotalItems(dataset.getTotalItems()-countDelete);
         }
 
         List<MultipartFile> files = request.getFiles();
@@ -172,6 +174,24 @@ public class DatasetService {
         datasetRepository.save(dataset);
 
         return datasetMapper.toDatasetResponse(dataset);
+    }
+
+    //get dataset have not assignment
+    public List<DatasetResponse> getDatasetsNotHaveAssignmentInProject(String projectId){
+        try {
+            if (projectId == null) {
+                throw new AppException(ErrorCode.REQUIRE_PROJECT_ID);
+            }
+
+            Project project = projectRepository.findById(projectId)
+                    .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+            List<Dataset> datasets = datasetRepository.findByAssignmentIsNullAndProject_ProjectIdAndDatasetStatus(project.getProjectId(), DatasetStatus.ACTIVE);
+
+            return datasetMapper.toDatasetResponse(datasets);
+        } catch (AppException ex) {
+            throw new AppException(ErrorCode.DATASET_NOT_FOUND);
+        }
     }
 
     // ===== DELETE DATASET =====
