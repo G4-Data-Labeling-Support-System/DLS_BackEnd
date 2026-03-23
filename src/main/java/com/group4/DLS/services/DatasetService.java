@@ -149,11 +149,12 @@ public class DatasetService {
             if (hasAssignment != null) {
                 throw new AppException(ErrorCode.CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT);
             }
-
+            int countDelete = 0;
             for (String dataItemId : request.getDeleteDataItemId()) {
                 dataitemService.deleteDataitem(dataItemId);
-                dataset.setTotalItems(dataset.getTotalItems()-1);
+                countDelete++;
             }
+            dataset.setTotalItems(dataset.getTotalItems()-countDelete)
         }
 
         List<MultipartFile> files = request.getFiles();
