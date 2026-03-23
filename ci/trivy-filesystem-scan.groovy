@@ -8,3 +8,5 @@ def call() {
         archiveArtifacts artifacts: 'trivy.*', allowEmptyArchive: true
     }
 }
+
+return this
