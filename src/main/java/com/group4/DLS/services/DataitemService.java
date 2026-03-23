@@ -204,8 +204,6 @@ public class DataitemService {
         dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
         //  xóa dataitem
         dataitemRepository.save(dataitem);
-        // xóa file trên storage
-        seaweedFilerUploadService.deleteImageByUrl(dataitem.getUrl());
     }
 
     public void deleteDataitemsByDatasetId(String datasetId) {
