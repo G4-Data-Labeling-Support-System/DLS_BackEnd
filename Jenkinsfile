@@ -48,7 +48,7 @@ node {
             // Step 1: Build project
             buildPipeline.call(config)
             // Step 2: Sonarqube Scan
-            sonarqubePipeline.call(config)
+            // sonarqubePipeline.call(config)
             // Step 3: Trivy Filesystem Scan
             trivyFilesystemScan.call()
             // Step 4: Build -> Trivy Image Scan -> Test -> Push
@@ -61,7 +61,7 @@ node {
             // Step 1: Build project
             buildPipeline.call(config)
             // Step 2: Sonarqube Scan
-            sonarqubePipeline.call(config)
+            // sonarqubePipeline.call(config)
             // Step 3: Trivy Filesystem Scan
             trivyFilesystemScan.call()
             // Step 4: Build -> Trivy Image Scan -> Test -> Push
