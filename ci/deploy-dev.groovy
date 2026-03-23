@@ -10,7 +10,7 @@ def call(config) {
             sshagent(['development-srv']) {
                 sh"""
                     ssh -o StrictHostKeyChecking=no ${config.devServer} \
-                    "sudo docker pull ${image} && 
+                    'sudo docker pull ${image} && 
                     
                     sudo docker stop ${config.appName}-dev || true && 
                     sudo docker rm ${config.appName}-dev || true &&
@@ -21,7 +21,7 @@ def call(config) {
                     -e SPRING_PROFILES_ACTIVE=dev \
                     -e DB_PASSWORD="${DB_PASSWORD}" \
                     -e JWT_SECRET="${JWT_SECRET}" \
-                    ${image}"
+                    ${image}'
                 """
             }
         }
