@@ -1,9 +1,11 @@
 package com.group4.DLS.controllers;
 
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
+import com.group4.DLS.domain.dto.request.AssignmentDatasetChangeRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
+import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.services.AssignmentService;
 
@@ -25,7 +27,7 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
 
-    //find assiagnment by id
+    // ================= GET ASSIGNMENT BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}")
     @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
     public ApiResponse<AssignmentResponse> getAssignmentById( @PathVariable String assignmentId) {
@@ -36,8 +38,9 @@ public class AssignmentController {
         return response;
     }
 
-    //find Assignment for Annnotator
+    // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
     @GetMapping("/annotators/{annotatorId}")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR')")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
         response.setCode(200);
@@ -46,8 +49,9 @@ public class AssignmentController {
         return response;
     }
 
-    //find Assignment for project
+    // ================= GET ASSIGNMENT FOR PRORJECT =================
     @GetMapping("/projects/{projectId}")
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForProject( @PathVariable String projectId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
@@ -56,8 +60,10 @@ public class AssignmentController {
         response.setMessage("Get all assignment for project successfully");
         return response;
     }
-    // 1 Get all assignments
+
+    // ================= GET ALL ASSIGNMENT =================
     @GetMapping
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
     public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
@@ -67,8 +73,9 @@ public class AssignmentController {
         return response;
     }
 
-    // 2 Create assignment
+    // ================= CREATE NEW ASSIGNMENT =================
     @PostMapping("/projects/{projectId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Create new assignment",
         description = "Create a new assignment linking a project with a dataset")
@@ -82,8 +89,9 @@ public class AssignmentController {
                 .build();
     }
 
-    // 3️ Update assignment (name + status)
+    // ================= UPDATE ASSIGNMENT (NAME + STATUS) =================
     @PutMapping("/{assignmentId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Update assignment",
         description = "Update an existing assignment by its ID")
@@ -97,23 +105,41 @@ public class AssignmentController {
                 .build();
     }
 
-    // 4️ Delete assignment
-    @PatchMapping("/{assignmentId}")
+    // ================= CHANGE DATASET FOR CURRENT ASSIGNMENT =================
+    @PutMapping("/change-dataset/assignment/{assignmentId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
+    @Operation(
+        summary = "Change Assignment dataset",
+        description = "Change Assignment dataset")
+    public ApiResponse<AssignmentResponse> changeAssignmentDatasetApiResponse (
+            @PathVariable String assignmentId,
+            @RequestBody AssignmentDatasetChangeRequest request) {
+        return ApiResponse.<AssignmentResponse>builder()
+                .code(200)
+                .message("Update assignment successfully")
+                .data(assignmentService.changeDatasetForCurrentAssignment(assignmentId, request))
+                .build();
+    }
+
+    // ================= REMOVE ASSIGNMENT =================
+    @PatchMapping("/remove/{assignmentId}")
+    @PreAuthorize("hasAnyRole('MANAGER')")
     @Operation(
         summary = "Delete assignment",
         description = "Delete an assignment by its ID")
     public ApiResponse<Void> deleteAssignment(
             @PathVariable String assignmentId) {
-        assignmentService.deleteAssignment(assignmentId);
+        assignmentService.removeAssignment(assignmentId);
 
         return ApiResponse.<Void>builder()
                 .code(200)
-                .message("Delete assignment successfully")
+                .message("Remove assignment successfully")
                 .build();
     }
 
-    //get label for assignment
+    // ================= GET LABELS BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/labels")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     @Operation(
         summary = "Get labels for assignment",
         description = "Retrieve all labels associated with a specific assignment")
@@ -123,6 +149,21 @@ public class AssignmentController {
                 .code(200)
                 .message("Get labels for assignment successfully")
                 .data(assignmentService.getLabelsForAssignment(assignmentId))
+                .build();
+    }
+
+    // ================= GET DATASET BY ASSIGNMENT_ID =================
+    @GetMapping("/{assignmentId}/dataset")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    @Operation(
+            summary = "Get dataset for assignment",
+            description = "Retrieve all dataset associated with a specific assignment")
+    public ApiResponse<DatasetResponse> getDatasetForAssignment(
+            @PathVariable String assignmentId) {
+        return ApiResponse.<DatasetResponse>builder()
+                .code(200)
+                .message("Get dataset for assignment successfully")
+                .data(assignmentService.getDatasetByAssignmentId(assignmentId))
                 .build();
     }
 }

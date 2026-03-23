@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.group4.DLS.domain.enums.DatasetStatus;
+
 @Builder
 @Getter
 @Setter
@@ -25,6 +27,8 @@ public class DatasetResponse {
     LocalDateTime createdAt;
     ProjectResponse project;
     String assignmentId;
+    DatasetStatus datasetStatus;
+
     // List all dataItems
     List<DataItemResponse> dataitems;
     List<LabelResponse> labels;

@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.GuidelineCreateRequest;
 import com.group4.DLS.domain.dto.response.GuidelineResponse;
 import com.group4.DLS.domain.entity.Guideline;
@@ -16,7 +17,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Slf4j
@@ -28,8 +28,14 @@ public class GuidelineService {
     GuidelineRepository guidelineRepository;
     ProjectRepository projectRepository;
     GuidelineMapper guidelineMapper;
-    ActivityLogService logService;
 
+    // ===== CREATE GUIDELINE =====
+    @LogActivity(
+        action = "CREATE",
+        entity = "Guideline",
+        description = "Create dataset",
+        entityIdField = "guidelineId"
+    )
     public GuidelineResponse create(String projectId, GuidelineCreateRequest request) {
 
         Project project = projectRepository.findById(projectId)
@@ -39,24 +45,16 @@ public class GuidelineService {
             throw new AppException(ErrorCode.GUIDELINE_EXISTS);
         }
 
-
         Guideline guideline = guidelineMapper.toEntity(request);
-        guideline.setStatus(GuidelineStatus.ACTIVE);
         guideline.setProject(project);
         guideline.setVersion(1);
 
         guidelineRepository.save(guideline);
 
-        // Log action
-        // logService.log(
-        //         "CREATE_GUIDELINE",
-        //         "GUIDELINE",
-        //         guideline.getGuideId(),
-        //         "Guideline created: " + guideline.getTitle());
-
         return guidelineMapper.toResponse(guideline);
     }
 
+    // ===== GET ALL GUIDELINE FOR CURRENT PROJECT =====
     public List<GuidelineResponse> getAllByProject(String projectId) {
         if(projectRepository.findById(projectId).isEmpty()){
             throw new AppException(ErrorCode.PROJECT_NOT_FOUND);
@@ -67,6 +65,13 @@ public class GuidelineService {
                 .toList();
     }
 
+    // ===== UPDATE GUIDELINE =====
+    @LogActivity(
+        action = "UPDATE",
+        entity = "Guideline",
+        description = "Update dataset",
+        entityIdParam = "guidelineId"
+    )
     public GuidelineResponse update(String guidelineId, GuidelineCreateRequest request) {
         Guideline guideline = guidelineRepository.findById(guidelineId)
                 .orElseThrow(() -> new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
@@ -82,16 +87,10 @@ public class GuidelineService {
 
         guidelineRepository.save(guideline);
 
-        // Log action
-        // logService.log(
-        //         "UPDATE_GUIDELINE",
-        //         "GUIDELINE",
-        //         guideline.getGuideId(),
-        //         "Guideline updated: " + guideline.getTitle());
-
         return guidelineMapper.toResponse(guideline);
     }
 
+    // ===== GET ALL GUIDELINE =====
     public List<GuidelineResponse> getAllGuideline(){
         List<GuidelineResponse> guidelines = guidelineRepository.findAll()
                 .stream()
@@ -103,18 +102,18 @@ public class GuidelineService {
         return guidelines;
     }
 
+    // ===== REMOVE GUIDELINE =====
+    @LogActivity(
+        action = "DELETE",
+        entity = "Guideline",
+        description = "Delete guideline",
+        entityIdParam = "guidelineId"
+    )
     public GuidelineResponse deleteGuideline(String guidelineId){
         Guideline guideline = guidelineRepository.findById(guidelineId)
                 .orElseThrow(() -> new AppException(ErrorCode.GUIDELINE_NOT_FOUND));
-        guideline.setStatus(GuidelineStatus.INACTIVE);
+        guideline.setGuidelineStatus(GuidelineStatus.INACTIVE);
         guidelineRepository.save(guideline);
-
-        // Log action
-        // logService.log(
-        //         "REMOVE_GUIDELINE",
-        //         "GUIDELINE",
-        //         guideline.getGuideId(),
-        //         "Guideline removed: " + guideline.getTitle());
 
         return guidelineMapper.toResponse(guideline);
     }

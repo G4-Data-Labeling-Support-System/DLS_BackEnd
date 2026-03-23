@@ -20,7 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -52,13 +51,12 @@ public class Task {
     @Column(name = "completed_count")
     int completedCount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "task_status")
-    TaskStatus taskStatus;
+    @Column(name = "flagForReview")
+    boolean flagForReview = false;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "review_status")
-    ReviewStatus reviewStatus;
+    @Column(name = "task_status")
+    TaskStatus taskStatus = TaskStatus.NOT_STARTED;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;
@@ -74,7 +72,7 @@ public class Task {
     private Assignment assignment;
 
     // One task has Many Annotation
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private List<Annotation> annotations = new ArrayList<>();
 
     // One Task has Many TaskDataitems

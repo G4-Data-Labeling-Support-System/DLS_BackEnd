@@ -16,6 +16,8 @@ public enum ErrorCode {
     ASSIGNMENT_NOT_FOUND(404, "Assignment not found"),
     DATASET_NOT_FOUND(404, "Dataset not found"),
     GUIDELINE_NOT_FOUND(404,"Guideline not found" ),
+    ANNOTATION_NOT_FOUND(404, "There are no annotation related to current assignment"),
+    DATAITEM_NOT_FOUND(404,"DataItem not found" ),
 
     // 403 errors
     USER_NOT_ACTIVE(403, "User is not active"),
@@ -46,6 +48,8 @@ public enum ErrorCode {
     REQUIRE_PROJECT_ID(400, "Project Id is needed"),
     DATASETNAME_CANNOT_BE_NULL(400, "Dataset name cannot be null"),
     DATASETNAME_ALREADY_EXSITS(400, "Dataset name already exists"),
+    ASSIGNMENT_BUSY(400, "Assignment is currently being used"),
+    DATASET_ALREADY_IN_USE(400, "Dataset already in use"),
 
     LABEL_NOT_FOUND(3001, "Label not found"),
     LABEL_ALREADY_EXISTS(3002, "Label already exists in this dataset"),
@@ -53,13 +57,17 @@ public enum ErrorCode {
     OVER_SIZE_FILE(413, "File size exceeds the maximum limit of 5MB"),
     INVALID_IMAGE_FILE(403,"Invalid image file" ),
     INVALID_FILE_FORMAT(403,"Invalid file format" ),
-    DATAITEM_NOT_FOUND(403,"DataItem not found" ),
     TASK_NOT_FOUND(400, "Task not found"),
     TASK_ALREADY_EXISTS(400, "Task already exists"),
     INVALID_TASK_STATUS(400, "Invalid task status"),
     PROJECT_MEMBER_NOT_FOUND(400, "Project member not found"),
     PROJECT_MEMBER_ALREADY_EXISTS(400, "Project member already exists"),
-    INVALID_ROLE(400, "Invalid role");
+    INVALID_ROLE(400, "Invalid role"),
+    CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT(400,"Cannot delete dataitem after assignment created" ),
+    DATAITEM_MINIMUM_REQUIRED(400,"Must upload at least 20 dataitems when dataset already assigned"),
+    ANNOTATION_STATUS_HAVE_REJECTED(400, "Task is having rejected annotation status "),
+    ANNOTATIONS_NOT_HAVE(400,"Annotations is empty" ),
+    REVIEW_NOT_FOUND(400,"Review not found" );
 
     final int code;
     final String message;

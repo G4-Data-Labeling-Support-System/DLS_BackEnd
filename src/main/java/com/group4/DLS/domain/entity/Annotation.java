@@ -1,13 +1,12 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.group4.DLS.domain.enums.AnnotationConfidence;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.AnnotationType;
-import com.group4.DLS.domain.enums.ReviewStatus;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -48,20 +47,19 @@ public class Annotation {
     AnnotationStatus annotationStatus;
 
     @Column(name = "created_at")
-    LocalDate createdAt;
+    LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    LocalDate updatedAt;
+    LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDate.now();
-        this.updatedAt = LocalDate.now();
+        this.createdAt = LocalDateTime.now();
     }
 
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = LocalDate.now();
+        this.updatedAt = LocalDateTime.now();
     }
 
     // Many Annotation belongs to One Task
@@ -69,8 +67,8 @@ public class Annotation {
     @JoinColumn(name = "task_id", nullable = false)
     private Task task;
 
-    // Many Annotation belongs to One DataItem
-    @ManyToOne(fetch = FetchType.LAZY)
+    //One Annotation belongs to One DataItem
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private Dataitem dataitem;
 

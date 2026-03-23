@@ -1,6 +1,6 @@
 package com.group4.DLS.domain.dto.response;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.group4.DLS.domain.enums.ProjectStatus;
 
@@ -21,7 +21,7 @@ public class ProjectResponse {
     String projectId;
     String projectName;
     String description;
-    ProjectStatus status;
-    LocalDate createdAt;
-    LocalDate updatedAt;
+    ProjectStatus projectStatus;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

@@ -5,6 +5,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+import com.group4.DLS.domain.enums.TaskStatus;
+
 @Builder
 @Getter
 @Setter
@@ -19,6 +21,6 @@ public class TaskResponse {
     Integer completedItems;
     Integer totalItems;
     boolean flagForReview;
-    String reviewStatus;
+    TaskStatus taskStatus;
     LocalDateTime createdAt;
 }

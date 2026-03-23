@@ -4,6 +4,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.enums.DataItemStatus;
+import com.group4.DLS.domain.enums.DatasetStatus;
+
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +35,10 @@ public class Dataset {
 
     @Column(name = "total_items")
     int totalItems;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dataset_status")
+    DatasetStatus datasetStatus = DatasetStatus.ACTIVE;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;

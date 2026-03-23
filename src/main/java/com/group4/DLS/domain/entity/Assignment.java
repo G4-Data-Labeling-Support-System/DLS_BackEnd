@@ -1,6 +1,5 @@
 package com.group4.DLS.domain.entity;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -8,7 +7,6 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.group4.DLS.domain.enums.AssignmentStatus;
-import com.group4.DLS.domain.enums.Status;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -44,7 +42,7 @@ public class Assignment {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "assignment_status", nullable = false)
-    AssignmentStatus assignmentStatus;
+    AssignmentStatus assignmentStatus = AssignmentStatus.ASSIGNED;
 
     @Column(name = "due_date")
     LocalDateTime dueDate;
@@ -58,10 +56,6 @@ public class Assignment {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-
-        if (assignmentStatus == null) {
-            this.assignmentStatus = AssignmentStatus.ASSIGNED;
-        }
     }
 
     // Many Assignment belongs to One Project
@@ -72,24 +66,24 @@ public class Assignment {
 
     // One Dataset has One Assignment
     @OneToOne
-    @JoinColumn(name = "dataset_id",unique = true, nullable = true)
+    @JoinColumn(name = "dataset_id",unique = false, nullable = true)
     private Dataset dataset;
 
     // Who created the assignment
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_by", nullable = false)
+    @JoinColumn(name = "assigned_by", nullable = true)
     @JsonBackReference
     private User assignedBy;
 
     // Who is assigned to do it
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "assigned_to", nullable = false)
+    @JoinColumn(name = "assigned_to", nullable = true)
     @JsonBackReference
     private User assignedTo;
 
     // Who is review to do it
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "reviewed_by", nullable = false)
+    @JoinColumn(name = "reviewed_by", nullable = true)
     @JsonBackReference
     private User reviewedBy;
 
