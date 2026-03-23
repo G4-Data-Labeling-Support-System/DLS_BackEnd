@@ -21,6 +21,7 @@ public class AssignmentResponse {
     String assignedBy;
     String assignedTo;
     String reviewedBy;
+    int completedItems;
     LocalDateTime dueDate;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
