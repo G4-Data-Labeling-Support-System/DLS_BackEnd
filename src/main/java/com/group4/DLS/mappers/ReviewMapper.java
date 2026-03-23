@@ -13,9 +13,14 @@ import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface ReviewMapper {
-    
+
+    @Mapping(source = "reviewId", target = "reviewId")
     @Mapping(source = "annotation.annotationId", target = "annotationId")
     @Mapping(source = "user.userId", target = "reviewerId")
+    @Mapping(source = "reviewStatus", target = "reviewStatus")
+    @Mapping(source = "comment", target = "comment")
+    @Mapping(source = "reviewedAt", target = "reviewedAt")
+    @Mapping(source = "evidences", target = "evidences")
     ReviewResponse toReviewResponse(Review review);
 
     List<ReviewResponse> toReviewResponse(List<Review> reviews);

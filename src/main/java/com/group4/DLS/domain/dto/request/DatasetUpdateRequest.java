@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DatasetUpdateRequest {
-    @NotNull
+    @NotNull(message = "PROJECT_IS_REQUIRED")
     String projectId;
 
     @Size(min = 3, max = 255, message = "INVALID_DATASET_NAME_LENGTH")

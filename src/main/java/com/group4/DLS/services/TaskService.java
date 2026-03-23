@@ -103,13 +103,25 @@ public class TaskService {
             // nếu có annatation có status là rejected thì không set lại
             if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size() && !task.getAnnotations().isEmpty()){
                 reviewService.createReviews(task);
-                task.setTaskStatus(TaskStatus.IN_PROGRESS);
+                task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
+            }else if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){
+                task.setTaskStatus(TaskStatus.COMPLETED);
+                task.setFlagForReview(false);
+            }else{
+                task.setTaskStatus(TaskStatus.IN_PROGRESS);
+                task.setFlagForReview(false);
             }
+
+
+
+            taskRepository.save(task);
         }
 
         return taskMapper.toTaskResponse(tasks);
     }
+
+
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
     public void removeTasksByAssignmentId(String assignmentId) {
