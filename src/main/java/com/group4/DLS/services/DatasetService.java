@@ -154,7 +154,7 @@ public class DatasetService {
                 dataitemService.deleteDataitem(dataItemId);
                 countDelete++;
             }
-            dataset.setTotalItems(dataset.getTotalItems()-countDelete)
+            dataset.setTotalItems(dataset.getTotalItems()-countDelete);
         }
 
         List<MultipartFile> files = request.getFiles();
