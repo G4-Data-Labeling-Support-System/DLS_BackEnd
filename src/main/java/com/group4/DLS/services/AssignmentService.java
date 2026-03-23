@@ -61,6 +61,11 @@ public class AssignmentService {
         if (assignments.isEmpty()) {
             throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
         }
+
+        for (AssignmentResponse assignment: assignments){
+            updateAssignmentStatus(assignment.getAssignmentId());
+        }
+
         return assignments;
     }
 
@@ -81,6 +86,10 @@ public class AssignmentService {
             throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
         }
 
+        for (AssignmentResponse assignment: assignments){
+            updateAssignmentStatus(assignment.getAssignmentId());
+        }
+
         return assignments;
     }
 
@@ -88,6 +97,7 @@ public class AssignmentService {
     public AssignmentResponse getAssignmentById(String assignmentId) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+        updateAssignmentStatus(assignment.getAssignmentId());
         return assignmentMapper.toResponse(assignment);
     }
 
@@ -101,6 +111,8 @@ public class AssignmentService {
         if (dataset == null) {
             throw new AppException(ErrorCode.DATASET_NOT_FOUND);
         }
+
+        updateAssignmentStatus(assignment.getAssignmentId());
 
         return labelService.getAllByDataset(dataset.getDatasetId());// Get labels for the dataset associated with the
                                                                     // assignment
@@ -120,6 +132,9 @@ public class AssignmentService {
         if (assignments.isEmpty()) {
             throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
         }
+        for(AssignmentResponse assignment: assignments){
+            updateAssignmentStatus(assignment.getAssignmentId());
+        }
         return assignments;
     }
 
@@ -128,6 +143,7 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
+        updateAssignmentStatus(assignment.getAssignmentId());
         return datasetMapper.toDatasetResponse(assignment.getDataset());
     }
 
@@ -139,7 +155,9 @@ public class AssignmentService {
 
         if (assignment == null) {
             throw new AppException(ErrorCode.DATASET_NOT_FOUND);
-        } 
+        }
+
+        updateAssignmentStatus(assignment.getAssignmentId());
 
         return assignmentMapper.toResponse(assignment);
     }
@@ -337,6 +355,40 @@ public class AssignmentService {
         assignment.setDataset(null);
         assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);// Soft delete assignment
         
+        assignmentRepository.save(assignment);
+    }
+
+
+    public void updateAssignmentStatus(String assignmentId) {
+        Assignment assignment = assignmentRepository.findById(assignmentId)
+                .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
+
+        int countComplete = 0;
+        for(Task task : tasks){
+            countComplete += task.getCompletedCount();
+        }
+        assignment.setCompletedItems(countComplete);
+
+        boolean allNotStarted = tasks.stream()
+                .allMatch(t -> t.getTaskStatus() == TaskStatus.NOT_STARTED);
+
+        boolean anyInProgress = tasks.stream()
+                .anyMatch(t -> t.getTaskStatus() == TaskStatus.IN_PROGRESS ||
+                        t.getTaskStatus() == TaskStatus.IN_REVIEW);
+
+        boolean allDone = tasks.stream()
+                .allMatch(t -> t.getTaskStatus() == TaskStatus.COMPLETED);
+
+        if (allDone) {
+            assignment.setAssignmentStatus(AssignmentStatus.COMPLETED);
+        } else if (anyInProgress) {
+            assignment.setAssignmentStatus(AssignmentStatus.IN_PROGRESS);
+        } else if (allNotStarted) {
+            assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
+        }
+
         assignmentRepository.save(assignment);
     }
 }
