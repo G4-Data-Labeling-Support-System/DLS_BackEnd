@@ -167,8 +167,18 @@ public class AnnotationService {
         // Delete annotations in batch
         for (Annotation annotation : annotations) {
             annotation.setAnnotationStatus(AnnotationStatus.INACTIVE);
+            annotation.setDataitem(null);
             reviewService.removeReviewByAnnotation(annotation.getAnnotationId());
         }
         annotationRepository.saveAll(annotations);
+    }
+
+    //get annotation by dataitem
+    public AnnotationResponse getAnnotationByDataItemId(String dataItemId){
+        Dataitem dataitem = dataItemRepository.findById(dataItemId)
+                .orElseThrow(()-> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+        Annotation annotation = annotationRepository
+                .findAnnotationByDataitem_ItemId(dataItemId);
+        return annotationMapper.toAnnotationResponse(annotation);
     }
 }
