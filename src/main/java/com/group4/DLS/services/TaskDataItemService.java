@@ -24,6 +24,7 @@ public class TaskDataItemService {
     TaskDataItemRepository taskDataItemRepository;
     DataItemMapper dataItemMapper;
     TaskDataitemMapper taskDataitemMapper;
+    AnnotationService annotationService;
 
     // ================= ASSIGN DATAITEM TO TASK =================
     public void createTaskDataItem(Task task, List<Dataitem> dataitems) {
@@ -41,7 +42,7 @@ public class TaskDataItemService {
             tdi.setItemIndex(order++);
             list.add(tdi);
         }
-
+        annotationService.createAnnotation(task, dataitems);
         taskDataItemRepository.saveAll(list);
     }
 

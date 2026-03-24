@@ -44,7 +44,7 @@ public class Annotation {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "annotation_status")
-    AnnotationStatus annotationStatus;
+    AnnotationStatus annotationStatus = null;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;
