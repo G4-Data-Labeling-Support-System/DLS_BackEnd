@@ -39,7 +39,7 @@ public class AnnotationController {
         ApiResponse<AnnotationResponse> response = new ApiResponse<>();
 
         response.setCode(200);
-        response.setData(annotationService.createAnnotation(request));
+        response.setData(annotationService.updateAnnotation(request));
         response.setMessage("Annotation submit successfully");
 
         return response;

@@ -79,7 +79,7 @@ public class AnnotationService {
         description = "Create annotation",
         entityIdField = "annotationId"
     )
-    public AnnotationResponse createAnnotation(AnnotationCreationRequest request) {
+    public AnnotationResponse updateAnnotation(AnnotationCreationRequest request) {
 
         // Get current task
         Task task = taskRepository.findById(request.getTaskId())
@@ -120,6 +120,13 @@ public class AnnotationService {
 
 
         return annotationMapper.toAnnotationResponse(annotationRepository.save(annotation));
+    }
+
+    public void createAnnotation(Task task, Dataitem dataitems){
+        Annotation annotation = new Annotation();
+        annotation.setDataitem(dataitems);
+        annotation.setTask(task);
+        annotationRepository.save(annotation);
     }
 
     //get Number of Anntation having Approved status
