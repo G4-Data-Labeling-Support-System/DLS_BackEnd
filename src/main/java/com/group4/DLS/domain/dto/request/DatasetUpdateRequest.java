@@ -1,5 +1,6 @@
 package com.group4.DLS.domain.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -33,7 +34,7 @@ public class DatasetUpdateRequest {
     @Schema(type = "array", example = "[\"id1\",\"id2\"]")
     private List<String> deleteDataItemId;
 
-    // FIX FILE UPLOAD (QUAN TRỌNG)
-    @Schema(type = "string", format = "binary")
-    private MultipartFile[] files;
+    // file khỏi DTO Swagger
+    @JsonIgnore
+    private List<MultipartFile> files;
 }

@@ -159,9 +159,7 @@ public class DatasetService {
             dataset.setTotalItems(dataset.getTotalItems()-countDelete);
         }
 
-        List<MultipartFile> files = request.getFiles() != null
-                ? Arrays.asList(request.getFiles())
-                : new ArrayList<>();
+        List<MultipartFile> files = request.getFiles();
 
         if (files != null && files.stream().anyMatch(file -> !file.isEmpty())) {
             dataitemService.createDataitem(dataset.getDatasetId(), files);// insert and return new item

@@ -15,6 +15,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -84,9 +85,14 @@ public class DatasetController {
      */
         @PutMapping(value = "/{datasetId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         @PreAuthorize("hasRole('MANAGER')")
-        @Operation(summary = "Update current dataset", description = "Update dataset")
-        public ApiResponse<DatasetResponse> update(@PathVariable String datasetId,
-                                                   @ParameterObject @ModelAttribute DatasetUpdateRequest request) throws IOException {
+        public ApiResponse<DatasetResponse> update(
+                @PathVariable String datasetId,
+
+                @RequestPart("data") DatasetUpdateRequest request,
+
+                @RequestPart(value = "files", required = false)
+                List<MultipartFile> files
+        ) throws IOException {
             ApiResponse<DatasetResponse> response = new ApiResponse<>();
 
             response.setCode(200);
