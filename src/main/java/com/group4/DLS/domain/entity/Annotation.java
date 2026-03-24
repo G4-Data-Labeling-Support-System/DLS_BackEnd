@@ -68,7 +68,7 @@ public class Annotation {
     private Task task;
 
     //One Annotation belongs to One DataItem
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private Dataitem dataitem;
 
