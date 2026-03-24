@@ -29,7 +29,7 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR', 'REVIEWER')") // Allow access to managers, admins, and annotators
     public ApiResponse<AssignmentResponse> getAssignmentById( @PathVariable String assignmentId) {
         ApiResponse<AssignmentResponse> response = new ApiResponse<>();
         response.setCode(200);
@@ -40,7 +40,7 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
     @GetMapping("/annotators/{annotatorId}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR', 'REVIEWER')")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
         response.setCode(200);
@@ -51,7 +51,7 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT FOR PRORJECT =================
     @GetMapping("/projects/{projectId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR', 'REVIEWER')") // Allow access to managers, admins, and annotators
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForProject( @PathVariable String projectId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
@@ -63,7 +63,7 @@ public class AssignmentController {
 
     // ================= GET ALL ASSIGNMENT =================
     @GetMapping
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR', 'REVIEWER')") // Allow access to managers, admins, and annotators
     public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
@@ -107,7 +107,7 @@ public class AssignmentController {
 
     // ================= CHANGE DATASET FOR CURRENT ASSIGNMENT =================
     @PutMapping("/change-dataset/assignment/{assignmentId}")
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
         summary = "Change Assignment dataset",
         description = "Change Assignment dataset")
