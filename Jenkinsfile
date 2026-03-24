@@ -73,6 +73,7 @@ node {
         } else {
             buildPipeline.call(config)
             dockerPipeline.call(config)
+            deployDev.call(config)
         }
     }
     catch (err) {

@@ -58,6 +58,11 @@ public class TaskService {
                 assignment.getDataset().getDatasetId(),
                 DataItemStatus.ACTIVE);
 
+        //lọc ra những item còn là active
+        List<Dataitem> activeItems = dataitems.stream()
+                .filter(item -> item.getDataItemStatus() == DataItemStatus.ACTIVE)
+                .collect(Collectors.toList());
+
         int maxPerTask = 20; // số lượng dataitem tối đa mỗi task có thể xử lý, có thể điều chỉnh tùy theo
                              // yêu cầu
         int taskIndex = 1; // bắt đầu từ 1 để đặt tên TASK-01, TASK-02, ...

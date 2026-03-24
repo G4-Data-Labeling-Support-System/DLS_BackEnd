@@ -37,6 +37,7 @@ public class AnnotationController {
     ) {
 
         ApiResponse<AnnotationResponse> response = new ApiResponse<>();
+        ApiResponse<AnnotationResponse> response = new ApiResponse<>();
 
         response.setCode(200);
         response.setData(annotationService.updateAnnotation(request));
