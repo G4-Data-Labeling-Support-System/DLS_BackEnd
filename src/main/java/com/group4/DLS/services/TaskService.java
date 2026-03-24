@@ -82,11 +82,6 @@ public class TaskService {
         }
     }
 
-    // get annotation have not reject by task
-    public List<Annotation> getAnnotationsNotRejected(Task task) {
-        return annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED);
-    }
-
     // ================= GET TASK BY ASSIGNMENT_ID =================
     public List<TaskResponse> getTasksByAssignmentId(String assignmentId) {
         // check assignment exist
@@ -105,8 +100,7 @@ public class TaskService {
             //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
             //case2: nếu 10 item approved và 10 item submitted sau khi sửa
             // nếu có annatation có status là rejected thì không set lại
-            if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size()
-                    && !task.getAnnotations().isEmpty()){
+            if(task.getTaskDataitems().size() == annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED).size()){
                 reviewService.createReviews(task);
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
