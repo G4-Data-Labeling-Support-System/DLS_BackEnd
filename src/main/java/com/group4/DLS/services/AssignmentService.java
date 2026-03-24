@@ -375,8 +375,7 @@ public class AssignmentService {
                 .allMatch(t -> t.getTaskStatus() == TaskStatus.NOT_STARTED);
 
         boolean anyInProgress = tasks.stream()
-                .anyMatch(t -> t.getTaskStatus() == TaskStatus.IN_PROGRESS ||
-                        t.getTaskStatus() == TaskStatus.IN_REVIEW);
+                .anyMatch(t -> t.getTaskStatus() == TaskStatus.IN_PROGRESS);
 
         boolean allDone = tasks.stream()
                 .allMatch(t -> t.getTaskStatus() == TaskStatus.COMPLETED);

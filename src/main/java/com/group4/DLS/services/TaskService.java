@@ -6,6 +6,7 @@ import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.domain.enums.TaskType;
 import com.group4.DLS.exceptions.AppException;
@@ -19,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,11 +56,16 @@ public class TaskService {
         List<Dataitem> dataitems = dataItemRepository.findByDataset_DatasetId(
                 assignment.getDataset().getDatasetId());
 
+        //lọc ra những item còn là active
+        List<Dataitem> activeItems = dataitems.stream()
+                .filter(item -> item.getDataItemStatus() == DataItemStatus.ACTIVE)
+                .collect(Collectors.toList());
+
         int maxPerTask = 20; // số lượng dataitem tối đa mỗi task có thể xử lý, có thể điều chỉnh tùy theo
                              // yêu cầu
         int taskIndex = 1; // bắt đầu từ 1 để đặt tên TASK-01, TASK-02, ...
 
-        for (int i = 0; i < dataitems.size(); i += maxPerTask) {// duyệt qua danh sách dataitems theo từng batch có kích
+        for (int i = 0; i < activeItems.size(); i += maxPerTask) {// duyệt qua danh sách dataitems theo từng batch có kích
                                                                 // thước maxPerTask
 
             int end = Math.min(i + maxPerTask, dataitems.size());// đảm bảo không vượt quá kích thước của danh sách

@@ -79,7 +79,7 @@ public class AnnotationService {
         description = "Create annotation",
         entityIdField = "annotationId"
     )
-    public List<AnnotationResponse> createAnnotation(AnnotationCreationRequest request) {
+    public AnnotationResponse createAnnotation(AnnotationCreationRequest request) {
 
         // Get current task
         Task task = taskRepository.findById(request.getTaskId())
@@ -91,39 +91,35 @@ public class AnnotationService {
 
         List<Annotation> annotationsToSave = new ArrayList<>();
 
-        for (AnnotationItemRequest item : request.getAnnotations()) {
-
             // Get dataitem for current annotation
-            Dataitem dataitem = dataItemRepository.findById(item.getDataitemId())
+            Dataitem dataitem = dataItemRepository.findById(request.getDataitemId())
                     .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
 
             Annotation annotation = new Annotation();
 
-            annotation.setAnnotationData(convertToJson(item.getAnnotationData()));
-            annotation.setAnnotationType(item.getAnnotationType());
+            annotation.setAnnotationData(convertToJson(request.getAnnotationData()));
+            annotation.setAnnotationType(request.getAnnotationType());
             annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
-            annotation.setAnnotationConfidence(item.getAnnotationConfidence());
-            annotation.setComment(item.getComment());
+            annotation.setAnnotationConfidence(request.getAnnotationConfidence());
+            annotation.setComment(request.getComment());
 
             annotation.setTask(task);
             annotation.setUser(user);
             annotation.setDataitem(dataitem);
 
             // Handel set labels
-            if (item.getLabelIds() != null && !item.getLabelIds().isEmpty()) {
-                List<Label> labels = labelRepository.findAllById(item.getLabelIds());
+            if (request.getLabelIds() != null && !request.getLabelIds().isEmpty()) {
+                List<Label> labels = labelRepository.findAllById(request.getLabelIds());
 
-                if (labels.size() != item.getLabelIds().size()) {
+                if (labels.size() != request.getLabelIds().size()) {
                     throw new AppException(ErrorCode.LABEL_NOT_FOUND);
                 }
 
                 annotation.setLabels(labels);
             }
 
-            annotationsToSave.add(annotation);
-        }
 
-        return annotationMapper.toAnnotationResponses(annotationRepository.saveAll(annotationsToSave));
+        return annotationMapper.toAnnotationResponse(annotationRepository.save(annotation));
     }
 
     //get Number of Anntation having Approved status

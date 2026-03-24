@@ -16,27 +16,4 @@ public interface AnnotationMapper {
 
     List<AnnotationResponse> toAnnotationResponses(List<Annotation> annotations);
 
-    // ===== CREATE MAPPER =====
-    @Mapping(target = "annotationId", ignore = true)
-    @Mapping(target = "task", ignore = true)
-    @Mapping(target = "dataitem", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "reviews", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "annotationStatus", ignore = true)
-    @Mapping(target = "annotationData", ignore = true)
-    Annotation toCreateAnnotationRequest(AnnotationItemRequest request);
-
-    // ===== UPDATE MAPPER =====
-    @Mapping(target = "annotationId", ignore = true)
-    @Mapping(target = "task", ignore = true)
-    @Mapping(target = "dataitem", ignore = true)
-    @Mapping(target = "user", ignore = true)
-    @Mapping(target = "reviews", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "annotationStatus", ignore = true)
-    @Mapping(target = "annotationData", ignore = true)
-    void updateAnnotation(AnnotationItemRequest request, @MappingTarget Annotation annotation);
-
 }

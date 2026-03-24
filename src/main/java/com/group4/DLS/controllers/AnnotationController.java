@@ -32,11 +32,11 @@ public class AnnotationController {
         summary = "Create new annotation",
         description = "Create new annotation"
     )
-    public ApiResponse<List<AnnotationResponse>> createAnnotationApiResponse(
+    public ApiResponse<AnnotationResponse> createAnnotationApiResponse(
         @RequestBody AnnotationCreationRequest request
     ) {
 
-        ApiResponse<List<AnnotationResponse>> response = new ApiResponse<>();
+        ApiResponse<AnnotationResponse> response = new ApiResponse<>();
 
         response.setCode(200);
         response.setData(annotationService.createAnnotation(request));

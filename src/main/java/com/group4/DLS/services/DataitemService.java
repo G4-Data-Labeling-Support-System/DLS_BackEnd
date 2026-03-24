@@ -187,20 +187,6 @@ public class DataitemService {
         Dataitem dataitem = dataitemRepository.findById(dataitemId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
 
-        TaskDataItem taskDataItem = dataitem.getTaskDataItem();
-
-        if (taskDataItem != null) {
-
-            String taskId = taskDataItem.getTask().getTaskId();
-            int index = taskDataItem.getItemIndex();
-
-            // xóa taskDataItem
-            taskDataItemRepository.delete(taskDataItem);
-
-            for(TaskDataItem updateIndexTaskItem: taskDataItemRepository.findByTask_TaskId(taskId)){
-                taskDataItemRepository.decreaseIndexAfter(updateIndexTaskItem.getTaskItemId(), index);
-            }
-        }
         dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
         //  xóa dataitem
         dataitemRepository.save(dataitem);
