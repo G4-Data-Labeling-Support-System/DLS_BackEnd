@@ -50,13 +50,4 @@ public class TaskController {
         return response;
     }
 
-    @GetMapping("/{taskId}/taskDataitems")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
-    public ApiResponse<List<TaskDataITemResponse>> getTaskDataItemsByTaskId(@PathVariable String taskId) {
-        ApiResponse<List<TaskDataITemResponse>> response = new ApiResponse<>();
-        response.setCode(200);
-        response.setData(taskDataItemService.getTaskDataItemsByTaskId(taskId));
-        response.setMessage("Task data items retrieved successfully");
-        return response;
-    }
 }

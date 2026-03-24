@@ -4,6 +4,7 @@ import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ReviewResponse;
+import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.services.AnnotationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -49,8 +50,8 @@ public class AnnotationController {
     @GetMapping("/dataitem/{dataItemId}")
     @PreAuthorize("hasAnyRole('Manager', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
-            summary = "Get annotation by DataItem",
-            description = "Get annotation by DataItem"
+            summary = "Get annotation status by Task DataItem",
+            description = "Get annotation status by Task DataItem"
     )
     public ApiResponse<AnnotationResponse> getAnnotationByDataitem
             (@PathVariable String dataItemId){
@@ -63,17 +64,17 @@ public class AnnotationController {
         return response;
     }
 
-//    // GET Annotation Staus flow by TaskDataItem
-//    @GetMapping("status/taskDataItem/{TaskDataItemId}")
-//    @PreAuthorize("hasAnyRole('MANAGER','REVIEWER','ANNOTATOR')")
-//    public ApiResponse<List<ReviewResponse>> getAnnotationStatusByTaskDataitem(
-//            @PathVariable String TaskDataItemId) {
-//
-//        ApiResponse<List<ReviewResponse>> response = new ApiResponse<>();
-//        response.setCode(200);
-//        response.setData(annotationService.(annotationId));
-//        response.setMessage("Reviews retrieved successfully");
-//
-//        return response;
-//    }
+    // GET Annotation Staus flow by TaskDataItem
+    @GetMapping("status/taskDataItem/{taskDataItemId}")
+    @PreAuthorize("hasAnyRole('MANAGER','REVIEWER','ANNOTATOR')")
+    public ApiResponse<AnnotationStatus> getAnnotationStatusByTaskDataitem(
+            @PathVariable String taskDataItemId) {
+
+        ApiResponse<AnnotationStatus> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(annotationService.getAnnotationStatusFlowTaskItem(taskDataItemId));
+        response.setMessage("Reviews retrieved successfully");
+
+        return response;
+    }
 }

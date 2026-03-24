@@ -34,6 +34,7 @@ public class AnnotationService {
 
     AnnotationMapper annotationMapper;
     ReviewService reviewService;
+    TaskDataItemRepository taskDataItemRepository;
 
     // function to change to jason to save database
     private String convertToJson(Object value) {
@@ -135,6 +136,14 @@ public class AnnotationService {
     }
 
     //get Status flow by taskitem
+    public AnnotationStatus getAnnotationStatusFlowTaskItem(String taskDataItemId){
+        TaskDataItem taskDataItem = taskDataItemRepository.findById(taskDataItemId)
+                .orElseThrow(()-> new AppException(ErrorCode.TASKDATAITEM_NOT_FOUND));
+        Annotation annotation = annotationRepository.findByTask_TaskIdAndDataitem_ItemId(
+                taskDataItem.getTask().getTaskId(), taskDataItem.getDataitem().getItemId());
+
+        return annotation.getAnnotationStatus();
+    }
 
 
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================

@@ -21,25 +21,8 @@ public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, Stri
         // đếm item trong task
         int countByTaskTaskId(String taskId);
 
-        // Remove TaskDataItem for current Dataset
-        void deleteByDataitem_Dataset_DatasetId(String datasetId);
+        List<TaskDataItem> findByTask_TaskIdOrderByItemIndexAsc(String taskTaskId);
 
-        @Modifying
-        @Query("""
-                        UPDATE TaskDataItem t
-                        SET t.itemIndex = t.itemIndex - 1
-                        WHERE t.task.taskId = :taskId
-                        AND t.itemIndex > :index
-                        """)
-        void decreaseIndexAfter(@Param("taskId") String taskId,
-                        @Param("index") int index);
-
-        @Modifying
-        @Query("""
-                        DELETE FROM TaskDataItem t
-                        WHERE t.dataitem.itemId = :dataitemId
-                        """)
-        void deleteByDataitemId(@Param("dataitemId") String dataitemId);
 
         @Transactional
         List<TaskDataItem> findByTask_Assignment_AssignmentId(String assignmentId);
