@@ -105,14 +105,17 @@ public class TaskService {
             //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
             //case2: nếu 10 item approved và 10 item submitted sau khi sửa
             // nếu có annatation có status là rejected thì không set lại
-            if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size() && !task.getAnnotations().isEmpty()){
+            if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size()
+                    && !task.getAnnotations().isEmpty()){
                 reviewService.createReviews(task);
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
-            }else if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){
+            }else if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){// nếu item bằng số annotationstatus approved
                 task.setTaskStatus(TaskStatus.COMPLETED);
                 task.setFlagForReview(false);
-            }else{
+            }else if (task.getAnnotations().stream() // nếu có annotation có status là submitted hoặc là reject njhen
+                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED
+                    || a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }

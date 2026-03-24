@@ -377,15 +377,22 @@ public class AssignmentService {
         boolean anyInProgress = tasks.stream()
                 .anyMatch(t -> t.getTaskStatus() == TaskStatus.IN_PROGRESS);
 
+        boolean allReadyReview = tasks.stream()
+                .anyMatch(t -> t.getTaskStatus() == TaskStatus.IN_REVIEW);
+
         boolean allDone = tasks.stream()
                 .allMatch(t -> t.getTaskStatus() == TaskStatus.COMPLETED);
 
         if (allDone) {
             assignment.setAssignmentStatus(AssignmentStatus.COMPLETED);
+        } else if (allReadyReview) {
+            assignment.setAssignmentStatus(AssignmentStatus.REVIEWING);
         } else if (anyInProgress) {
             assignment.setAssignmentStatus(AssignmentStatus.IN_PROGRESS);
         } else if (allNotStarted) {
             assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
+        } else {
+            assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);
         }
 
         assignmentRepository.save(assignment);
