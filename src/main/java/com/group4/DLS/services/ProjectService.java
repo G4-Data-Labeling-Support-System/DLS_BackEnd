@@ -65,10 +65,11 @@ public class ProjectService {
                 ProjectStatus.INACTIVE,
                 ProjectStatus.NOT_STARTED,
                 ProjectStatus.COMPLETED,
-                ProjectStatus.IN_PROGRESS,
-                ProjectStatus.NOT_STARTED));
+                ProjectStatus.IN_PROGRESS));
         return projectMapper.toProjectResponse(projects);
     }
+
+
 
     // ================= GET PROJECT BY ID =================
     public ProjectResponse getProjectById(String projectId) {
@@ -84,6 +85,13 @@ public class ProjectService {
         return projectMapper.toProjectResponse(project);
     }
 
+    // ================== GET PROJECTS FOR CREATION OR UPDATION DATASET ============
+    public List<ProjectResponse> getAllProjectsForCrateOrUpdateDataset() {
+        List<Project> projects = projectRepository.findByProjectStatusIn(List.of(
+                ProjectStatus.NOT_STARTED,
+                ProjectStatus.IN_PROGRESS));
+        return projectMapper.toProjectResponse(projects);
+    }
     // ================= CREATE PROJECT =================
     @LogActivity(
         action = "CREATE",
