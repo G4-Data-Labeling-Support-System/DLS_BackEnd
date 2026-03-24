@@ -31,6 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -157,10 +159,12 @@ public class DatasetService {
             dataset.setTotalItems(dataset.getTotalItems()-countDelete);
         }
 
-        List<MultipartFile> files = request.getFiles();
+        List<MultipartFile> files = request.getFiles() != null
+                ? Arrays.asList(request.getFiles())
+                : new ArrayList<>();
 
         if (files != null && files.stream().anyMatch(file -> !file.isEmpty())) {
-            dataitemService.createDataitem(dataset.getDatasetId(), request.getFiles());// insert and return new item
+            dataitemService.createDataitem(dataset.getDatasetId(), files);// insert and return new item
             if (!(hasAssignment == null)) {
                 if (files.size() < 20) {
                     // rule: chỉ được thêm và phải >=20
