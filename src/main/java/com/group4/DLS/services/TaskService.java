@@ -107,7 +107,7 @@ public class TaskService {
             }else if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){// nếu item bằng số annotationstatus approved
                 task.setTaskStatus(TaskStatus.COMPLETED);
                 task.setFlagForReview(false);
-            }else if (task.getAnnotations().stream() // nếu có annotation có status là submitted hoặc là reject njhen
+            }else if (task.getAnnotations().stream() // nếu có annotation có status là submitted hoặc là reject nhen
                     .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED
                     || a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
