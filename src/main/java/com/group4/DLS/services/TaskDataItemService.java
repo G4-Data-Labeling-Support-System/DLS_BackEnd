@@ -40,10 +40,9 @@ public class TaskDataItemService {
             tdi.setDataitem(item);
             tdi.setAssignedAt(LocalDateTime.now());
             tdi.setItemIndex(order++);
-            annotationService.createAnnotation(task, item);
             list.add(tdi);
         }
-
+        annotationService.createAnnotation(task, dataitems);
         taskDataItemRepository.saveAll(list);
     }
 

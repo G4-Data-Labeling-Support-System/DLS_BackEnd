@@ -92,7 +92,7 @@ public class DataitemService {
 
             // 2 tạo Dataitem
             Dataitem item = new Dataitem();
-            item.setFileName(UUID.randomUUID()+"-"+file.getOriginalFilename());
+            item.setFileName(datasetId+"-"+file.getOriginalFilename());
             item.setUrl(fileUrl);
             item.setFileSize((int) file.getSize());
             item.setWidth(width);

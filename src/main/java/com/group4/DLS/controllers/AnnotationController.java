@@ -1,6 +1,6 @@
 package com.group4.DLS.controllers;
 
-import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
+import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.services.AnnotationService;
@@ -33,7 +33,7 @@ public class AnnotationController {
         description = "Create new annotation"
     )
     public ApiResponse<AnnotationResponse> createAnnotationApiResponse(
-        @RequestBody AnnotationCreationRequest request
+        @RequestBody AnnotationItemRequest request
     ) {
 
         ApiResponse<AnnotationResponse> response = new ApiResponse<>();

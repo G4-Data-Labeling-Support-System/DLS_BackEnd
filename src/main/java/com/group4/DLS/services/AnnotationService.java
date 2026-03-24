@@ -2,7 +2,6 @@ package com.group4.DLS.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.DLS.aop.LogActivity;
-import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.*;
@@ -79,7 +78,7 @@ public class AnnotationService {
         description = "Create annotation",
         entityIdField = "annotationId"
     )
-    public AnnotationResponse updateAnnotation(AnnotationCreationRequest request) {
+    public AnnotationResponse updateAnnotation(AnnotationItemRequest request) {
 
         // Get current task
         Task task = taskRepository.findById(request.getTaskId())
@@ -89,32 +88,27 @@ public class AnnotationService {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
 
-        List<Annotation> annotationsToSave = new ArrayList<>();
+        // Get dataitem for current annotation
+        Dataitem dataitem = dataItemRepository.findById(request.getDataitemId())
+                .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
 
-            // Get dataitem for current annotation
-            Dataitem dataitem = dataItemRepository.findById(request.getDataitemId())
-                    .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+        Annotation annotation = annotationRepository.findByTask_TaskIdAndDataitem_ItemId(task.getTaskId(), dataitem.getItemId());
 
-            Annotation annotation = new Annotation();
+        annotation.setAnnotationData(convertToJson(request.getAnnotationData()));
+        annotation.setAnnotationType(request.getAnnotationType());
+        annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
+        annotation.setAnnotationConfidence(request.getAnnotationConfidence());
+        annotation.setComment(request.getComment());
+        annotation.setTask(task);
+        annotation.setUser(user);
 
-            annotation.setAnnotationData(convertToJson(request.getAnnotationData()));
-            annotation.setAnnotationType(request.getAnnotationType());
-            annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
-            annotation.setAnnotationConfidence(request.getAnnotationConfidence());
-            annotation.setComment(request.getComment());
+        // Handel set labels
+        if (request.getLabelIds() != null && !request.getLabelIds().isEmpty()) {
+            List<Label> labels = labelRepository.findAllById(request.getLabelIds());
 
-            annotation.setTask(task);
-            annotation.setUser(user);
-            annotation.setDataitem(dataitem);
-
-            // Handel set labels
-            if (request.getLabelIds() != null && !request.getLabelIds().isEmpty()) {
-                List<Label> labels = labelRepository.findAllById(request.getLabelIds());
-
-                if (labels.size() != request.getLabelIds().size()) {
-                    throw new AppException(ErrorCode.LABEL_NOT_FOUND);
-                }
-
+            if (labels.size() != request.getLabelIds().size()) {
+                throw new AppException(ErrorCode.LABEL_NOT_FOUND);
+            }
                 annotation.setLabels(labels);
             }
 
@@ -122,11 +116,16 @@ public class AnnotationService {
         return annotationMapper.toAnnotationResponse(annotationRepository.save(annotation));
     }
 
-    public void createAnnotation(Task task, Dataitem dataitems){
-        Annotation annotation = new Annotation();
-        annotation.setDataitem(dataitems);
-        annotation.setTask(task);
-        annotationRepository.save(annotation);
+    public void createAnnotation(Task task, List<Dataitem> dataitems){
+       List<Annotation> annotations = new ArrayList<>();
+       for (Dataitem dataitem: dataitems){
+           Annotation annotation = new Annotation();
+           annotation.setDataitem(dataitem);
+           annotation.setTask(task);
+           annotation.setUser(task.getAssignment().getAssignedTo());
+           annotations.add(annotation);
+       }
+       annotationRepository.saveAll(annotations);
     }
 
     //get Number of Anntation having Approved status

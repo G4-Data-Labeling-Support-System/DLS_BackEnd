@@ -53,13 +53,10 @@ public class TaskService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        List<Dataitem> dataitems = dataItemRepository.findByDataset_DatasetId(
-                assignment.getDataset().getDatasetId());
-
         //lọc ra những item còn là active
-        List<Dataitem> activeItems = dataitems.stream()
-                .filter(item -> item.getDataItemStatus() == DataItemStatus.ACTIVE)
-                .collect(Collectors.toList());
+        List<Dataitem> activeItems = dataItemRepository.findByDataset_DatasetIdAndDataItemStatusOrderByUploadedAtAsc(
+                assignment.getDataset().getDatasetId(),
+                DataItemStatus.ACTIVE);
 
         int maxPerTask = 20; // số lượng dataitem tối đa mỗi task có thể xử lý, có thể điều chỉnh tùy theo
                              // yêu cầu
@@ -68,9 +65,9 @@ public class TaskService {
         for (int i = 0; i < activeItems.size(); i += maxPerTask) {// duyệt qua danh sách dataitems theo từng batch có kích
                                                                 // thước maxPerTask
 
-            int end = Math.min(i + maxPerTask, dataitems.size());// đảm bảo không vượt quá kích thước của danh sách
+            int end = Math.min(i + maxPerTask, activeItems.size());// đảm bảo không vượt quá kích thước của danh sách
 
-            List<Dataitem> batch = dataitems.subList(i, end);// lấy một batch con của dataitems để tạo task
+            List<Dataitem> batch = activeItems.subList(i, end);// lấy một batch con của dataitems để tạo task
 
             // tạo task
             Task task = new Task();
