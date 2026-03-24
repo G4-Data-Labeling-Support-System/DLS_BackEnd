@@ -26,7 +26,7 @@ public class AnnotationController {
     private final AnnotationService annotationService;
 
     // ================= CREATE NEW ANNOTATION =================
-    @PostMapping("/submit")
+    @PutMapping("/submit")
     @PreAuthorize("hasAnyRole('ANNOTATOR', 'MANAGER')")
     @Operation(
         summary = "Create new annotation",
