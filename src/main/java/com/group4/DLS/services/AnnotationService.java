@@ -167,7 +167,6 @@ public class AnnotationService {
         // Delete annotations in batch
         for (Annotation annotation : annotations) {
             annotation.setAnnotationStatus(AnnotationStatus.INACTIVE);
-            annotation.setDataitem(null);
             reviewService.removeReviewByAnnotation(annotation.getAnnotationId());
         }
         annotationRepository.saveAll(annotations);
