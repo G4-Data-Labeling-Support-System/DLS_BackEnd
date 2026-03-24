@@ -3,6 +3,7 @@ package com.group4.DLS.controllers;
 import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.dto.response.ApiResponse;
+import com.group4.DLS.domain.dto.response.ReviewResponse;
 import com.group4.DLS.services.AnnotationService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -62,4 +63,17 @@ public class AnnotationController {
         return response;
     }
 
+//    // GET Annotation Staus flow by TaskDataItem
+//    @GetMapping("status/taskDataItem/{TaskDataItemId}")
+//    @PreAuthorize("hasAnyRole('MANAGER','REVIEWER','ANNOTATOR')")
+//    public ApiResponse<List<ReviewResponse>> getAnnotationStatusByTaskDataitem(
+//            @PathVariable String TaskDataItemId) {
+//
+//        ApiResponse<List<ReviewResponse>> response = new ApiResponse<>();
+//        response.setCode(200);
+//        response.setData(annotationService.(annotationId));
+//        response.setMessage("Reviews retrieved successfully");
+//
+//        return response;
+//    }
 }
