@@ -30,11 +30,8 @@ public class DatasetUpdateRequest {
     @Size(max = 1000, message = "INVALID_DATASET_DESCRIPTION_LENGTH")
     private String description;
 
-    // FIX ARRAY STRING
     @Schema(type = "array", example = "[\"id1\",\"id2\"]")
     private List<String> deleteDataItemId;
 
-    // file khỏi DTO Swagger
-    @JsonIgnore
     private List<MultipartFile> files;
 }

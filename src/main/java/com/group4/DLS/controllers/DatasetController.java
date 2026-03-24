@@ -83,15 +83,14 @@ public class DatasetController {
      * Update a dataset
      * ================
      */
-        @PutMapping(value = "/{datasetId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        @PutMapping(value = "/{datasetId}", consumes = {
+                MediaType.MULTIPART_FORM_DATA_VALUE,
+                MediaType.APPLICATION_FORM_URLENCODED_VALUE
+        } )
         @PreAuthorize("hasRole('MANAGER')")
         public ApiResponse<DatasetResponse> update(
                 @PathVariable String datasetId,
-
-                @RequestPart("data") DatasetUpdateRequest request,
-
-                @RequestPart(value = "files", required = false)
-                List<MultipartFile> files
+                @ModelAttribute DatasetUpdateRequest request
         ) throws IOException {
             ApiResponse<DatasetResponse> response = new ApiResponse<>();
 
