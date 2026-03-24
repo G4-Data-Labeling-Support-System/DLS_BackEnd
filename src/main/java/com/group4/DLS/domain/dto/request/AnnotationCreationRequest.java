@@ -4,6 +4,9 @@ import java.util.List;
 
 import com.group4.DLS.domain.entity.Annotation;
 
+import com.group4.DLS.domain.enums.AnnotationConfidence;
+import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.domain.enums.AnnotationType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,5 +21,11 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AnnotationCreationRequest {
     String taskId;
-    List<AnnotationItemRequest> annotations;
+    AnnotationConfidence annotationConfidence;
+    Object annotationData;
+    AnnotationStatus annotationStatus;
+    AnnotationType annotationType;
+    String comment;
+    String dataitemId;
+    List<String> labelIds;;
 }
