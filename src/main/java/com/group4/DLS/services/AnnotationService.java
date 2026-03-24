@@ -67,9 +67,9 @@ public class AnnotationService {
     // ================= CREATE NEW ANNOTATION =================
     @Transactional
     @LogActivity(
-        action = "CREATE",
+        action = "Update",
         entity = "Annotation",
-        description = "Create annotation",
+        description = "Update annotation",
         entityIdField = "annotationId"
     )
     public AnnotationResponse updateAnnotation(AnnotationItemRequest request) {
@@ -133,6 +133,8 @@ public class AnnotationService {
         }
         return count;
     }
+
+    //get Status flow by taskitem
 
 
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================
