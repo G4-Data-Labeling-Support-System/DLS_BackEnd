@@ -7,6 +7,8 @@ import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.services.DatasetService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -88,6 +90,10 @@ public class DatasetController {
                 MediaType.APPLICATION_FORM_URLENCODED_VALUE
         } )
         @PreAuthorize("hasRole('MANAGER')")
+        @Parameter(
+                name = "files",
+                content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+        )
         public ApiResponse<DatasetResponse> update(
                 @PathVariable String datasetId,
                 @ModelAttribute DatasetUpdateRequest request
