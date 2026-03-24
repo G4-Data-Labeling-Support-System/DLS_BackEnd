@@ -40,13 +40,23 @@ public class TaskController {
         return response;
     }
 
-    @GetMapping("/{taskId}")
+    @GetMapping("/{taskId}/dataitem")
     @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
     public ApiResponse<List<DataItemResponse>> getTaskById(@PathVariable String taskId) {
         ApiResponse<List<DataItemResponse>> response = new ApiResponse<>();
         response.setCode(200);
         response.setData(taskDataItemService.getDataitemsByTaskId(taskId));
         response.setMessage("Task retrieved successfully");
+        return response;
+    }
+
+    @GetMapping("/{taskId}/taskDataitems")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    public ApiResponse<List<TaskDataITemResponse>> getTaskDataItemsByTaskId(@PathVariable String taskId) {
+        ApiResponse<List<TaskDataITemResponse>> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(taskDataItemService.getTaskDataItemsByTaskId(taskId));
+        response.setMessage("Task data items retrieved successfully");
         return response;
     }
 
