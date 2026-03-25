@@ -6,6 +6,7 @@ import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.*;
 import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.domain.enums.TaskDataItemStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AnnotationMapper;
@@ -127,11 +128,17 @@ public class AnnotationService {
     public int getNumberAnnotationIsApproved(Task task){
         int count = 0;
         List<Annotation> annotations = annotationRepository.findAnnotationsByTask(task);
+        List<TaskDataItem> taskDataItems = new ArrayList<>();
         for(Annotation annotation: annotations){
             if(annotation.getAnnotationStatus().equals(AnnotationStatus.APPROVED)){
+                TaskDataItem taskDataItem = taskDataItemRepository
+                        .findTaskDataItemByDataItem_ItemId(annotation.getDataitem().getItemId());
+                taskDataItem.setTaskDataItemStatus(TaskDataItemStatus.COMPLETED);
+                taskDataItems.add(taskDataItem);
                 count++;
             }
         }
+        taskDataItemRepository.saveAll(taskDataItems);
         return count;
     }
 

@@ -406,6 +406,10 @@ public class AssignmentService {
         boolean allDone = tasks.stream()
                 .allMatch(t -> t.getTaskStatus() == TaskStatus.COMPLETED);
 
+        if (LocalDateTime.now().isAfter(assignment.getDueDate())) {
+            assignment.setAssignmentStatus(AssignmentStatus.OVER_DUE);
+        }
+
         if (allDone) {
             assignment.setAssignmentStatus(AssignmentStatus.COMPLETED);
         } else if (allReadyReview) {

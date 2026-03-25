@@ -1,6 +1,7 @@
 package com.group4.DLS.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.ReviewUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.ReviewResponse;
@@ -33,19 +34,14 @@ public class ReviewController {
 
     @PutMapping(value = "/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasAnyRole('REVIEWER','MANAGER')")
-    public ApiResponse<List<ReviewResponse>> reviewTask(
-            @RequestPart("data") String json,
-            @RequestPart(value = "files", required = false) List<MultipartFile> files
-    ) throws IOException {
+    public ApiResponse<ReviewResponse> reviewTask(
+            @ModelAttribute ReviewUpdateRequest request) throws IOException {
 
-        ObjectMapper mapper = new ObjectMapper();
-        ReviewUpdateRequest request = mapper.readValue(json, ReviewUpdateRequest.class);
-
-        ApiResponse<List<ReviewResponse>> response = new ApiResponse<>();
+        ApiResponse<ReviewResponse> response = new ApiResponse<>();
 
         response.setCode(200);
         response.setMessage("Review updated successfully");
-        response.setData(reviewService.reviewed(request, files));
+        response.setData(reviewService.reviewed(request));
 
         return response;
     }
