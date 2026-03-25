@@ -117,10 +117,10 @@ public class ReviewService {
             if (review == null) {
                 throw new AppException(ErrorCode.REVIEW_NOT_FOUND);
             }
-
+            String status = request.getReviewStatus().toUpperCase();
             review.setReviewedAt(LocalDateTime.now());
             review.setComment(request.getComment());
-            review.setReviewStatus(ReviewStatus.valueOf(request.getReviewStatus()));
+            review.setReviewStatus(ReviewStatus.valueOf(status));
 
             // xử lý file theo index
             List<String> evidences = new ArrayList<>();
@@ -131,9 +131,8 @@ public class ReviewService {
                 }
             }
             review.setEvidences(evidences);
-
-            // update status
-            if (AnnotationStatus.valueOf(request.getReviewStatus()) == AnnotationStatus.APPROVED) {
+            
+            if (AnnotationStatus.valueOf(status) == AnnotationStatus.APPROVED) {
                 task.setCompletedCount(task.getCompletedCount() + 1);
                 taskRepository.save(task);
             }
