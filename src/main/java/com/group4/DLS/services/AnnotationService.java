@@ -132,7 +132,7 @@ public class AnnotationService {
         for(Annotation annotation: annotations){
             if(annotation.getAnnotationStatus().equals(AnnotationStatus.APPROVED)){
                 TaskDataItem taskDataItem = taskDataItemRepository
-                        .findTaskDataitemByDataItem_ItemId(annotation.getDataitem().getItemId());
+                        .findTaskDataitemByDataitem_ItemId(annotation.getDataitem().getItemId());
                 taskDataItem.setTaskDataItemStatus(TaskDataItemStatus.COMPLETED);
                 taskDataItems.add(taskDataItem);
                 count++;
