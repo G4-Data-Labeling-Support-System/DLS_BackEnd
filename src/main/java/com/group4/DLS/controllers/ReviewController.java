@@ -63,4 +63,18 @@ public class ReviewController {
 
         return response;
     }
+
+    // GET reviews by taskdataitemId
+    @GetMapping("/TaskDataItem/{TaskDataItemId}")
+    @PreAuthorize("hasAnyRole('MANAGER','REVIEWER','ANNOTATOR', 'ADMIN')")
+    public ApiResponse<List<ReviewResponse>> getReviewsByTaskDataItemId(
+            @PathVariable String TaskDataItemId) {
+
+        ApiResponse<List<ReviewResponse>> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(reviewService.getReviewByTaskDatatItem(TaskDataItemId));
+        response.setMessage("Reviews retrieved successfully");
+
+        return response;
+    }
 }

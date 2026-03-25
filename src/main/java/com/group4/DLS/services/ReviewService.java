@@ -9,17 +9,16 @@ import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.ReviewItemRequest;
 import com.group4.DLS.domain.dto.request.ReviewUpdateRequest;
 import com.group4.DLS.domain.dto.response.ReviewResponse;
-import com.group4.DLS.domain.entity.Annotation;
-import com.group4.DLS.domain.entity.Review;
-import com.group4.DLS.domain.entity.Task;
-import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.entity.*;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.ReviewStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 
 import com.group4.DLS.mappers.ReviewMapper;
+import com.group4.DLS.repositories.TaskDataItemRepository;
 import com.group4.DLS.repositories.TaskRepository;
+import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import com.group4.DLS.repositories.AnnotationRepository;
@@ -38,7 +37,8 @@ public class ReviewService {
     AnnotationRepository annotationRepository;
     SeaweedFilerUploadService seaweedFilerUploadService;
     ReviewMapper reviewMapper;
-    private final TaskRepository taskRepository;
+    TaskRepository taskRepository;
+    TaskDataItemRepository taskDataItemRepository;
 
     // ================= REMOVE REVIEW BY ANNOTATION_ID =================
     @Transactional
@@ -174,6 +174,16 @@ public class ReviewService {
         return reviewMapper.toReviewResponse(reviews);
     }
 
+    //get review by task dataItem
+    public List<ReviewResponse> getReviewByTaskDatatItem(String taskDataItemId){
+        TaskDataItem taskDataItem = taskDataItemRepository.findById(taskDataItemId)
+                .orElseThrow(()-> new AppException(ErrorCode.TASKDATAITEM_NOT_FOUND));
+
+        Annotation annotation = annotationRepository.findAnnotationByDataitem_ItemId(taskDataItem.getTaskItemId());
+        List<Review> reviews = reviewRepository.findByAnnotation_AnnotationId(annotation.getAnnotationId());
+        return reviewMapper.toReviewResponse(reviews);
+    }
+
     @LogActivity(
             action = "DELETE",
             entity = "Annotation",
@@ -194,3 +204,4 @@ public class ReviewService {
     }
 
 }
+
