@@ -125,7 +125,6 @@ public class DatasetService {
         description = "Update dataset",
         entityIdParam = "datasetId"
     )
-    @Transactional
     public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request,List<MultipartFile> files) throws IOException {
 
         Dataset dataset = datasetRepository.findById(datasetId)
@@ -143,6 +142,7 @@ public class DatasetService {
         // update basic info
         datasetMapper.updateDatasetFromRequest(request, dataset);
         dataset.setProject(project);
+        datasetRepository.save(dataset);
 
         // check do dataset have assignment
         Assignment hasAssignment = dataset.getAssignment();

@@ -25,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
@@ -330,6 +331,7 @@ public class AssignmentService {
         description = "Delete assignment",
         entityIdParam = "assignmentId"
     )
+    @Transactional(rollbackFor = Exception.class)
     public void removeAssignment(String assignmentId) {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
@@ -351,8 +353,7 @@ public class AssignmentService {
 
             datasetRepository.save(dataset);
         }
-
-        assignment.setDataset(null);
+        
         assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);// Soft delete assignment
         
         assignmentRepository.save(assignment);

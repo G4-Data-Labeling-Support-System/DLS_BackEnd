@@ -40,9 +40,4 @@ public interface DatasetRepository extends JpaRepository<Dataset, String> {
             DatasetStatus status
     );
 
-    @Transactional
-    @Modifying
-    @Query("UPDATE Dataitem d SET d.dataItemStatus = :status WHERE d.itemId IN :ids")
-    void softDeleteAllByIds(@Param("ids") List<String> ids,
-                            @Param("status") DataItemStatus status);
 }
