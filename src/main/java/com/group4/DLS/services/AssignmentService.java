@@ -336,15 +336,6 @@ public class AssignmentService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        // Remove related Annotations
-        annotationService.removeAnnotationByAssignmentId(assignmentId);
-
-        // Unmap Task and Dataitem from TaskItem
-        taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
-
-        // Remove related Tasks
-        taskService.removeTasksByAssignmentId(assignmentId);
-
         // Remove assignment reference from dataset
         if (!datasetRepository.findById(assignment.getDataset().getDatasetId()).isEmpty()) {
             Dataset dataset = assignment.getDataset();
@@ -353,7 +344,12 @@ public class AssignmentService {
 
             datasetRepository.save(dataset);
         }
-        
+        // Remove related Annotations
+        annotationService.removeAnnotationByAssignmentId(assignmentId);
+        // Unmap Task and Dataitem from TaskItem
+        taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
+        // Remove related Tasks
+        taskService.removeTasksByAssignmentId(assignmentId);
         assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);// Soft delete assignment
         
         assignmentRepository.save(assignment);
