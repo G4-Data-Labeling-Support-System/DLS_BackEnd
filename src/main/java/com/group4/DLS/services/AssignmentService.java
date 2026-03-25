@@ -79,6 +79,32 @@ public class AssignmentService {
         // get assignment by annotatorId
         List<AssignmentResponse> assignments = assignmentRepository.findByAssignedTo_UserId(annotatorId)
                 .stream()
+                .filter(assignment -> assignment.getAssignmentStatus() != AssignmentStatus.INACTIVE)
+                .map(assignmentMapper::toResponse)
+                .toList();
+
+        // check if empty
+        if (assignments.isEmpty()) {
+            throw new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND);
+        }
+
+        for (AssignmentResponse assignment: assignments){
+            updateAssignmentStatus(assignment.getAssignmentId());
+        }
+
+        return assignments;
+    }
+
+    // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
+    public List<AssignmentResponse> getAssignmentForReviewer(String reviewerId) {
+        // check user exist
+        if (!userRepository.existsById(reviewerId)) {
+            throw new AppException(ErrorCode.USER_NOT_FOUND);
+        }
+        List<AssignmentResponse> assignments = assignmentRepository
+                .findByAssignedBy_UserId(reviewerId)
+                .stream()
+                .filter(assignment -> assignment.getAssignmentStatus() != AssignmentStatus.INACTIVE)
                 .map(assignmentMapper::toResponse)
                 .toList();
 

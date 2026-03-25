@@ -85,7 +85,7 @@ public class DatasetController {
         @PreAuthorize("hasRole('MANAGER')")
         public ApiResponse<DatasetResponse> update(
                 @PathVariable String datasetId,
-                @RequestPart("request") String requestJson,
+                @RequestPart("request") String requestJson, // Dùng String + parse JSON
                 @RequestParam(required = false) List<MultipartFile> files
         ) throws IOException {
             ObjectMapper mapper = new ObjectMapper();

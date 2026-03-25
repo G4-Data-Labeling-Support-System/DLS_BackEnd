@@ -40,11 +40,21 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
     @GetMapping("/annotators/{annotatorId}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR', 'REVIEWER')")
+    @PreAuthorize("hasAnyRole('ANNOTATOR')")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
         response.setCode(200);
         response.setData(assignmentService.getAssignmentForAnnotator(annotatorId));
+        response.setMessage("Get all assignment for annotator successfully");
+        return response;
+    }
+
+    @GetMapping("/reviewers/{reviewerId}")
+    @PreAuthorize("hasAnyRole('REVIEWER')")
+    public ApiResponse<List<AssignmentResponse>> getAssignmentsForReviewer( @PathVariable String reviewerId) {
+        ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(assignmentService.getAssignmentForReviewer(reviewerId));
         response.setMessage("Get all assignment for annotator successfully");
         return response;
     }
