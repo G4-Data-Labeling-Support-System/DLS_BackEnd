@@ -48,7 +48,7 @@ public class AnnotationController {
     }
 
     @GetMapping("/dataitem/{dataItemId}")
-    @PreAuthorize("hasAnyRole('Manager', 'ANNOTATOR', 'REVIEWER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR', 'REVIEWER', 'ADMIN')")
     @Operation(
             summary = "Get annotation status by Task DataItem",
             description = "Get annotation status by Task DataItem"
@@ -66,7 +66,7 @@ public class AnnotationController {
 
     // GET Annotation Staus flow by TaskDataItem
     @GetMapping("status/taskDataItem/{taskDataItemId}")
-    @PreAuthorize("hasAnyRole('MANAGER','REVIEWER','ANNOTATOR')")
+    @PreAuthorize("hasAnyRole('MANAGER','REVIEWER','ANNOTATOR', 'ADMIN')")
     public ApiResponse<AnnotationStatus> getAnnotationStatusByTaskDataitem(
             @PathVariable String taskDataItemId) {
 

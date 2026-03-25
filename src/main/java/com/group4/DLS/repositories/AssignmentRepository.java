@@ -19,7 +19,7 @@ public interface AssignmentRepository extends JpaRepository<Assignment, String> 
 
     List<Assignment> findByAssignedTo_UserId(String userId);
 
-    List<Assignment> findByAssignedBy_UserId(String assignedByUserId);
+    List<Assignment> findByReviewedBy_UserId(String reviewerId);
 
     // Find assignment by dataset_id
     Assignment findByDatasetDatasetId(String datasetId);

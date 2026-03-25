@@ -33,14 +33,14 @@ public class DatasetController {
      * ==============================
      */
     @GetMapping
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @Operation(summary = "Get all datasets", description = "Retrieve all datasets")
     public List<DatasetResponse> getAllDataset() {
         return datasetService.getAllDatasets();
     }
 
     @GetMapping("/{datasetId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @Operation(summary = "Get dataset by dataset_id", description = "Retrieve dataset")
     public DatasetResponse getDatasetById(@PathVariable String datasetId) {
         return datasetService.getDatasetById(datasetId);
@@ -52,7 +52,7 @@ public class DatasetController {
      * ==============================
      */
     @GetMapping("/project/{projectId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR', 'ADMIN')")
     @Operation(summary = "Get datasets by project", description = "Retrieve all datasets belonging to a specific project")
     public List<DatasetResponse> getAllByProjectDatasetResponses(
             @PathVariable String projectId) {
@@ -120,7 +120,7 @@ public class DatasetController {
 
     //get datasets not have assignment of project
     @GetMapping("/notassignment/project/{projectId}")
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR', 'ADMIN')")
     @Operation(summary = "Get datasets not have assignment by project", description = "Retrieve all datasets belonging to a specific project")
     public ApiResponse<List<DatasetResponse>> getDatasetsByAssignmentIsNullAndProject(
             @PathVariable String projectId) {
