@@ -5,16 +5,14 @@ import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.services.DatasetService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -84,13 +82,15 @@ public class DatasetController {
      */
         @PutMapping(value = "/{datasetId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         @PreAuthorize("hasRole('MANAGER')")
-        @Operation(summary = "Update current dataset", description = "Update dataset")
-        public ApiResponse<DatasetResponse> update(@PathVariable String datasetId,
-                                                   @ParameterObject @ModelAttribute DatasetUpdateRequest request) throws IOException {
+        public ApiResponse<DatasetResponse> update(
+                @PathVariable String datasetId,
+                @ModelAttribute DatasetUpdateRequest request,
+                @RequestParam(required = false) List<MultipartFile> files
+        ) throws IOException {
             ApiResponse<DatasetResponse> response = new ApiResponse<>();
 
             response.setCode(200);
-            response.setData(datasetService.updateDataset(datasetId, request));
+            response.setData(datasetService.updateDataset(datasetId, request, files));
             response.setMessage("Dataset updated successfully");
 
             return response;

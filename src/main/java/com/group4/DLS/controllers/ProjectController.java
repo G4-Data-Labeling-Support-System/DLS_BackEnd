@@ -134,6 +134,25 @@ public class ProjectController {
                 .build();
     }
 
+    /*
+     * ================
+     * List all projects for creation or update dataset
+     * ===============
+     */
+    @GetMapping("/actionOfDataset")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
+    @Operation(
+            summary = "List all projects for create or update dataset",
+            description = "Retrieve a list of all data labeling projects"
+    )
+    public ApiResponse<List<ProjectResponse>> getAllProjectsForCrateOrUpdateDataset() {
+        return ApiResponse.<List<ProjectResponse>>builder()
+                .code(200)
+                .message("Get all projects successfully")
+                .data(projectService.getAllProjectsForCrateOrUpdateDataset())
+                .build();
+    }
+
     //get all member of project
     @GetMapping("/{projectId}/members")
     @PreAuthorize("hasRole('MANAGER')")
