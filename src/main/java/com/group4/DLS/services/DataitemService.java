@@ -193,6 +193,12 @@ public class DataitemService {
         dataitemRepository.save(dataitem);
     }
 
+    @LogActivity(
+            action = "DELETE",
+            entity = "Dataitem",
+            description = "Delete Dataitems",
+            entityIdParam = "dataitemId"
+    )
     public void deleteDataitems(List<String> dataitemIds) {
         List<Dataitem> dataitems = new ArrayList<>();
         for(String dataitemId: dataitemIds) {

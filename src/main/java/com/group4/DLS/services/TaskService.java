@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Assignment;
@@ -48,6 +49,12 @@ public class TaskService {
     }
 
     // ================= CREATE NEW TASK FOR CURRENT ASSIGNMENT =================
+    @LogActivity(
+            action = "CREATE",
+            entity = "Task",
+            description = "Create Tasks",
+            entityIdField = "assignmentId"
+    )
     public void createTasksForAssignment(String assignmentId) {
 
         Assignment assignment = assignmentRepository.findById(assignmentId)
@@ -100,7 +107,7 @@ public class TaskService {
             //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
             //case2: nếu 10 item approved và 10 item submitted sau khi sửa
             // nếu có annatation có status là rejected thì không set lại
-            if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount() ){
+            if(annotationService.getNumberAnnotationIsApproved(task) == task.getAnnotations().size() ){
                 task.setTaskStatus(TaskStatus.COMPLETED);
                 task.setFlagForReview(false);
             }else if(task.getTaskDataitems().size() == annotationService
@@ -114,9 +121,8 @@ public class TaskService {
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }
-
-
-
+            int countComplete = annotationService.getNumberAnnotationIsApproved(task);
+            task.setCompletedCount(countComplete);
             taskRepository.save(task);
         }
 
@@ -130,6 +136,12 @@ public class TaskService {
     }
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
+    @LogActivity(
+            action = "DELETE",
+            entity = "Task",
+            description = "Delete Task By Assignment",
+            entityIdParam = "assignmentId"
+    )
     public void removeTasksByAssignmentId(String assignmentId) {
 
         // Check assignment exists

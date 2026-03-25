@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.ReviewItemRequest;
 import com.group4.DLS.domain.dto.request.ReviewUpdateRequest;
 import com.group4.DLS.domain.dto.response.ReviewResponse;
@@ -54,6 +55,12 @@ public class ReviewService {
     }
 
     // create when flagForReview of task is true;
+    @LogActivity(
+            action = "CREATE",
+            entity = "Review",
+            description = "Create Reviews",
+            entityIdField = "taskId"
+    )
     public void createReviews(Task task) {
         List<Annotation> annotations = annotationRepository.findAnnotationsByTask(task);
 
@@ -90,6 +97,12 @@ public class ReviewService {
     }
 
     //after reviewer reviews success
+    @LogActivity(
+            action = "UPDATE",
+            entity = "Review",
+            description = "Update view after reviewer reviews",
+            entityIdParam = "reviewerId"
+    )
     public List<ReviewResponse> reviewed(ReviewUpdateRequest request, List<MultipartFile> files) throws IOException {
 
         Task task = taskRepository.findById(request.getTaskId())
@@ -161,6 +174,12 @@ public class ReviewService {
         return reviewMapper.toReviewResponse(reviews);
     }
 
+    @LogActivity(
+            action = "DELETE",
+            entity = "Annotation",
+            description = "Delete Annotation",
+            entityIdParam = "annotationId"
+    )
     public void removeReviewByAnnotation(String annotationId){
         Annotation annotation = annotationRepository.findById(annotationId)
                 .orElseThrow(()-> new AppException(ErrorCode.ANNOTATION_NOT_FOUND));
