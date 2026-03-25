@@ -1,5 +1,6 @@
 package com.group4.DLS.repositories;
 
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,6 +18,8 @@ public interface AssignmentRepository extends JpaRepository<Assignment, String> 
     List<Assignment> findByProject_ProjectId(String projectId);
 
     List<Assignment> findByAssignedTo_UserId(String userId);
+
+    List<Assignment> findByAssignedBy_UserId(String assignedByUserId);
 
     // Find assignment by dataset_id
     Assignment findByDatasetDatasetId(String datasetId);
