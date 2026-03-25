@@ -6,6 +6,7 @@ import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.TaskStatus;
 import com.group4.DLS.domain.enums.TaskType;
 import com.group4.DLS.exceptions.AppException;
@@ -19,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -51,19 +53,21 @@ public class TaskService {
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
 
-        List<Dataitem> dataitems = dataItemRepository.findByDataset_DatasetId(
-                assignment.getDataset().getDatasetId());
+        //lọc ra những item còn là active
+        List<Dataitem> activeItems = dataItemRepository.findByDataset_DatasetIdAndDataItemStatusOrderByUploadedAtAsc(
+                assignment.getDataset().getDatasetId(),
+                DataItemStatus.ACTIVE);
 
         int maxPerTask = 20; // số lượng dataitem tối đa mỗi task có thể xử lý, có thể điều chỉnh tùy theo
                              // yêu cầu
         int taskIndex = 1; // bắt đầu từ 1 để đặt tên TASK-01, TASK-02, ...
 
-        for (int i = 0; i < dataitems.size(); i += maxPerTask) {// duyệt qua danh sách dataitems theo từng batch có kích
+        for (int i = 0; i < activeItems.size(); i += maxPerTask) {// duyệt qua danh sách dataitems theo từng batch có kích
                                                                 // thước maxPerTask
 
-            int end = Math.min(i + maxPerTask, dataitems.size());// đảm bảo không vượt quá kích thước của danh sách
+            int end = Math.min(i + maxPerTask, activeItems.size());// đảm bảo không vượt quá kích thước của danh sách
 
-            List<Dataitem> batch = dataitems.subList(i, end);// lấy một batch con của dataitems để tạo task
+            List<Dataitem> batch = activeItems.subList(i, end);// lấy một batch con của dataitems để tạo task
 
             // tạo task
             Task task = new Task();
@@ -76,11 +80,6 @@ public class TaskService {
             taskRepository.save(task);
             taskDataItemService.createTaskDataItem(task, batch);
         }
-    }
-
-    // get annotation have not reject by task
-    public List<Annotation> getAnnotationsNotRejected(Task task) {
-        return annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED);
     }
 
     // ================= GET TASK BY ASSIGNMENT_ID =================
@@ -101,14 +100,17 @@ public class TaskService {
             //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
             //case2: nếu 10 item approved và 10 item submitted sau khi sửa
             // nếu có annatation có status là rejected thì không set lại
-            if(task.getTaskDataitems().size() == getAnnotationsNotRejected(task).size() && !task.getAnnotations().isEmpty()){
+            if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount() ){
+                task.setTaskStatus(TaskStatus.COMPLETED);
+                task.setFlagForReview(false);
+            }else if(task.getTaskDataitems().size() == annotationService
+                    .getByTaskToSetStatus(task).size()){// nếu item bằng số annotationstatus approved
                 reviewService.createReviews(task);
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
-            }else if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){
-                task.setTaskStatus(TaskStatus.COMPLETED);
-                task.setFlagForReview(false);
-            }else{
+            }else if (task.getAnnotations().stream() // nếu có annotation có status là submitted hoặc là reject nhen
+                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED
+                    || a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }
@@ -121,7 +123,11 @@ public class TaskService {
         return taskMapper.toTaskResponse(tasks);
     }
 
-
+    //================== Get Task By Task Id ==================
+    public TaskResponse getTaskByTaskId(String taskId){
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+        return taskMapper.toResponse(task);
+    }
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
     public void removeTasksByAssignmentId(String assignmentId) {

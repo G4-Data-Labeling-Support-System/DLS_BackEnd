@@ -76,7 +76,7 @@ public class GuidelineController {
      * ======================
      */
     @GetMapping("/project/{projectId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
     @Operation(
         summary = "Get all guidelines by project",
         description = "Retrieve all guidelines associated with a specific project"
@@ -94,7 +94,7 @@ public class GuidelineController {
 
 //GET ALL
     @GetMapping
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
     public ApiResponse<List<GuidelineResponse>> getAllGuideline() {
         ApiResponse<List<GuidelineResponse>> response = new ApiResponse<>();
 

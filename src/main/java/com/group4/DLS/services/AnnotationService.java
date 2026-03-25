@@ -2,7 +2,6 @@ package com.group4.DLS.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.DLS.aop.LogActivity;
-import com.group4.DLS.domain.dto.request.AnnotationCreationRequest;
 import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.*;
@@ -35,6 +34,7 @@ public class AnnotationService {
 
     AnnotationMapper annotationMapper;
     ReviewService reviewService;
+    TaskDataItemRepository taskDataItemRepository;
 
     // function to change to jason to save database
     private String convertToJson(Object value) {
@@ -56,30 +56,24 @@ public class AnnotationService {
         return Collections.emptyList();
     }
 
-    //public all annnotation by task and not status
-    public List<Annotation> getAnnotationsByTaskAndNotStatus(Task task,AnnotationStatus status){
-        if(task == null){
-            throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
-        }
-
-        List<Annotation> annotations = annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
-
-        if(annotations.isEmpty() && !task.getAnnotations().isEmpty()){
-            throw new AppException(ErrorCode.ANNOTATION_STATUS_HAVE_REJECTED);
-        }
-
+    public List<Annotation> getByTaskToSetStatus(Task task){
+        List<Annotation> annotations = annotationRepository
+                .findByTaskAndAnnotationStatusNotIn(
+                        task,
+                        List.of(AnnotationStatus.NOT_START, AnnotationStatus.REJECTED)
+                );
         return annotations;
     }
 
     // ================= CREATE NEW ANNOTATION =================
     @Transactional
     @LogActivity(
-        action = "CREATE",
+        action = "Update",
         entity = "Annotation",
-        description = "Create annotation",
+        description = "Update annotation",
         entityIdField = "annotationId"
     )
-    public List<AnnotationResponse> createAnnotation(AnnotationCreationRequest request) {
+    public AnnotationResponse updateAnnotation(AnnotationItemRequest request) {
 
         // Get current task
         Task task = taskRepository.findById(request.getTaskId())
@@ -89,41 +83,44 @@ public class AnnotationService {
         var auth = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) auth.getPrincipal();
 
-        List<Annotation> annotationsToSave = new ArrayList<>();
+        // Get dataitem for current annotation
+        Dataitem dataitem = dataItemRepository.findById(request.getDataitemId())
+                .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
 
-        for (AnnotationItemRequest item : request.getAnnotations()) {
+        Annotation annotation = annotationRepository.findByTask_TaskIdAndDataitem_ItemId(task.getTaskId(), dataitem.getItemId());
 
-            // Get dataitem for current annotation
-            Dataitem dataitem = dataItemRepository.findById(item.getDataitemId())
-                    .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+        annotation.setAnnotationData(convertToJson(request.getAnnotationData()));
+        annotation.setAnnotationType(request.getAnnotationType());
+        annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
+        annotation.setAnnotationConfidence(request.getAnnotationConfidence());
+        annotation.setComment(request.getComment());
+        annotation.setTask(task);
+        annotation.setUser(user);
 
-            Annotation annotation = new Annotation();
+        // Handel set labels
+        if (request.getLabelIds() != null && !request.getLabelIds().isEmpty()) {
+            List<Label> labels = labelRepository.findAllById(request.getLabelIds());
 
-            annotation.setAnnotationData(convertToJson(item.getAnnotationData()));
-            annotation.setAnnotationType(item.getAnnotationType());
-            annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
-            annotation.setAnnotationConfidence(item.getAnnotationConfidence());
-            annotation.setComment(item.getComment());
-
-            annotation.setTask(task);
-            annotation.setUser(user);
-            annotation.setDataitem(dataitem);
-
-            // Handel set labels
-            if (item.getLabelIds() != null && !item.getLabelIds().isEmpty()) {
-                List<Label> labels = labelRepository.findAllById(item.getLabelIds());
-
-                if (labels.size() != item.getLabelIds().size()) {
-                    throw new AppException(ErrorCode.LABEL_NOT_FOUND);
-                }
-
+            if (labels.size() != request.getLabelIds().size()) {
+                throw new AppException(ErrorCode.LABEL_NOT_FOUND);
+            }
                 annotation.setLabels(labels);
             }
 
-            annotationsToSave.add(annotation);
-        }
 
-        return annotationMapper.toAnnotationResponses(annotationRepository.saveAll(annotationsToSave));
+        return annotationMapper.toAnnotationResponse(annotationRepository.save(annotation));
+    }
+
+    public void createAnnotation(Task task, List<Dataitem> dataitems){
+       List<Annotation> annotations = new ArrayList<>();
+       for (Dataitem dataitem: dataitems){
+           Annotation annotation = new Annotation();
+           annotation.setDataitem(dataitem);
+           annotation.setTask(task);
+           annotation.setUser(task.getAssignment().getAssignedTo());
+           annotations.add(annotation);
+       }
+       annotationRepository.saveAll(annotations);
     }
 
     //get Number of Anntation having Approved status
@@ -137,6 +134,17 @@ public class AnnotationService {
         }
         return count;
     }
+
+    //get Status flow by taskitem
+    public AnnotationStatus getAnnotationStatusFlowTaskItem(String taskDataItemId){
+        TaskDataItem taskDataItem = taskDataItemRepository.findById(taskDataItemId)
+                .orElseThrow(()-> new AppException(ErrorCode.TASKDATAITEM_NOT_FOUND));
+        Annotation annotation = annotationRepository.findByTask_TaskIdAndDataitem_ItemId(
+                taskDataItem.getTask().getTaskId(), taskDataItem.getDataitem().getItemId());
+
+        return annotation.getAnnotationStatus();
+    }
+
 
     // ================= REMOVE ANNOTATION BY ASSINGMENT_ID =================
     @LogActivity(
@@ -168,5 +176,14 @@ public class AnnotationService {
             reviewService.removeReviewByAnnotation(annotation.getAnnotationId());
         }
         annotationRepository.saveAll(annotations);
+    }
+
+    //get annotation by dataitem
+    public AnnotationResponse getAnnotationByDataItemId(String dataItemId){
+        Dataitem dataitem = dataItemRepository.findById(dataItemId)
+                .orElseThrow(()-> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+        Annotation annotation = annotationRepository
+                .findAnnotationByDataitem_ItemId(dataItemId);
+        return annotationMapper.toAnnotationResponse(annotation);
     }
 }

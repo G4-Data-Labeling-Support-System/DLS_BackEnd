@@ -47,7 +47,8 @@ public class DataitemService {
             throw new AppException(ErrorCode.DATASET_NOT_FOUND);
         }
 
-        List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
+        List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId).stream()
+                .filter(dataitem -> dataitem.getDataItemStatus() == DataItemStatus.ACTIVE).toList();
 
         return dataItemMapper.toDataItemResponse(dataitems);
     }
@@ -92,7 +93,7 @@ public class DataitemService {
 
             // 2 tạo Dataitem
             Dataitem item = new Dataitem();
-            item.setFileName(UUID.randomUUID()+"-"+file.getOriginalFilename());
+            item.setFileName(datasetId+"-"+file.getOriginalFilename());
             item.setUrl(fileUrl);
             item.setFileSize((int) file.getSize());
             item.setWidth(width);
@@ -187,23 +188,22 @@ public class DataitemService {
         Dataitem dataitem = dataitemRepository.findById(dataitemId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
 
-        TaskDataItem taskDataItem = dataitem.getTaskDataItem();
-
-        if (taskDataItem != null) {
-
-            String taskId = taskDataItem.getTask().getTaskId();
-            int index = taskDataItem.getItemIndex();
-
-            // xóa taskDataItem
-            taskDataItemRepository.delete(taskDataItem);
-
-            for(TaskDataItem updateIndexTaskItem: taskDataItemRepository.findByTask_TaskId(taskId)){
-                taskDataItemRepository.decreaseIndexAfter(updateIndexTaskItem.getTaskItemId(), index);
-            }
-        }
         dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
         //  xóa dataitem
         dataitemRepository.save(dataitem);
+    }
+
+    public void deleteDataitems(List<String> dataitemIds) {
+        List<Dataitem> dataitems = new ArrayList<>();
+        for(String dataitemId: dataitemIds) {
+            Dataitem dataitem = dataitemRepository.findById(dataitemId)
+                    .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+
+            dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
+            dataitems.add(dataitem);
+        }
+        //  xóa dataitem
+        dataitemRepository.saveAll(dataitems);
     }
 
     public void deleteDataitemsByDatasetId(String datasetId) {

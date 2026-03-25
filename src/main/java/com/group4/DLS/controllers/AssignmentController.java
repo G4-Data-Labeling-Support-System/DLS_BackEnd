@@ -29,7 +29,7 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR', 'REVIEWER')") // Allow access to managers, admins, and annotators
     public ApiResponse<AssignmentResponse> getAssignmentById( @PathVariable String assignmentId) {
         ApiResponse<AssignmentResponse> response = new ApiResponse<>();
         response.setCode(200);
@@ -40,7 +40,7 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
     @GetMapping("/annotators/{annotatorId}")
-    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR')")
+    @PreAuthorize("hasAnyRole('ANNOTATOR', 'ADMIN')")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
         response.setCode(200);
@@ -49,9 +49,19 @@ public class AssignmentController {
         return response;
     }
 
+    @GetMapping("/reviewers/{reviewerId}")
+    @PreAuthorize("hasAnyRole('REVIEWER', 'ADMIN')")
+    public ApiResponse<List<AssignmentResponse>> getAssignmentsForReviewer( @PathVariable String reviewerId) {
+        ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(assignmentService.getAssignmentForReviewer(reviewerId));
+        response.setMessage("Get all assignment for annotator successfully");
+        return response;
+    }
+
     // ================= GET ASSIGNMENT FOR PRORJECT =================
     @GetMapping("/projects/{projectId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR', 'REVIEWER')") // Allow access to managers, admins, and annotators
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForProject( @PathVariable String projectId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
@@ -63,7 +73,7 @@ public class AssignmentController {
 
     // ================= GET ALL ASSIGNMENT =================
     @GetMapping
-    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR')") // Allow access to managers, admins, and annotators
+    @PreAuthorize("hasAnyRole('MANAGER','ADMIN','ANNOTATOR', 'REVIEWER')") // Allow access to managers, admins, and annotators
     public ApiResponse<List<AssignmentResponse>> getAllAssignments() {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
 
@@ -107,7 +117,7 @@ public class AssignmentController {
 
     // ================= CHANGE DATASET FOR CURRENT ASSIGNMENT =================
     @PutMapping("/change-dataset/assignment/{assignmentId}")
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ANNOTATOR', 'REVIEWER')")
     @Operation(
         summary = "Change Assignment dataset",
         description = "Change Assignment dataset")
@@ -139,7 +149,7 @@ public class AssignmentController {
 
     // ================= GET LABELS BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/labels")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
     @Operation(
         summary = "Get labels for assignment",
         description = "Retrieve all labels associated with a specific assignment")
@@ -154,7 +164,7 @@ public class AssignmentController {
 
     // ================= GET DATASET BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/dataset")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
     @Operation(
             summary = "Get dataset for assignment",
             description = "Retrieve all dataset associated with a specific assignment")

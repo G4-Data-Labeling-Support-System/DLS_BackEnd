@@ -2,6 +2,7 @@ package com.group4.DLS.services;
 
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.dto.response.TaskDataITemResponse;
+import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.entity.TaskDataItem;
@@ -24,6 +25,7 @@ public class TaskDataItemService {
     TaskDataItemRepository taskDataItemRepository;
     DataItemMapper dataItemMapper;
     TaskDataitemMapper taskDataitemMapper;
+    AnnotationService annotationService;
 
     // ================= ASSIGN DATAITEM TO TASK =================
     public void createTaskDataItem(Task task, List<Dataitem> dataitems) {
@@ -41,13 +43,13 @@ public class TaskDataItemService {
             tdi.setItemIndex(order++);
             list.add(tdi);
         }
-
+        annotationService.createAnnotation(task, dataitems);
         taskDataItemRepository.saveAll(list);
     }
 
     // ================= GET DATAITEMS BY TASK_ID =================
     public List<DataItemResponse> getDataitemsByTaskId(String taskId) {
-        List<TaskDataItem> taskDataItems = taskDataItemRepository.findByTask_TaskId(taskId);
+        List<TaskDataItem> taskDataItems = taskDataItemRepository.findByTask_TaskIdOrderByItemIndexAsc(taskId);
         List<Dataitem> dataitems = new ArrayList<>();
         for (TaskDataItem tdi : taskDataItems) {
             dataitems.add(tdi.getDataitem());
@@ -57,8 +59,10 @@ public class TaskDataItemService {
 
     // ================= GET TASKDATAITEM BY TASK_ID =================
     public List<TaskDataITemResponse> getTaskDataItemsByTaskId(String taskId) {
-        return taskDataitemMapper.toResponse(taskDataItemRepository.findByTask_TaskId(taskId));
+        return taskDataitemMapper.toResponse(taskDataItemRepository.findByTask_TaskIdOrderByItemIndexAsc(taskId));
     }
+
+
 
     // ================= REMOVE TASKDATAITEM BY ASSIGNMENT_ID =================
     public void deleteTaskDataItemsByAssignmentId(String assignmentId) {

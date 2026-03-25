@@ -63,11 +63,11 @@ public enum ErrorCode {
     PROJECT_MEMBER_NOT_FOUND(400, "Project member not found"),
     PROJECT_MEMBER_ALREADY_EXISTS(400, "Project member already exists"),
     INVALID_ROLE(400, "Invalid role"),
-    CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT(400,"Cannot delete dataitem after assignment created" ),
-    DATAITEM_MINIMUM_REQUIRED(400,"Must upload at least 20 dataitems when dataset already assigned"),
-    ANNOTATION_STATUS_HAVE_REJECTED(400, "Task is having rejected annotation status "),
+    CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT(400,"Cannot delete dataItem after assignment created" ),
+    DATAITEM_MINIMUM_REQUIRED(400,"Must upload at least 20 dataItem when dataset already assigned"),
     ANNOTATIONS_NOT_HAVE(400,"Annotations is empty" ),
-    REVIEW_NOT_FOUND(400,"Review not found" );
+    REVIEW_NOT_FOUND(400,"Review not found" ),
+    TASKDATAITEM_NOT_FOUND(400, "Task DataItem not found");
 
     final int code;
     final String message;
