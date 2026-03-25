@@ -123,7 +123,11 @@ public class TaskService {
         return taskMapper.toTaskResponse(tasks);
     }
 
-
+    //================== Get Task By Task Id ==================
+    public TaskResponse getTaskByTaskId(String taskId){
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+        return taskMapper.toResponse(task);
+    }
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
     public void removeTasksByAssignmentId(String assignmentId) {
