@@ -84,7 +84,7 @@ public class DatasetController {
         @PreAuthorize("hasRole('MANAGER')")
         public ApiResponse<DatasetResponse> update(
                 @PathVariable String datasetId,
-                @ModelAttribute DatasetUpdateRequest request,
+                @RequestPart("request") DatasetUpdateRequest request,
                 @RequestParam(required = false) List<MultipartFile> files
         ) throws IOException {
             ApiResponse<DatasetResponse> response = new ApiResponse<>();
