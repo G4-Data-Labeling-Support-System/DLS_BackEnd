@@ -1,0 +1,26 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/DLS"
+    username: root
+    password: TMNNT012928637160822863716
+    hikari:
+      minimum-idle: 5
+      idle-timeout: 600000        # 10 min
+      max-lifetime: 1800000       # 30 min
+      connection-timeout: 30000   # 30s
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        "[format_sql]": true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
