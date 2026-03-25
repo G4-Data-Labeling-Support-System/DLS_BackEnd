@@ -212,10 +212,5 @@ public class DataitemService {
         dataitemRepository.saveAll(dataitems);
     }
 
-    public void deleteDataitemsByDatasetId(String datasetId) {
-        List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
-        for (Dataitem dataitem : dataitems) {
-            deleteDataitem(dataitem.getItemId());
-        }
-    }
+
 }
