@@ -18,6 +18,6 @@ public interface AnnotationRepository extends JpaRepository<Annotation, String> 
 
     List<Annotation> findAnnotationsByTask_TaskId(String taskId);
 
-    //get annotaions by task and status not have
-    List<Annotation> findByTaskAndAnnotationStatusNot(Task task, AnnotationStatus status);
+    List<Annotation> findByTaskAndAnnotationStatusNotIn(
+            Task task, List<AnnotationStatus> statuses);
 }
