@@ -1,5 +1,6 @@
 package com.group4.DLS.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.group4.DLS.domain.dto.request.DatasetCreationRequest;
 import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
@@ -84,9 +85,12 @@ public class DatasetController {
         @PreAuthorize("hasRole('MANAGER')")
         public ApiResponse<DatasetResponse> update(
                 @PathVariable String datasetId,
-                @RequestPart("request") DatasetUpdateRequest request,
+                @RequestPart("request") String requestJson,
                 @RequestParam(required = false) List<MultipartFile> files
         ) throws IOException {
+            ObjectMapper mapper = new ObjectMapper();
+            DatasetUpdateRequest request = mapper.readValue(requestJson, DatasetUpdateRequest.class);
+
             ApiResponse<DatasetResponse> response = new ApiResponse<>();
 
             response.setCode(200);
