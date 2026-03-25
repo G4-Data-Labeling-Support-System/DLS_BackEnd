@@ -71,7 +71,7 @@ public class AnnotationService {
         action = "Update",
         entity = "Annotation",
         description = "Update annotation",
-        entityIdField = "annotationId"
+            entityIdParam = "annotationId"
     )
     public AnnotationResponse updateAnnotation(AnnotationItemRequest request) {
 
