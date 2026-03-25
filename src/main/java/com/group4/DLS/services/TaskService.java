@@ -100,13 +100,14 @@ public class TaskService {
             //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
             //case2: nếu 10 item approved và 10 item submitted sau khi sửa
             // nếu có annatation có status là rejected thì không set lại
-            if(task.getTaskDataitems().size() == annotationService.getAnnotationsByTaskAndNotStatus(task, AnnotationStatus.REJECTED).size()){
+            if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount() ){
+                task.setTaskStatus(TaskStatus.COMPLETED);
+                task.setFlagForReview(false);
+            }else if(task.getTaskDataitems().size() == annotationService
+                    .getByTaskToSetStatus(task).size()){// nếu item bằng số annotationstatus approved
                 reviewService.createReviews(task);
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
-            }else if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount()){// nếu item bằng số annotationstatus approved
-                task.setTaskStatus(TaskStatus.COMPLETED);
-                task.setFlagForReview(false);
             }else if (task.getAnnotations().stream() // nếu có annotation có status là submitted hoặc là reject nhen
                     .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED
                     || a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
@@ -122,7 +123,11 @@ public class TaskService {
         return taskMapper.toTaskResponse(tasks);
     }
 
-
+    //================== Get Task By Task Id ==================
+    public TaskResponse getTaskByTaskId(String taskId){
+        Task task = taskRepository.findById(taskId).orElseThrow(() -> new AppException(ErrorCode.TASK_NOT_FOUND));
+        return taskMapper.toResponse(task);
+    }
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
     public void removeTasksByAssignmentId(String assignmentId) {

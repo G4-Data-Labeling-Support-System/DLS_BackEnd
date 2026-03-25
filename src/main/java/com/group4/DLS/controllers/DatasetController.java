@@ -52,7 +52,7 @@ public class DatasetController {
      * ==============================
      */
     @GetMapping("/project/{projectId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR', 'ADMIN', 'REVIEWER')")
     @Operation(summary = "Get datasets by project", description = "Retrieve all datasets belonging to a specific project")
     public List<DatasetResponse> getAllByProjectDatasetResponses(
             @PathVariable String projectId) {

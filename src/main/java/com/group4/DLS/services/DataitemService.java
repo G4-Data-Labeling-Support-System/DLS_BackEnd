@@ -47,7 +47,8 @@ public class DataitemService {
             throw new AppException(ErrorCode.DATASET_NOT_FOUND);
         }
 
-        List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
+        List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId).stream()
+                .filter(dataitem -> dataitem.getDataItemStatus() == DataItemStatus.ACTIVE).toList();
 
         return dataItemMapper.toDataItemResponse(dataitems);
     }

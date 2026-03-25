@@ -56,13 +56,13 @@ public class AnnotationService {
         return Collections.emptyList();
     }
 
-    //public all annnotation by task and not status
-    public List<Annotation> getAnnotationsByTaskAndNotStatus(Task task,AnnotationStatus status){
-        if(task.getAnnotations().isEmpty()){
-            throw new AppException(ErrorCode.ANNOTATION_NOT_FOUND);
-        }
-
-        return annotationRepository.findByTaskAndAnnotationStatusNot(task, status);
+    public List<Annotation> getByTaskToSetStatus(Task task){
+        List<Annotation> annotations = annotationRepository
+                .findByTaskAndAnnotationStatusNotIn(
+                        task,
+                        List.of(AnnotationStatus.NOT_START, AnnotationStatus.REJECTED)
+                );
+        return annotations;
     }
 
     // ================= CREATE NEW ANNOTATION =================
