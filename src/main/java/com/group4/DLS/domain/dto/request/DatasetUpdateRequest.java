@@ -33,5 +33,4 @@ public class DatasetUpdateRequest {
     @Schema(type = "array", example = "[\"id1\",\"id2\"]")
     private List<String> deleteDataItemId;
 
-    private List<MultipartFile> files;
 }

@@ -192,6 +192,19 @@ public class DataitemService {
         dataitemRepository.save(dataitem);
     }
 
+    public void deleteDataitems(List<String> dataitemIds) {
+        List<Dataitem> dataitems = new ArrayList<>();
+        for(String dataitemId: dataitemIds) {
+            Dataitem dataitem = dataitemRepository.findById(dataitemId)
+                    .orElseThrow(() -> new AppException(ErrorCode.DATAITEM_NOT_FOUND));
+
+            dataitem.setDataItemStatus(DataItemStatus.INACTIVE);
+            dataitems.add(dataitem);
+        }
+        //  xóa dataitem
+        dataitemRepository.saveAll(dataitems);
+    }
+
     public void deleteDataitemsByDatasetId(String datasetId) {
         List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
         for (Dataitem dataitem : dataitems) {

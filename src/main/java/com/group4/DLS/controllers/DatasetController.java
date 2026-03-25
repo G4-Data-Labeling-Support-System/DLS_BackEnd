@@ -5,15 +5,10 @@ import com.group4.DLS.domain.dto.request.DatasetUpdateRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.services.DatasetService;
-
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -85,23 +80,17 @@ public class DatasetController {
      * Update a dataset
      * ================
      */
-        @PutMapping(value = "/{datasetId}", consumes = {
-                MediaType.MULTIPART_FORM_DATA_VALUE,
-                MediaType.APPLICATION_FORM_URLENCODED_VALUE
-        } )
+        @PutMapping(value = "/{datasetId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         @PreAuthorize("hasRole('MANAGER')")
-        @Parameter(
-                name = "files",
-                content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE)
-        )
         public ApiResponse<DatasetResponse> update(
                 @PathVariable String datasetId,
-                @ModelAttribute DatasetUpdateRequest request
+                @ModelAttribute DatasetUpdateRequest request,
+                @RequestParam(required = false) List<MultipartFile> files
         ) throws IOException {
             ApiResponse<DatasetResponse> response = new ApiResponse<>();
 
             response.setCode(200);
-            response.setData(datasetService.updateDataset(datasetId, request));
+            response.setData(datasetService.updateDataset(datasetId, request, files));
             response.setMessage("Dataset updated successfully");
 
             return response;

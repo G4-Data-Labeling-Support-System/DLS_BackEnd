@@ -125,7 +125,8 @@ public class DatasetService {
         description = "Update dataset",
         entityIdParam = "datasetId"
     )
-    public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request) throws IOException {
+    @Transactional
+    public DatasetResponse updateDataset(String datasetId, DatasetUpdateRequest request,List<MultipartFile> files) throws IOException {
 
         Dataset dataset = datasetRepository.findById(datasetId)
                 .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
@@ -151,15 +152,11 @@ public class DatasetService {
             if (hasAssignment != null) {
                 throw new AppException(ErrorCode.CANNOT_DELETE_DATAIEM_AFTER_ASSIGN_ASSIGNMENT);
             }
-            int countDelete = 0;
-            for (String dataItemId : request.getDeleteDataItemId()) {
-                dataitemService.deleteDataitem(dataItemId);
-                countDelete++;
-            }
+            dataitemService.deleteDataitems(request.getDeleteDataItemId());
+            int countDelete = request.getDeleteDataItemId().size();
             dataset.setTotalItems(dataset.getTotalItems()-countDelete);
         }
 
-        List<MultipartFile> files = request.getFiles();
 
         if (files != null && files.stream().anyMatch(file -> !file.isEmpty())) {
             dataitemService.createDataitem(dataset.getDatasetId(), files);// insert and return new item
@@ -170,11 +167,9 @@ public class DatasetService {
                 }
                 dataitemService.assignNewDataItems(dataset.getDatasetId());// insert and return new item
             }
+            dataset.setTotalItems(dataset.getDataitems().size());
         }
         datasetRepository.save(dataset);
-        dataset.setTotalItems(dataset.getDataitems().size());
-        datasetRepository.save(dataset);
-
         return datasetMapper.toDatasetResponse(dataset);
     }
 
