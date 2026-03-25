@@ -1,6 +1,7 @@
 package com.group4.DLS.repositories;
 
 import com.group4.DLS.domain.entity.Dataitem;
+import com.group4.DLS.domain.enums.DataItemStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,4 +22,8 @@ public interface DataItemRepository extends JpaRepository<Dataitem, String> {
     )
 """)
     List<Dataitem> findUnassignedDataItems(@Param("datasetId") String datasetId);
+
+    List<Dataitem> findByDataset_DatasetIdAndDataItemStatusOrderByUploadedAtAsc(
+            String datasetId,
+            DataItemStatus dataItemStatus);
 }

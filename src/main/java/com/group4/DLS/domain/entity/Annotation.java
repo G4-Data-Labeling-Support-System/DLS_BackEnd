@@ -44,7 +44,7 @@ public class Annotation {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "annotation_status")
-    AnnotationStatus annotationStatus;
+    AnnotationStatus annotationStatus = AnnotationStatus.NOT_START;
 
     @Column(name = "created_at")
     LocalDateTime createdAt;
@@ -68,7 +68,7 @@ public class Annotation {
     private Task task;
 
     //One Annotation belongs to One DataItem
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "item_id", nullable = false)
     private Dataitem dataitem;
 

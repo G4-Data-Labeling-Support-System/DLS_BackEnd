@@ -40,9 +40,9 @@ public class TaskController {
         return response;
     }
 
-    @GetMapping("/{taskId}")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
-    public ApiResponse<List<DataItemResponse>> getTaskById(@PathVariable String taskId) {
+    @GetMapping("/{taskId}/dataitem")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
+    public ApiResponse<List<DataItemResponse>> getDataItemByTaskId(@PathVariable String taskId) {
         ApiResponse<List<DataItemResponse>> response = new ApiResponse<>();
         response.setCode(200);
         response.setData(taskDataItemService.getDataitemsByTaskId(taskId));
@@ -50,8 +50,18 @@ public class TaskController {
         return response;
     }
 
+    @GetMapping("/{taskId}")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
+    public ApiResponse<TaskResponse> getTaskByTaskId(@PathVariable String taskId) {
+        ApiResponse<TaskResponse> response = new ApiResponse<>();
+        response.setCode(200);
+        response.setData(taskService.getTaskByTaskId(taskId));
+        response.setMessage("Task retrieved successfully");
+        return response;
+    }
+
     @GetMapping("/{taskId}/taskDataitems")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
     public ApiResponse<List<TaskDataITemResponse>> getTaskDataItemsByTaskId(@PathVariable String taskId) {
         ApiResponse<List<TaskDataITemResponse>> response = new ApiResponse<>();
         response.setCode(200);
@@ -59,4 +69,5 @@ public class TaskController {
         response.setMessage("Task data items retrieved successfully");
         return response;
     }
+
 }

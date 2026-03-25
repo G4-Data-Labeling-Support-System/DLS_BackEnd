@@ -134,9 +134,28 @@ public class ProjectController {
                 .build();
     }
 
+    /*
+     * ================
+     * List all projects for creation or update dataset
+     * ===============
+     */
+    @GetMapping("/actionOfDataset")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN', 'ANNOTATOR', 'REVIEWER')")
+    @Operation(
+            summary = "List all projects for create or update dataset",
+            description = "Retrieve a list of all data labeling projects"
+    )
+    public ApiResponse<List<ProjectResponse>> getAllProjectsForCrateOrUpdateDataset() {
+        return ApiResponse.<List<ProjectResponse>>builder()
+                .code(200)
+                .message("Get all projects successfully")
+                .data(projectService.getAllProjectsForCrateOrUpdateDataset())
+                .build();
+    }
+
     //get all member of project
     @GetMapping("/{projectId}/members")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @Operation(
         summary = "Get project members",
         description = "Retrieve all members associated with a specific project")
@@ -150,7 +169,7 @@ public class ProjectController {
 
     //get all member of project
     @GetMapping("/datasets/{datasetId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Get project by dataset",
             description = "Retrieve project associated with a datasetId")

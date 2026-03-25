@@ -5,11 +5,10 @@ import com.group4.DLS.domain.enums.DataItemStatus;
 import com.group4.DLS.domain.enums.DataType;
 import com.group4.DLS.domain.enums.FileFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.Valid;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.aspectj.bridge.IMessage;
 
 import java.time.LocalDateTime;
 
@@ -66,9 +65,4 @@ public class Dataitem {
     @JoinColumn(name = "datasetId", nullable = false)
     @JsonIgnore
     private Dataset dataset;
-
-    // One DataItem has Many TaskDataitems
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_data_item_id", nullable = true)
-    private TaskDataItem taskDataItem;
 }

@@ -1,5 +1,7 @@
 package com.group4.DLS.domain.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -20,18 +22,15 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DatasetUpdateRequest {
     @NotNull(message = "PROJECT_IS_REQUIRED")
-    String projectId;
+    private String projectId;
 
     @Size(min = 3, max = 255, message = "INVALID_DATASET_NAME_LENGTH")
-    String datasetName;
+    private String datasetName;
 
     @Size(max = 1000, message = "INVALID_DATASET_DESCRIPTION_LENGTH")
-    String description;
+    private String description;
 
+    @Schema(type = "array", example = "[\"id1\",\"id2\"]")
+    private List<String> deleteDataItemId;
 
-    // xoá dataitem
-    List<String> deleteDataItemId;
-
-    //thêm ảnh
-    List<MultipartFile> files;
 }
