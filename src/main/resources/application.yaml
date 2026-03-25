@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+    active: ${SPRING_PROFILES_ACTIVE:local}
   application:
     name: DLS
 
@@ -16,6 +16,8 @@ jwt:
 
 seaweedfs:
   master:
-    url: https://master-seaweed.hikarimoon.pro
+    # url: https://master-seaweed.hikarimoon.pro
+    url: http://localhost:9333
   filer:
-    url: https://filer-seaweed.hikarimoon.pro
+    # url: https://filer-seaweed.hikarimoon.pro
+    url: http://localhost:8888
