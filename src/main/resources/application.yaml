@@ -16,8 +16,8 @@ jwt:
 
 seaweedfs:
   master:
-    # url: https://master-seaweed.hikarimoon.pro
-    url: http://localhost:9333
+    url: https://master-seaweed.hikarimoon.pro
+    # url: http://localhost:9333
   filer:
-    # url: https://filer-seaweed.hikarimoon.pro
-    url: http://localhost:8888
+    url: https://filer-seaweed.hikarimoon.pro
+    # url: http://localhost:8888
