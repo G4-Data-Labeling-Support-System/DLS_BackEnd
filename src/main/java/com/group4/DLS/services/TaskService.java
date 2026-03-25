@@ -135,8 +135,6 @@ public class TaskService {
         return taskMapper.toResponse(task);
     }
 
-    //====
-
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
     @LogActivity(
             action = "DELETE",
