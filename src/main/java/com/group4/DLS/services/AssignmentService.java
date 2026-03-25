@@ -376,8 +376,8 @@ public class AssignmentService {
         taskDataItemService.deleteTaskDataItemsByAssignmentId(assignmentId);
         // Remove related Tasks
         taskService.removeTasksByAssignmentId(assignmentId);
+        assignment.setDataset(null);
         assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);// Soft delete assignment
-        
         assignmentRepository.save(assignment);
     }
 
