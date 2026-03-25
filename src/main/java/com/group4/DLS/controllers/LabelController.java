@@ -42,7 +42,7 @@ public class LabelController {
          * ==============================
          */
         @PostMapping("/api/v1/datasets/{datasetId}/labels")
-        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
         @Operation(summary = "Create new label", description = "Create a new label for a dataset")
         public ApiResponse<LabelResponse> createLabel(
                         @PathVariable String datasetId,
@@ -61,7 +61,7 @@ public class LabelController {
          * ==============================
          */
         @GetMapping("/api/v1/labels")
-        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
         @Operation(summary = "Get all labels", description = "Retrieve all labels in system")
         public List<LabelResponse> getAllLabels() {
 
@@ -74,7 +74,7 @@ public class LabelController {
          * ==============================
          */
         @GetMapping("/api/v1/labels/{labelId}")
-        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+        @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
         @Operation(summary = "Get label by ID", description = "Retrieve a specific label by its ID")
         public LabelResponse getById(@PathVariable String labelId) {
 

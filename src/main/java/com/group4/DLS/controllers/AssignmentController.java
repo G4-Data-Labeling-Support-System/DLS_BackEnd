@@ -40,7 +40,7 @@ public class AssignmentController {
 
     // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
     @GetMapping("/annotators/{annotatorId}")
-    @PreAuthorize("hasAnyRole('ANNOTATOR')")
+    @PreAuthorize("hasAnyRole('ANNOTATOR', 'ADMIN')")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForAnnotator( @PathVariable String annotatorId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
         response.setCode(200);
@@ -50,7 +50,7 @@ public class AssignmentController {
     }
 
     @GetMapping("/reviewers/{reviewerId}")
-    @PreAuthorize("hasAnyRole('REVIEWER')")
+    @PreAuthorize("hasAnyRole('REVIEWER', 'ADMIN')")
     public ApiResponse<List<AssignmentResponse>> getAssignmentsForReviewer( @PathVariable String reviewerId) {
         ApiResponse<List<AssignmentResponse>> response = new ApiResponse<>();
         response.setCode(200);
@@ -149,7 +149,7 @@ public class AssignmentController {
 
     // ================= GET LABELS BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/labels")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
     @Operation(
         summary = "Get labels for assignment",
         description = "Retrieve all labels associated with a specific assignment")
@@ -164,7 +164,7 @@ public class AssignmentController {
 
     // ================= GET DATASET BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}/dataset")
-    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER')")
+    @PreAuthorize("hasAnyRole('MANAGER','ANNOTATOR','REVIEWER', 'ADMIN')")
     @Operation(
             summary = "Get dataset for assignment",
             description = "Retrieve all dataset associated with a specific assignment")

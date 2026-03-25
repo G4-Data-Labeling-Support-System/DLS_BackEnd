@@ -155,7 +155,7 @@ public class ProjectController {
 
     //get all member of project
     @GetMapping("/{projectId}/members")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasRole('MANAGER', 'ADMIN')")
     @Operation(
         summary = "Get project members",
         description = "Retrieve all members associated with a specific project")
@@ -169,7 +169,7 @@ public class ProjectController {
 
     //get all member of project
     @GetMapping("/datasets/{datasetId}")
-    @PreAuthorize("hasRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'ADMIN')")
     @Operation(
             summary = "Get project by dataset",
             description = "Retrieve project associated with a datasetId")

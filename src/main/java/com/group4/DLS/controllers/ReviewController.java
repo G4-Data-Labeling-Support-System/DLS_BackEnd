@@ -52,7 +52,7 @@ public class ReviewController {
 
     // GET reviews by annotationId
     @GetMapping("/annotation/{annotationId}")
-    @PreAuthorize("hasAnyRole('MANAGER','REVIEWER','ANNOTATOR')")
+    @PreAuthorize("hasAnyRole('MANAGER','REVIEWER','ANNOTATOR', 'ADMIN')")
     public ApiResponse<List<ReviewResponse>> getReviewsByAnnotationId(
             @PathVariable String annotationId) {
 

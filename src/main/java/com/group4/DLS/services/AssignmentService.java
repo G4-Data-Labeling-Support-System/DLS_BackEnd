@@ -95,14 +95,14 @@ public class AssignmentService {
         return assignments;
     }
 
-    // ================= GET ASSIGNMENT BY ANNOTATOR_ID =================
+    // ================= GET ASSIGNMENT BY review_ID =================
     public List<AssignmentResponse> getAssignmentForReviewer(String reviewerId) {
         // check user exist
         if (!userRepository.existsById(reviewerId)) {
             throw new AppException(ErrorCode.USER_NOT_FOUND);
         }
         List<AssignmentResponse> assignments = assignmentRepository
-                .findByAssignedBy_UserId(reviewerId)
+                .findByReviewedBy_UserId(reviewerId)
                 .stream()
                 .filter(assignment -> assignment.getAssignmentStatus() != AssignmentStatus.INACTIVE)
                 .map(assignmentMapper::toResponse)
