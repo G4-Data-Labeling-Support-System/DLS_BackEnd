@@ -7,7 +7,6 @@ import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.dto.response.LabelResponse;
-import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
@@ -42,6 +41,7 @@ public class AssignmentService {
     UserRepository userRepository;
     TaskDataItemRepository taskDataItemRepository;
     TaskRepository taskRepository;
+    AnnotationRepository annotationRepository;
 
     TaskService taskService;
     TaskDataItemService taskDataItemService;
@@ -307,15 +307,12 @@ public class AssignmentService {
 
         if (assignmentStatus.equals(AssignmentStatus.ASSIGNED)) {
 
-            // Remove tasks that related to this assignment
-            List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
-            for (Task task : tasks) {
-                task.setTaskStatus(TaskStatus.INACTIVE);
-            }
-            taskRepository.saveAll(tasks);
-
+            //remove annotation
+            annotationRepository.deleteAllByTaskAssignment_AssignmentId(assignmentId);
             // Remove related TaskDataItem
             taskDataItemRepository.deleteByTask_Assignment_AssignmentId(assignmentId);
+            // Remove tasks that related to this assignment
+            taskRepository.deleteByAssignment_AssignmentId(assignmentId);
 
             // Get new dataset
             Dataset dataset = datasetRepository.findById(request.getDatasetId())

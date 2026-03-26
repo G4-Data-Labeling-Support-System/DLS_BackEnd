@@ -193,4 +193,6 @@ public class AnnotationService {
                 .findAnnotationByDataitem_ItemId(dataItemId);
         return annotationMapper.toAnnotationResponse(annotation);
     }
+
+    public void deleteAnnotationByTa
 }

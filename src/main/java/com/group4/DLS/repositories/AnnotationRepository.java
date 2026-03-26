@@ -3,7 +3,9 @@ package com.group4.DLS.repositories;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Task;
 import com.group4.DLS.domain.enums.AnnotationStatus;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +22,8 @@ public interface AnnotationRepository extends JpaRepository<Annotation, String> 
 
     List<Annotation> findByTaskAndAnnotationStatusNotIn(
             Task task, List<AnnotationStatus> statuses);
+
+    @Transactional
+    @Modifying
+    void deleteAllByTaskAssignment_AssignmentId(String taskAssignmentId);
 }
