@@ -1,16 +1,20 @@
 services:
-  # backend:
-  #   image: dls-backend
-  #   environment:
-  #     SPRING_PROFILES_ACTIVE: docker
-  #     SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/DLS?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-  #     SPRING_DATASOURCE_USERNAME: root
-  #     SPRING_DATASOURCE_PASSWORD: TMNNT012928637160822863716
-  #     SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
-  #   depends_on:
-  #     - mysql
-  #   ports:
-  #     - "8080:8080"
+  backend:
+    build: .
+    container_name: dls-backend
+    restart: always
+    networks:
+      - dls-network
+    volumes:
+      - ./logs:/app/logs
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+    depends_on:
+      - mysql
+    ports:
+      - "8081:8081"
+    env_file:
+    - .env
 
   mysql:
     image: mysql:8.4
@@ -19,6 +23,10 @@ services:
       MYSQL_ROOT_PASSWORD: TMNNT012928637160822863716
     ports:
       - "3306:3306"
+    volumes:
+    - mysql_data:/var/lib/mysql
+    networks:
+    - dls-network
 
   seaweed-master:
     image: chrislusf/seaweedfs
@@ -26,6 +34,8 @@ services:
     command: master -ip=seaweed-master -port=9333
     ports:
       - "9333:9333"
+    networks:
+    - dls-network
 
   seaweed-volume:
     image: chrislusf/seaweedfs
@@ -41,6 +51,8 @@ services:
       - seaweed-master
     volumes:
       - volume_data:/data
+    networks:
+    - dls-network
 
   seaweed-filer:
     image: chrislusf/seaweedfs
@@ -50,7 +62,13 @@ services:
       - "8888:8888"
     depends_on:
       - seaweed-master
+    networks:
+    - dls-network
 
 volumes:
   mysql_data:
   volume_data:
+
+networks:
+  dls-network:
+    driver: bridge
