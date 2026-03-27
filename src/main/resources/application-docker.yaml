@@ -1,19 +1,24 @@
 server:
   port: 8081
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+
 spring:
   application:
     name: DLS
-
   datasource:
-    url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS_PROD"
+    url: "jdbc:mysql://mysql:3306/DLS?autoReconnect=true&allowPublicKeyRetrieval=true&useSSL=false"
     username: root
     password: ${DB_PASSWORD}
     hikari:
       minimum-idle: 5
-      idle-timeout: 600000        # 10 min
-      max-lifetime: 1800000       # 30 min
-      connection-timeout: 30000   # 30s
+      idle-timeout: 600000 # 10 min
+      max-lifetime: 1800000 # 30 min
+      connection-timeout: 30000 # 30s
 
   jpa:
     hibernate:
@@ -28,8 +33,12 @@ spring:
       max-file-size: 5MB
       max-request-size: 10MB
 
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: 3600000
+
 seaweedfs:
   master:
-    url: https://master-seaweed.hikarimoon.pro
+    url: http://seaweed-master:9333
   filer:
-    url: https://filer-seaweed.hikarimoon.pro
+    url: http://seaweed-filer:8888

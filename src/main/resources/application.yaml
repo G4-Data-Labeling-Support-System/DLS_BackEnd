@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
+    active: ${SPRING_PROFILES_ACTIVE:local}
   application:
     name: DLS
 
@@ -13,9 +13,3 @@ management:
 jwt:
   secret: ${JWT_SECRET:default-dev-secret}
   expiration: 3600000
-
-seaweedfs:
-  master:
-    url: https://master-seaweed.hikarimoon.pro
-  filer:
-    url: https://filer-seaweed.hikarimoon.pro
