@@ -24,3 +24,9 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 10MB
+
+seaweedfs:
+  master:
+    url: https://master-seaweed.hikarimoon.pro
+  filer:
+    url: https://filer-seaweed.hikarimoon.pro
