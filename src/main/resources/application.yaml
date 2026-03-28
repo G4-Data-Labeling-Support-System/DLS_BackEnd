@@ -13,4 +13,3 @@ management:
 jwt:
   secret: ${JWT_SECRET:default-dev-secret}
   expiration: 3600000
-
