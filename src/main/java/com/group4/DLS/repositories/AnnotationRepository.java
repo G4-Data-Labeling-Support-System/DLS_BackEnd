@@ -25,5 +25,5 @@ public interface AnnotationRepository extends JpaRepository<Annotation, String> 
 
     @Transactional
     @Modifying
-    void deleteAllByTaskAssignment_AssignmentId(String taskAssignmentId);
+    void deleteAllByTask_Assignment_AssignmentId(String taskAssignmentId);
 }
