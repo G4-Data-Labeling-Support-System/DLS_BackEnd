@@ -34,6 +34,7 @@ public class ExportService {
     AssignmentRepository assignmentRepository;
     YoloExportService yoloExportService;
     CocoExportService cocoExportService;
+    JsonExportService jsonExport;
 
     public File export(String assignmentId, String format) throws Exception {
 
@@ -46,6 +47,10 @@ public class ExportService {
 
         if ("coco".equalsIgnoreCase(format)) {
             return cocoExportService.export(assignment);
+        }
+
+        if ("json".equalsIgnoreCase(format)) {
+            return jsonExport.jsonExport(assignment);
         }
 
         throw new RuntimeException("Format chưa support");
