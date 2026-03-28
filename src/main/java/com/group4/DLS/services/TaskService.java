@@ -108,10 +108,7 @@ public class TaskService {
         }
 
         for (Task task: tasks){
-            //so sánh số item trong task với số annotation đã submitted + approved
-            //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
-            //case2: nếu 10 item approved và 10 item submitted sau khi sửa
-            // nếu có annatation có status là rejected thì không set lại
+           
             if(task.getAnnotations().stream().allMatch
                     (a-> a.getAnnotationStatus() == AnnotationStatus.APPROVED)){
                 task.setTaskStatus(TaskStatus.COMPLETED);
