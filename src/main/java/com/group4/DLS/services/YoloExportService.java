@@ -31,8 +31,8 @@ public class YoloExportService {
 
     public File export(Assignment assignment) throws Exception {
 
-        String basePath = System.getProperty("java.io.tmpdir") + assignment.getAssignmentName()
-                + "/yolo_" + System.currentTimeMillis();
+        String basePath = System.getProperty("java.io.tmpdir")
+                + "/yolo_" + assignment.getAssignmentName()+ "_" + System.currentTimeMillis();
 
         File baseDir = new File(basePath);
 
