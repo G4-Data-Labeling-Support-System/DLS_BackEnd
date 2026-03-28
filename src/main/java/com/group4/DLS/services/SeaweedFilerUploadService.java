@@ -1,6 +1,6 @@
 package com.group4.DLS.services;
 
-import com.group4.DLS.domain.entity.SeaweedFSProperties;
+import com.group4.DLS.helper.SeaweedFSProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
