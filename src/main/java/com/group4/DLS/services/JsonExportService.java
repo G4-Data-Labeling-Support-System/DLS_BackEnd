@@ -31,7 +31,7 @@ public class JsonExportService {
                 + "/json_" + assignment.getAssignmentName() + "_" + System.currentTimeMillis();
 
         File baseDir = new File(basePath);
-        baseDir.mkdirs();
+        createDir(baseDir);
 
         File jsonFile = new File(baseDir, "annotations.json");
 
@@ -68,6 +68,7 @@ public class JsonExportService {
                     result.add(imageMap);
                 }
 
+                @SuppressWarnings("unchecked")
                 List<Map<String, Object>> annList =
                         (List<Map<String, Object>>) imageMap.get("annotations");
 
@@ -94,5 +95,11 @@ public class JsonExportService {
         FileUtils.zipFolder(baseDir, zipFile);
 
         return zipFile;
+    }
+
+    private void createDir(File dir) {
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Không tạo được thư mục: " + dir.getAbsolutePath());
+        }
     }
 }

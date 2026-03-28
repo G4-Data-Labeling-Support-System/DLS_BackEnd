@@ -35,8 +35,9 @@ public class CocoExportService {
         File baseDir = new File(basePath);
         File imagesDir = new File(baseDir, "images");
 
-        baseDir.mkdirs();
-        imagesDir.mkdirs();
+        createDir(baseDir);
+        createDir(imagesDir);
+
 
         List<Map<String, Object>> images = new ArrayList<>();
         List<Map<String, Object>> annotations = new ArrayList<>();
@@ -74,7 +75,7 @@ public class CocoExportService {
 
                     images.add(img);
 
-                    // 🔥 DOWNLOAD IMAGE
+                    //  DOWNLOAD IMAGE
                     Path target = Paths.get(imagesDir.getPath(), fileName);
                     FileUtils.downloadImage(item.getUrl(), target);
 
@@ -83,7 +84,7 @@ public class CocoExportService {
 
                 int currentImageId = imageMap.get(fileName);
 
-                // 🔥 ANNOTATION
+                //  ANNOTATION
                 for (Shape s : data.getShapes()) {
 
                     if (s.getLabel() == null) continue;
@@ -128,7 +129,7 @@ public class CocoExportService {
         File jsonFile = new File(baseDir, "annotations.json");
         mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, coco);
 
-        // 🔥 ZIP (dùng lại FileUtils)
+        //  ZIP (dùng lại FileUtils)
         File zipFile = new File(basePath + ".zip");
         FileUtils.zipFolder(baseDir, zipFile);
 
@@ -141,5 +142,11 @@ public class CocoExportService {
         }
         String url = item.getUrl();
         return url.substring(url.lastIndexOf("/") + 1);
+    }
+
+    private void createDir(File dir) {
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Không tạo được thư mục: " + dir.getAbsolutePath());
+        }
     }
 }
