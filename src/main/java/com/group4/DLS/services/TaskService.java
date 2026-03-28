@@ -126,6 +126,10 @@ public class TaskService {
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }
+            int approvedCount =  (int) task.getAnnotations().stream()
+                    .filter(a -> a.getAnnotationStatus() == AnnotationStatus.APPROVED)
+                    .count();
+            task.setCompletedCount(approvedCount);
             taskRepository.save(task);
         }
 
