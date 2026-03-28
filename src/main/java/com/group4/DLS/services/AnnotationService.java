@@ -57,15 +57,6 @@ public class AnnotationService {
         return Collections.emptyList();
     }
 
-    public List<Annotation> getByTaskToSetStatus(Task task){
-        List<Annotation> annotations = annotationRepository
-                .findByTaskAndAnnotationStatusNotIn(
-                        task,
-                        List.of(AnnotationStatus.NOT_START, AnnotationStatus.REJECTED, AnnotationStatus.APPROVED)
-                );
-        return annotations;
-    }
-
     // ================= CREATE NEW ANNOTATION =================
     @Transactional
     @LogActivity(
@@ -107,9 +98,10 @@ public class AnnotationService {
             }
                 annotation.setLabels(labels);
             }
+        annotationRepository.save(annotation);
+        reviewService.createReviews(annotation);
 
-
-        return annotationMapper.toAnnotationResponse(annotationRepository.save(annotation));
+        return annotationMapper.toAnnotationResponse(annotation);
     }
 
     public void createAnnotation(Task task, List<Dataitem> dataitems){
@@ -124,23 +116,7 @@ public class AnnotationService {
        annotationRepository.saveAll(annotations);
     }
 
-    //get Number of Anntation having Approved status
-    public int getNumberAnnotationIsApproved(Task task){
-        int count = 0;
-        List<Annotation> annotations = annotationRepository.findAnnotationsByTask(task);
-        List<TaskDataItem> taskDataItems = new ArrayList<>();
-        for(Annotation annotation: annotations){
-            if(annotation.getAnnotationStatus().equals(AnnotationStatus.APPROVED)){
-                TaskDataItem taskDataItem = taskDataItemRepository
-                        .findTaskDataitemByDataitem_ItemId(annotation.getDataitem().getItemId());
-                taskDataItem.setTaskDataItemStatus(TaskDataItemStatus.COMPLETED);
-                taskDataItems.add(taskDataItem);
-                count++;
-            }
-        }
-        taskDataItemRepository.saveAll(taskDataItems);
-        return count;
-    }
+
 
     //get Status flow by taskitem
     public AnnotationStatus getAnnotationStatusFlowTaskItem(String taskDataItemId){

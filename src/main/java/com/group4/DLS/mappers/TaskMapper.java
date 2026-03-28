@@ -13,6 +13,8 @@ import java.util.List;
 public interface TaskMapper {
 
     @Mapping(target = "assignmentId", source = "assignment.assignmentId")
+    @Mapping(target = "completedItems", source = "completedCount")
+
     TaskResponse toResponse(Task task);
 
     List<TaskResponse> toTaskResponse(List<Task> dataitems);

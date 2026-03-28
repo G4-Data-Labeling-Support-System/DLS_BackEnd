@@ -19,6 +19,7 @@ import com.group4.DLS.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,6 +56,7 @@ public class TaskService {
             description = "Create Tasks",
             entityIdField = "assignmentId"
     )
+    @Transactional
     public void createTasksForAssignment(String assignmentId) {
 
         Assignment assignment = assignmentRepository.findById(assignmentId)
@@ -64,6 +66,9 @@ public class TaskService {
         List<Dataitem> activeItems = dataItemRepository.findByDataset_DatasetIdAndDataItemStatusOrderByUploadedAtAsc(
                 assignment.getDataset().getDatasetId(),
                 DataItemStatus.ACTIVE);
+        assignment.setTotalItems(activeItems.size());
+        assignmentRepository.save(assignment);
+
 
         int maxPerTask = 20; // số lượng dataitem tối đa mỗi task có thể xử lý, có thể điều chỉnh tùy theo
                              // yêu cầu
@@ -103,24 +108,25 @@ public class TaskService {
         }
 
         for (Task task: tasks){
-            //case 1: số annotation is approved bằng với annotation trong task
-            if(task.getAnnotations().size() == annotationService.getNumberAnnotationIsApproved(task)){
+           
+            if(task.getAnnotations().stream().allMatch
+                    (a-> a.getAnnotationStatus() == AnnotationStatus.APPROVED)){
                 task.setTaskStatus(TaskStatus.COMPLETED);
                 task.setFlagForReview(false);
-            //case2:
-            }else if(!annotationService
-                    .getByTaskToSetStatus(task).isEmpty()){// nếu item bằng số annotationstatus approved
-                reviewService.createReviews(task);
+            }else if(task.getAnnotations().stream()
+                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.APPROVED
+                            ||  a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
             }else if (task.getAnnotations().stream() // nếu có annotation có status là submitted hoặc là reject nhen
-                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED
-                    || a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
+                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED)){
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }
-            int countComplete = annotationService.getNumberAnnotationIsApproved(task);
-            task.setCompletedCount(countComplete);
+            int approvedCount =  (int) task.getAnnotations().stream()
+                    .filter(a -> a.getAnnotationStatus() == AnnotationStatus.APPROVED)
+                    .count();
+            task.setCompletedCount(approvedCount);
             taskRepository.save(task);
         }
 

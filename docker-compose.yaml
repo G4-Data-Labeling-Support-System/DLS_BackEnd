@@ -18,7 +18,7 @@ services:
       MYSQL_DATABASE: DLS
       MYSQL_ROOT_PASSWORD: TMNNT012928637160822863716
     ports:
-      - "3306:3306"
+      - "3307:3306"
 
   seaweed-master:
     image: chrislusf/seaweedfs
