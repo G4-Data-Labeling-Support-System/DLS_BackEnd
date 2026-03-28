@@ -18,7 +18,9 @@ import java.io.FileWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -29,16 +31,26 @@ public class YoloExportService {
 
     public File export(Assignment assignment) throws Exception {
 
-        String basePath = "exports/yolo_" + assignment.getAssignmentId();
+        String basePath = System.getProperty("java.io.tmpdir") + assignment.getAssignmentName()
+                + "/yolo_" + System.currentTimeMillis();
 
         File baseDir = new File(basePath);
-        File imagesDir = new File(baseDir, "images");
-        File labelsDir = new File(baseDir, "labels");
 
-        imagesDir.mkdirs();
-        labelsDir.mkdirs();
+        File imagesTrainDir = new File(baseDir, "images/train");
+        File imagesValDir = new File(baseDir, "images/val");
+
+        File labelsTrainDir = new File(baseDir, "labels/train");
+        File labelsValDir = new File(baseDir, "labels/val");
+
+        imagesTrainDir.mkdirs();
+        imagesValDir.mkdirs();
+        labelsTrainDir.mkdirs();
+        labelsValDir.mkdirs();
 
         Map<String, Integer> labelMap = new HashMap<>();
+        Map<String, Boolean> splitMap = new HashMap<>();
+
+        Random random = new Random();
 
         for (Task task : assignment.getTasks()) {
             for (Annotation ann : task.getAnnotations()) {
@@ -53,10 +65,17 @@ public class YoloExportService {
                 if (data.getShapes() == null) continue;
 
                 Dataitem item = ann.getDataitem();
-
                 String fileName = resolveFileName(item);
 
-                File labelFile = new File(labelsDir,
+                // FIX: đảm bảo 1 image chỉ thuộc train hoặc val
+                splitMap.putIfAbsent(fileName, random.nextDouble() < 0.8);
+                boolean isTrain = splitMap.get(fileName);
+
+                File currentImageDir = isTrain ? imagesTrainDir : imagesValDir;
+                File currentLabelDir = isTrain ? labelsTrainDir : labelsValDir;
+
+                // 📄 label file
+                File labelFile = new File(currentLabelDir,
                         fileName.replaceAll("\\.[^.]+$", "") + ".txt");
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(labelFile, true));
@@ -81,8 +100,8 @@ public class YoloExportService {
 
                 writer.close();
 
-                // download ảnh
-                Path target = Paths.get(imagesDir.getPath(), fileName);
+                // 🖼 download ảnh
+                Path target = Paths.get(currentImageDir.getPath(), fileName);
                 FileUtils.downloadImage(item.getUrl(), target);
             }
         }
@@ -90,7 +109,35 @@ public class YoloExportService {
         // classes.txt
         FileUtils.writeClassesFile(baseDir, labelMap);
 
-        // zip
+        // dataset.yaml
+        File yamlFile = new File(baseDir, "dataset.yaml");
+        BufferedWriter yamlWriter = new BufferedWriter(new FileWriter(yamlFile));
+
+        yamlWriter.write("train: ./images/train");
+        yamlWriter.newLine();
+        yamlWriter.write("val: ./images/val");
+        yamlWriter.newLine();
+
+        yamlWriter.write("nc: " + labelMap.size());
+        yamlWriter.newLine();
+
+        yamlWriter.write("names: [");
+
+        List<String> names = labelMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .toList();
+
+        String nameStr = names.stream()
+                .map(n -> "\"" + n + "\"")
+                .reduce((a, b) -> a + ", " + b)
+                .orElse("");
+
+        yamlWriter.write(nameStr);
+        yamlWriter.write("]");
+        yamlWriter.close();
+
+        // 📦 zip
         File zipFile = new File(basePath + ".zip");
         FileUtils.zipFolder(baseDir, zipFile);
 

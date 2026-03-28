@@ -29,7 +29,8 @@ public class CocoExportService {
 
     public File export(Assignment assignment) throws Exception {
 
-        String basePath = "exports/coco_" + assignment.getAssignmentId();
+        String basePath = System.getProperty("java.io.tmpdir") + assignment.getAssignmentName()
+                + "/coco_" + System.currentTimeMillis();
 
         File baseDir = new File(basePath);
         File imagesDir = new File(baseDir, "images");
