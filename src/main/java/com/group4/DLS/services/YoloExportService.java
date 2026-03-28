@@ -42,10 +42,10 @@ public class YoloExportService {
         File labelsTrainDir = new File(baseDir, "labels/train");
         File labelsValDir = new File(baseDir, "labels/val");
 
-        imagesTrainDir.mkdirs();
-        imagesValDir.mkdirs();
-        labelsTrainDir.mkdirs();
-        labelsValDir.mkdirs();
+        createDir(imagesTrainDir);
+        createDir(imagesValDir);
+        createDir(labelsTrainDir);
+        createDir(labelsValDir);
 
         Map<String, Integer> labelMap = new HashMap<>();
         Map<String, Boolean> splitMap = new HashMap<>();
@@ -151,5 +151,11 @@ public class YoloExportService {
         String url = item.getUrl();
         String name = url.substring(url.lastIndexOf("/") + 1);
         return name.replace(",", "_") + ".jpg";
+    }
+
+    private void createDir(File dir) {
+        if (!dir.exists() && !dir.mkdirs()) {
+            throw new RuntimeException("Không tạo được thư mục: " + dir.getAbsolutePath());
+        }
     }
 }
