@@ -117,8 +117,8 @@ public class TaskService {
                 task.setTaskStatus(TaskStatus.COMPLETED);
                 task.setFlagForReview(false);
             }else if(task.getAnnotations().stream()
-                    .allMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED )){
-                reviewService.createReviews(task);
+                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.APPROVED
+                            ||  a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
             }else if (task.getAnnotations().stream() // nếu có annotation có status là submitted hoặc là reject nhen

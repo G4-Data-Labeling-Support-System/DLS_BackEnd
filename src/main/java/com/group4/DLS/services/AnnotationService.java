@@ -98,9 +98,10 @@ public class AnnotationService {
             }
                 annotation.setLabels(labels);
             }
+        annotationRepository.save(annotation);
+        reviewService.createReviews(annotation);
 
-
-        return annotationMapper.toAnnotationResponse(annotationRepository.save(annotation));
+        return annotationMapper.toAnnotationResponse(annotation);
     }
 
     public void createAnnotation(Task task, List<Dataitem> dataitems){

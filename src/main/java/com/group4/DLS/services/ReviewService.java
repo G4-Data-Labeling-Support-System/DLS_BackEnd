@@ -17,7 +17,6 @@ import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.ReviewMapper;
 import com.group4.DLS.repositories.TaskDataItemRepository;
 import com.group4.DLS.repositories.TaskRepository;
-import org.springframework.data.repository.Repository;
 import org.springframework.stereotype.Service;
 
 import com.group4.DLS.repositories.AnnotationRepository;
@@ -60,21 +59,12 @@ public class ReviewService {
             description = "Create Reviews",
             entityIdField = "taskId"
     )
-    public void createReviews(Task task) {
-        List<Annotation> annotations = annotationRepository.findAnnotationsByTask(task);
-
-        User reviewer = task.getAssignment().getReviewedBy();
-        if (annotations.isEmpty()) {
-            throw new AppException(ErrorCode.ANNOTATIONS_NOT_HAVE);
-        }
-        List<Review> reviewsToSave = new ArrayList<>();
-
-        for (Annotation annotation : annotations) {
+    public void createReviews(Annotation annotation) {
+        User reviewer = annotation.getTask().getAssignment().getReviewedBy();
+        // lấy review mới nhất
+        Review latestReview = reviewRepository
+                .findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
            if(annotation.getAnnotationStatus().equals(AnnotationStatus.SUBMITTED)){
-               // lấy review mới nhất
-               Review latestReview = reviewRepository
-                       .findTopByAnnotation_AnnotationIdOrderByCreatedAtDesc(annotation.getAnnotationId());
-
                // nếu chưa có review hoặc review trước đã xử lý xong
                if (latestReview == null || latestReview.getReviewStatus() == ReviewStatus.REJECTED) {
 
@@ -84,15 +74,10 @@ public class ReviewService {
                    review.setAnnotation(annotation);
                    review.setEvidences(new ArrayList<>());
                    review.setReviewStatus(ReviewStatus.IN_PROGRESS); //  quan trọng
-
-                   reviewsToSave.add(review);
+                   // Lưu review vào database
+                   reviewRepository.save(review);
                }
            }
-        }
-
-        // Lưu tất cả review vào database
-        reviewRepository.saveAll(reviewsToSave);
-
     }
 
     //after reviewer reviews success
