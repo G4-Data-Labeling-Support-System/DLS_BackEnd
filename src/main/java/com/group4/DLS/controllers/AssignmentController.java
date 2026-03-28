@@ -39,17 +39,23 @@ public class AssignmentController {
 
     //============= Export===========
     @PostMapping("/{id}/export")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Resource> export(
             @PathVariable("id") String assignmentId,
             @RequestBody ExportRequest request) throws Exception {
 
         File file = exportService.export(assignmentId, request.getExportFormat());
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=" + file.getName())
+        FileSystemResource resource = new FileSystemResource(file);
+
+        ResponseEntity<Resource> response = ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(new FileSystemResource(file));
+                .body(resource);
+        // xóa sau khi trả
+        file.deleteOnExit();
+
+        return response;
     }
 
     // ================= GET ASSIGNMENT BY ASSIGNMENT_ID =================
