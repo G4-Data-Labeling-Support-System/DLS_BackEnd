@@ -52,8 +52,6 @@ public class AssignmentController {
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
-        // xóa sau khi trả
-        file.deleteOnExit();
 
         return response;
     }

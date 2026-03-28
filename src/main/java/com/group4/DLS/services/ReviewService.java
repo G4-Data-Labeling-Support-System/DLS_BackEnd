@@ -120,7 +120,12 @@ public class ReviewService {
             String status = request.getReviewStatus().toUpperCase();
             review.setReviewedAt(LocalDateTime.now());
             review.setComment(request.getComment());
-            review.setReviewStatus(ReviewStatus.valueOf(status));
+            if(status.equalsIgnoreCase("APPROVED")){
+                review.setReviewStatus(ReviewStatus.COMPLETED);
+            }else{
+                review.setReviewStatus(ReviewStatus.valueOf(status));
+            }
+
 
             // xử lý file theo index
             List<String> evidences = new ArrayList<>();
