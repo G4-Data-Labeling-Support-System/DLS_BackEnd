@@ -61,7 +61,7 @@ public class AnnotationService {
         List<Annotation> annotations = annotationRepository
                 .findByTaskAndAnnotationStatusNotIn(
                         task,
-                        List.of(AnnotationStatus.NOT_START, AnnotationStatus.REJECTED)
+                        List.of(AnnotationStatus.NOT_START, AnnotationStatus.REJECTED, AnnotationStatus.APPROVED)
                 );
         return annotations;
     }

@@ -1,0 +1,87 @@
+{
+  "images" : [ {
+    "file_name" : "0bdf175a-95ce-442b-9812-a2b6f49a57d0-Screenshot 2026-03-05 112017.png",
+    "width" : 1394,
+    "id" : 1,
+    "height" : 635
+  }, {
+    "file_name" : "0bdf175a-95ce-442b-9812-a2b6f49a57d0-Screenshot 2026-03-04 233410.png",
+    "width" : 1379,
+    "id" : 2,
+    "height" : 619
+  }, {
+    "file_name" : "0bdf175a-95ce-442b-9812-a2b6f49a57d0-Screenshot 2026-03-04 131442.png",
+    "width" : 1919,
+    "id" : 3,
+    "height" : 1079
+  }, {
+    "file_name" : "0bdf175a-95ce-442b-9812-a2b6f49a57d0-Screenshot 2026-03-03 181251.png",
+    "width" : 1086,
+    "id" : 4,
+    "height" : 301
+  } ],
+  "annotations" : [ {
+    "area" : 1050.0,
+    "category_id" : 1,
+    "bbox" : [ 114.60000610351562, 185.22499084472656, 42.0, 25.0 ],
+    "iscrowd" : 0,
+    "id" : 1,
+    "image_id" : 1
+  }, {
+    "area" : 1394.0,
+    "category_id" : 1,
+    "bbox" : [ 140.60000610351562, 260.22499084472656, 41.0, 34.0 ],
+    "iscrowd" : 0,
+    "id" : 2,
+    "image_id" : 1
+  }, {
+    "area" : 1050.0,
+    "category_id" : 2,
+    "bbox" : [ 114.60000610351562, 185.22499084472656, 42.0, 25.0 ],
+    "iscrowd" : 0,
+    "id" : 3,
+    "image_id" : 2
+  }, {
+    "area" : 1394.0,
+    "category_id" : 2,
+    "bbox" : [ 140.60000610351562, 260.22499084472656, 41.0, 34.0 ],
+    "iscrowd" : 0,
+    "id" : 4,
+    "image_id" : 2
+  }, {
+    "area" : 1050.0,
+    "category_id" : 2,
+    "bbox" : [ 114.60000610351562, 185.22499084472656, 42.0, 25.0 ],
+    "iscrowd" : 0,
+    "id" : 5,
+    "image_id" : 3
+  }, {
+    "area" : 1394.0,
+    "category_id" : 2,
+    "bbox" : [ 140.60000610351562, 260.22499084472656, 41.0, 34.0 ],
+    "iscrowd" : 0,
+    "id" : 6,
+    "image_id" : 3
+  }, {
+    "area" : 1050.0,
+    "category_id" : 2,
+    "bbox" : [ 114.60000610351562, 185.22499084472656, 42.0, 25.0 ],
+    "iscrowd" : 0,
+    "id" : 7,
+    "image_id" : 4
+  }, {
+    "area" : 1394.0,
+    "category_id" : 2,
+    "bbox" : [ 140.60000610351562, 260.22499084472656, 41.0, 34.0 ],
+    "iscrowd" : 0,
+    "id" : 8,
+    "image_id" : 4
+  } ],
+  "categories" : [ {
+    "name" : "Liquid",
+    "id" : 1
+  }, {
+    "name" : "person",
+    "id" : 2
+  } ]
+}

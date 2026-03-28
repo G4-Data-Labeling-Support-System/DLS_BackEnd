@@ -39,6 +39,7 @@ public class AssignmentController {
 
     //============= Export===========
     @PostMapping("/{id}/export")
+    @PreAuthorize("hasRole('MANAGER')")
     public ResponseEntity<Resource> export(
             @PathVariable("id") String assignmentId,
             @RequestBody ExportRequest request) throws Exception {
