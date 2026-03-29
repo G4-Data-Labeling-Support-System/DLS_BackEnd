@@ -45,33 +45,21 @@ node {
 
         // Call functions base on branch
         if (env.BRANCH_NAME == "main") {
-            // Step 1: Build project
-            buildPipeline.call(config)
-            // Step 2: Sonarqube Scan
+            // buildPipeline.call(config)
             // sonarqubePipeline.call(config)
-            // Step 3: Trivy Filesystem Scan
             trivyFilesystemScan.call()
-            // Step 4: Build -> Trivy Image Scan -> Test -> Push
             dockerPipeline.call(config)
-            // Step 5: Deploy to Docker production server
             deployProd.call(config)
-            // Step 6: Update Manifestfile
             // updateManifest.call(config)
         } else if (env.BRANCH_NAME == "development") {
-            // Step 1: Build project
-            buildPipeline.call(config)
-            // Step 2: Sonarqube Scan
+            // buildPipeline.call(config)
             // sonarqubePipeline.call(config)
-            // Step 3: Trivy Filesystem Scan
             trivyFilesystemScan.call()
-            // Step 4: Build -> Trivy Image Scan -> Test -> Push
             dockerPipeline.call(config)
-            // Step 5: Deploy to Docker production server
             deployBeta.call(config)
-            // Step 6: Update Manifestfile
             // updateManifest.call(config)
         } else {
-            buildPipeline.call(config)
+            // buildPipeline.call(config)
             dockerPipeline.call(config)
             deployDev.call(config)
         }
@@ -90,6 +78,11 @@ node {
         // Clean up workspace after run the pipeline
         stage('Cleanup') {
             cleanWs()
+
+            // Docker cleanup
+            // sh"""
+            //     docker rmi ${DOCKER} 
+            // """
         }
     }
 
