@@ -126,7 +126,7 @@ public class ReviewService {
                 task.setCompletedCount(task.getCompletedCount() + 1);
                 taskRepository.save(task);
             }
-            annotation.setAnnotationStatus(AnnotationStatus.valueOf(request.getReviewStatus()));
+            annotation.setAnnotationStatus(AnnotationStatus.valueOf(status));
 
 
 
