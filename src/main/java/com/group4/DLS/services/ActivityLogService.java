@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.group4.DLS.domain.dto.response.ActivityLogResponse;
 import com.group4.DLS.domain.entity.ActivityLog;
 import com.group4.DLS.domain.entity.User;
 import com.group4.DLS.domain.enums.ActionType;
@@ -18,6 +19,21 @@ import lombok.experimental.FieldDefaults;
 public class ActivityLogService {
 
     ActivityLogRepository activityLogRepository;
+
+    public List<ActivityLogResponse> getAllLogs() {
+        return activityLogRepository.findAll()
+                .stream()
+                .map(log -> ActivityLogResponse.builder()
+                        .username(log.getUser().getUsername())
+                        .action(log.getActionType())
+                        .entityName(log.getEntityName())
+                        .entityId(log.getEntityId())
+                        .description(log.getDescription())
+                        .ipAddress(log.getIpAddress())
+                        .timestamp(log.getTimestamp())
+                        .build())
+                .toList();
+    }
 
     // Get All Logs
     public void log(
