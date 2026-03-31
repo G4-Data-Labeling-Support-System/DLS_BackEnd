@@ -1,7 +1,6 @@
 package com.group4.DLS.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.group4.DLS.domain.dto.response.AnnotationData;
 import com.group4.DLS.domain.dto.response.Shape;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Assignment;
@@ -26,8 +25,6 @@ import java.util.Random;
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class YoloExportService {
-
-    ObjectMapper mapper;
 
     public File export(Assignment assignment) throws Exception {
 
