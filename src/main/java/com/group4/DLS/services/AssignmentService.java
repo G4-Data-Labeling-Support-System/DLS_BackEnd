@@ -414,7 +414,7 @@ public class AssignmentService {
             assignment.setAssignmentStatus(AssignmentStatus.IN_PROGRESS);
         } else if (allNotStarted) {
             assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
-        } 
+        }
         assignment.setCompletedItems(countComplete);
         assignmentRepository.save(assignment);
     }
