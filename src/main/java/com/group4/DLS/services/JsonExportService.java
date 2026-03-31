@@ -1,6 +1,8 @@
 package com.group4.DLS.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group4.DLS.domain.dto.response.BoundingBoxShape;
+import com.group4.DLS.domain.dto.response.PolygonShape;
 import com.group4.DLS.domain.dto.response.Shape;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Assignment;
@@ -69,13 +71,34 @@ public class JsonExportService {
 
                 for (Shape s : ann.getAnnotationData().getRaw()) {
 
+                    if (s.getLabel() == null) continue;
+
                     Map<String, Object> shapeMap = new HashMap<>();
+
                     shapeMap.put("label", s.getLabel());
-                    shapeMap.put("type", s.getType());
-                    shapeMap.put("x", s.getX());
-                    shapeMap.put("y", s.getY());
-                    shapeMap.put("width", s.getWidth());
-                    shapeMap.put("height", s.getHeight());
+                    shapeMap.put("color", s.getColor());
+
+                    // ======================
+                    // BOUNDING BOX
+                    // ======================
+                    if (s instanceof BoundingBoxShape box) {
+                        shapeMap.put("type", "bounding_box");
+
+                        shapeMap.put("x", box.getX());
+                        shapeMap.put("y", box.getY());
+                        shapeMap.put("width", box.getWidth());
+                        shapeMap.put("height", box.getHeight());
+                        shapeMap.put("startX", box.getStartX());
+                        shapeMap.put("startY", box.getStartY());
+                    }
+
+                    // ======================
+                    //  POLYGON
+                    // ======================
+                    else if (s instanceof PolygonShape polygon) {
+                        shapeMap.put("type", "polygon");
+                        shapeMap.put("points", polygon.getPoints());
+                    }
 
                     annList.add(shapeMap);
                 }

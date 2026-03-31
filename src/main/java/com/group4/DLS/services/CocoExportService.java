@@ -1,6 +1,8 @@
 package com.group4.DLS.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.group4.DLS.domain.dto.response.BoundingBoxShape;
+import com.group4.DLS.domain.dto.response.PolygonShape;
 import com.group4.DLS.domain.dto.response.Shape;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Assignment;
@@ -14,10 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +27,14 @@ public class CocoExportService {
 
     public File export(Assignment assignment) throws Exception {
 
-        String basePath = System.getProperty("java.io.tmpdir") + assignment.getAssignmentName()
-                + "/coco_" + System.currentTimeMillis();
+        String basePath = System.getProperty("java.io.tmpdir")
+                + "/coco_" + assignment.getAssignmentName() + "_" + System.currentTimeMillis();
 
         File baseDir = new File(basePath);
         File imagesDir = new File(baseDir, "images");
 
         createDir(baseDir);
         createDir(imagesDir);
-
 
         List<Map<String, Object>> images = new ArrayList<>();
         List<Map<String, Object>> annotations = new ArrayList<>();
@@ -49,16 +47,15 @@ public class CocoExportService {
         for (Task task : assignment.getTasks()) {
             for (Annotation ann : task.getAnnotations()) {
 
-                if (ann.getAnnotationData() == null) continue;
-
-
-
-                if (ann.getAnnotationData().getRaw() == null) continue;
+                if (ann.getAnnotationData() == null
+                        || ann.getAnnotationData().getRaw() == null) continue;
 
                 Dataitem item = ann.getDataitem();
                 String fileName = resolveFileName(item);
 
-                // IMAGE
+                // ======================
+                // IMAGE (tránh duplicate)
+                // ======================
                 if (!imageMap.containsKey(fileName)) {
 
                     imageMap.put(fileName, imageId);
@@ -71,7 +68,7 @@ public class CocoExportService {
 
                     images.add(img);
 
-                    //  DOWNLOAD IMAGE
+                    // download image
                     Path target = Paths.get(imagesDir.getPath(), fileName);
                     FileUtils.downloadImage(item.getUrl(), target);
 
@@ -80,7 +77,9 @@ public class CocoExportService {
 
                 int currentImageId = imageMap.get(fileName);
 
-                //  ANNOTATION
+                // ======================
+                // ANNOTATIONS
+                // ======================
                 for (Shape s : ann.getAnnotationData().getRaw()) {
 
                     if (s.getLabel() == null) continue;
@@ -88,35 +87,96 @@ public class CocoExportService {
                     categoryMap.putIfAbsent(s.getLabel(), categoryMap.size() + 1);
                     int categoryId = categoryMap.get(s.getLabel());
 
-                    double x = s.getX();
-                    double y = s.getY();
-                    double w = s.getWidth();
-                    double h = s.getHeight();
+                    List<Double> bbox = null;
+                    List<List<Double>> segmentation = null;
+
+                    // ======================
+                    //  POLYGON (ưu tiên)
+                    // ======================
+                    if (s instanceof PolygonShape polygon) {
+
+                        if (polygon.getPoints() == null || polygon.getPoints().size() < 3) continue;
+
+                        List<Double> seg = new ArrayList<>();
+
+                        double minX = Double.MAX_VALUE;
+                        double minY = Double.MAX_VALUE;
+                        double maxX = Double.MIN_VALUE;
+                        double maxY = Double.MIN_VALUE;
+
+                        for (List<Double> p : polygon.getPoints()) {
+
+                            if (p.size() < 2) continue;
+
+                            double x = p.get(0);
+                            double y = p.get(1);
+
+                            seg.add(x);
+                            seg.add(y);
+
+                            minX = Math.min(minX, x);
+                            minY = Math.min(minY, y);
+                            maxX = Math.max(maxX, x);
+                            maxY = Math.max(maxY, y);
+                        }
+
+                        // tránh polygon lỗi
+                        if (seg.size() < 6) continue;
+
+                        segmentation = List.of(seg);
+                        bbox = List.of(minX, minY, maxX - minX, maxY - minY);
+                    }
+
+                    // ======================
+                    //  BBOX (fallback)
+                    // ======================
+                    else if (s instanceof BoundingBoxShape box) {
+
+                        if (box.getWidth() == null || box.getHeight() == null) continue;
+
+                        bbox = List.of(
+                                box.getX(),
+                                box.getY(),
+                                box.getWidth(),
+                                box.getHeight()
+                        );
+                    }
+
+                    if (bbox == null) continue;
 
                     Map<String, Object> anno = new HashMap<>();
-                    anno.put("id", annotationId);
+                    anno.put("id", annotationId++);
                     anno.put("image_id", currentImageId);
                     anno.put("category_id", categoryId);
-                    anno.put("bbox", List.of(x, y, w, h));
-                    anno.put("area", w * h);
+                    anno.put("bbox", bbox);
+                    anno.put("area", bbox.get(2) * bbox.get(3));
                     anno.put("iscrowd", 0);
 
+                    if (segmentation != null) {
+                        anno.put("segmentation", segmentation);
+                    }
+
                     annotations.add(anno);
-                    annotationId++;
                 }
             }
         }
 
-        // categories
-        List<Map<String, Object>> categories = new ArrayList<>();
-        categoryMap.forEach((name, id) -> {
-            Map<String, Object> cat = new HashMap<>();
-            cat.put("id", id);
-            cat.put("name", name);
-            categories.add(cat);
-        });
+        // ======================
+        // CATEGORIES (sort theo id)
+        // ======================
+        List<Map<String, Object>> categories = categoryMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue())
+                .map(e -> {
+                    Map<String, Object> cat = new HashMap<>();
+                    cat.put("id", e.getValue());
+                    cat.put("name", e.getKey());
+                    return cat;
+                })
+                .toList();
 
-        // json
+        // ======================
+        // FINAL JSON
+        // ======================
         Map<String, Object> coco = new HashMap<>();
         coco.put("images", images);
         coco.put("annotations", annotations);
@@ -125,7 +185,7 @@ public class CocoExportService {
         File jsonFile = new File(baseDir, "annotations.json");
         mapper.writerWithDefaultPrettyPrinter().writeValue(jsonFile, coco);
 
-        //  ZIP (dùng lại FileUtils)
+        // zip
         File zipFile = new File(basePath + ".zip");
         FileUtils.zipFolder(baseDir, zipFile);
 
