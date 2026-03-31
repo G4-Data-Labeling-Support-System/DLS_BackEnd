@@ -69,7 +69,8 @@ public enum ErrorCode {
     REVIEW_NOT_FOUND(400,"Review not found" ),
     TASKDATAITEM_NOT_FOUND(400, "Task DataItem not found"),
     ASSIGNMENT_NOT_COMPLETE_TO_EXPORT(400, "Assignment is not complete to export"),
-    ANNOTATION_MIXED_TYPE_NOT_SUPPORTED(400, "Cannot export to yolo because annotation has also bounding box and polygon");
+    ANNOTATION_MIXED_TYPE_NOT_SUPPORTED(400, "Cannot export to yolo because annotation has also bounding box and polygon"),
+    PROJECT_CANNOT_DELETE_WHEN_ASSIGNMENT_ACTIVE(400, "Project cannot delete when assignment has active");
 
     final int code;
     final String message;
