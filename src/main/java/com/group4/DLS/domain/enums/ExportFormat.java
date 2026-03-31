@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 public enum ExportFormat {
     COCO,
     YOLO,
-    VOC,
     JSON;
 
     @JsonCreator

@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.response.DataItemResponse;
 import com.group4.DLS.domain.dto.response.TaskDataITemResponse;
 import com.group4.DLS.domain.dto.response.TaskResponse;
@@ -28,6 +29,12 @@ public class TaskDataItemService {
     AnnotationService annotationService;
 
     // ================= ASSIGN DATAITEM TO TASK =================
+    @LogActivity(
+            action = "CREATE",
+            entity = "TaskDataItem",
+            description = "Create TaskDataItems",
+            entityIdField = "taskId"
+    )
     public void createTaskDataItem(Task task, List<Dataitem> dataitems) {
 
         List<TaskDataItem> list = new ArrayList<>();
@@ -65,6 +72,12 @@ public class TaskDataItemService {
 
 
     // ================= REMOVE TASKDATAITEM BY ASSIGNMENT_ID =================
+    @LogActivity(
+            action = "DELETE",
+            entity = "TaskDataItem",
+            description = "Delete TaskDataItems By Assignment",
+            entityIdParam = "assignmentId"
+    )
     public void deleteTaskDataItemsByAssignmentId(String assignmentId) {
         List<TaskDataItem> taskDataItems = taskDataItemRepository.findByTask_Assignment_AssignmentId(assignmentId);
 

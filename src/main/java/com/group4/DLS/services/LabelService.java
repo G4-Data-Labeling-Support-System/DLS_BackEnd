@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.request.LabelCreationRequest;
 import com.group4.DLS.domain.dto.request.LabelUpdateRequest;
 import com.group4.DLS.domain.dto.response.LabelResponse;
@@ -31,6 +32,12 @@ public class LabelService {
      * CREATE
      * ======================
      */
+    @LogActivity(
+            action = "CREATE",
+            entity = "Label",
+            description = "Create Label",
+            entityIdField = "labelId"
+    )
     public LabelResponse create(String datasetId, LabelCreationRequest request) {
 
         Dataset dataset = datasetRepository.findById(datasetId)
@@ -105,6 +112,12 @@ public class LabelService {
      * UPDATE
      * ======================
      */
+    @LogActivity(
+            action = "Update",
+            entity = "Label",
+            description = "Update Label",
+            entityIdParam = "labelId"
+    )
     public LabelResponse update(String labelId, LabelUpdateRequest request) {
 
         Label label = labelRepository.findById(labelId)
@@ -139,6 +152,12 @@ public class LabelService {
     }
 
     // ===== DELETE LABELS BY DATASET_ID =====
+    @LogActivity(
+            action = "DELETE",
+            entity = "Label",
+            description = "Delete Label",
+            entityIdParam = "labelId"
+    )
     public void deleteLabelsByDatasetId(String datasetId) {
 
         // Find all labels that current dataset have

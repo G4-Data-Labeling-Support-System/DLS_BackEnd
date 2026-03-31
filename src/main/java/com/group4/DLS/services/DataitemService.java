@@ -193,6 +193,12 @@ public class DataitemService {
         dataitemRepository.save(dataitem);
     }
 
+    @LogActivity(
+            action = "DELETE",
+            entity = "Dataitem",
+            description = "Delete Dataitems",
+            entityIdParam = "dataitemId"
+    )
     public void deleteDataitems(List<String> dataitemIds) {
         List<Dataitem> dataitems = new ArrayList<>();
         for(String dataitemId: dataitemIds) {
@@ -206,10 +212,5 @@ public class DataitemService {
         dataitemRepository.saveAll(dataitems);
     }
 
-    public void deleteDataitemsByDatasetId(String datasetId) {
-        List<Dataitem> dataitems = dataitemRepository.findByDataset_DatasetId(datasetId);
-        for (Dataitem dataitem : dataitems) {
-            deleteDataitem(dataitem.getItemId());
-        }
-    }
+
 }

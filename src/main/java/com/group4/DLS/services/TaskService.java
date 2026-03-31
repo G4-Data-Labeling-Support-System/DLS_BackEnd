@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Assignment;
@@ -18,6 +19,7 @@ import com.group4.DLS.repositories.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,6 +50,13 @@ public class TaskService {
     }
 
     // ================= CREATE NEW TASK FOR CURRENT ASSIGNMENT =================
+    @LogActivity(
+            action = "CREATE",
+            entity = "Task",
+            description = "Create Tasks",
+            entityIdField = "assignmentId"
+    )
+    @Transactional
     public void createTasksForAssignment(String assignmentId) {
 
         Assignment assignment = assignmentRepository.findById(assignmentId)
@@ -57,6 +66,9 @@ public class TaskService {
         List<Dataitem> activeItems = dataItemRepository.findByDataset_DatasetIdAndDataItemStatusOrderByUploadedAtAsc(
                 assignment.getDataset().getDatasetId(),
                 DataItemStatus.ACTIVE);
+        assignment.setTotalItems(activeItems.size());
+        assignmentRepository.save(assignment);
+
 
         int maxPerTask = 20; // số lượng dataitem tối đa mỗi task có thể xử lý, có thể điều chỉnh tùy theo
                              // yêu cầu
@@ -96,27 +108,25 @@ public class TaskService {
         }
 
         for (Task task: tasks){
-            //so sánh số item trong task với số annotation đã submitted + approved
-            //case1: nếu 20 annotation submitted = với số item task có là task đó đang cần review
-            //case2: nếu 10 item approved và 10 item submitted sau khi sửa
-            // nếu có annatation có status là rejected thì không set lại
-            if(annotationService.getNumberAnnotationIsApproved(task) == task.getCompletedCount() ){
+           
+            if(task.getAnnotations().stream().allMatch
+                    (a-> a.getAnnotationStatus() == AnnotationStatus.APPROVED)){
                 task.setTaskStatus(TaskStatus.COMPLETED);
                 task.setFlagForReview(false);
-            }else if(task.getTaskDataitems().size() == annotationService
-                    .getByTaskToSetStatus(task).size()){// nếu item bằng số annotationstatus approved
-                reviewService.createReviews(task);
+            }else if(task.getAnnotations().stream()
+                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.APPROVED
+                            ||  a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
                 task.setTaskStatus(TaskStatus.IN_REVIEW);
                 task.setFlagForReview(true);
             }else if (task.getAnnotations().stream() // nếu có annotation có status là submitted hoặc là reject nhen
-                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED
-                    || a.getAnnotationStatus() == AnnotationStatus.REJECTED)){
+                    .anyMatch(a -> a.getAnnotationStatus() == AnnotationStatus.SUBMITTED)){
                 task.setTaskStatus(TaskStatus.IN_PROGRESS);
                 task.setFlagForReview(false);
             }
-
-
-
+            int approvedCount =  (int) task.getAnnotations().stream()
+                    .filter(a -> a.getAnnotationStatus() == AnnotationStatus.APPROVED)
+                    .count();
+            task.setCompletedCount(approvedCount);
             taskRepository.save(task);
         }
 
@@ -130,6 +140,12 @@ public class TaskService {
     }
 
     // ================= REMOVE TASK BY ASSIGNMENT_ID =================
+    @LogActivity(
+            action = "DELETE",
+            entity = "Task",
+            description = "Delete Task By Assignment",
+            entityIdParam = "assignmentId"
+    )
     public void removeTasksByAssignmentId(String assignmentId) {
 
         // Check assignment exists

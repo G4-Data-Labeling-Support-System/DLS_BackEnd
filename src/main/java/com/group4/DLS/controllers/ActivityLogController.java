@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.group4.DLS.domain.dto.response.ActivityLogResponse;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.entity.ActivityLog;
 import com.group4.DLS.services.ActivityLogService;
@@ -31,19 +32,19 @@ public class ActivityLogController {
     * Get All Logs
     * ===============
     */
-    // @GetMapping
-    // @PreAuthorize("hasAnyRole('ADMIN')")
-    // @Operation(
-    //     summary = "Get all logs",
-    //     description = "Retrieve a list of all activity logs in the system"
-    // )
-    // public ApiResponse<List<ActivityLog>> getAllLogs() {
-    //     ApiResponse<List<ActivityLog>> response = new ApiResponse<>();
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
+    @Operation(
+        summary = "Get all logs",
+        description = "Retrieve a list of all activity logs in the system"
+    )
+    public ApiResponse<List<ActivityLogResponse>> getAllLogs() {
+        ApiResponse<List<ActivityLogResponse>> response = new ApiResponse<>();
         
-    //     response.setCode(200);
-    //     response.setData(activityLogService.log());
-    //     response.setMessage("Logs retrieved successfully");
+        response.setCode(200);
+        response.setData(activityLogService.getAllLogs());
+        response.setMessage("Logs retrieved successfully");
 
-    //     return response;
-    // }
+        return response;
+    }
 }
