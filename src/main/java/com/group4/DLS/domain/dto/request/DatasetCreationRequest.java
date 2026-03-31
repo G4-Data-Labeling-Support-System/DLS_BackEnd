@@ -1,6 +1,7 @@
 package com.group4.DLS.domain.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,16 +21,17 @@ import java.util.List;
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DatasetCreationRequest {
 
-    @NotBlank(message = "REQUIRE_PROJECT_ID")
+    @NotBlank(message = "project id is required")
     String projectId;
 
-    @NotBlank(message = "DATASETNAME_CANNOT_BE_NULL")
-    @Size(min = 3, max = 255, message = "INVALID_DATASET_NAME_LENGTH")
+    @NotBlank(message = "dataset name is required")
+    @Size(min = 3, max = 255, message = "dataset name must be between 3 and 255 characters")
     String datasetName;
-    
-    @Size(max = 1000, message = "INVALID_DATASET_DESCRIPTION_LENGTH")
+
+    @Size(max = 1000, message = "description must not exceed 1000 characters")
     String description;
 
+    @NotEmpty(message = "files cannot be empty")
     List<MultipartFile> files;
 
 }

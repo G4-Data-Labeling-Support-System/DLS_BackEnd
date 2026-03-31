@@ -11,8 +11,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class GuidelineUpdateRequest {
-    @Size(max = 50, message = "GUIDELINE_NAME_TOO_LONG")
+    @Size(max = 50, message = "Title must not exceed 50 characters")
     String title;
-    @Size(max = 500, message = "GUIDELINE_CONTENT_TOO_LONG")
+
+    @Size(max = 500, message = "Content must not exceed 500 characters")
     String content;
 }
