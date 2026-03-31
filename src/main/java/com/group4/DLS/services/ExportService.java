@@ -7,6 +7,7 @@ import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataitem;
 import com.group4.DLS.domain.entity.Task;
+import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AnnotationMapper;
@@ -40,6 +41,10 @@ public class ExportService {
 
         Assignment assignment = assignmentRepository.findById(assignmentId)
                 .orElseThrow(() -> new AppException(ErrorCode.ASSIGNMENT_NOT_FOUND));
+
+        if(assignment.getAssignmentStatus() != AssignmentStatus.COMPLETED){
+            new AppException(ErrorCode.ASSIGNMENT_NOT_COMPLETE_TO_EXPORT);
+        }
 
         if ("yolo".equalsIgnoreCase(format)) {
             return yoloExportService.export(assignment);
