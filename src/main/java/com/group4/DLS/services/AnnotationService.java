@@ -37,14 +37,14 @@ public class AnnotationService {
     ReviewService reviewService;
     TaskDataItemRepository taskDataItemRepository;
 
-    // function to change to jason to save database
-    private String convertToJson(Object value) {
-        try {
-            return new ObjectMapper().writeValueAsString(value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    // function to change to jason to save database
+//    private String convertToJson(String value) {
+//        try {
+//            return new ObjectMapper().writeValueAsString(value);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     // ================= GET ALL ANNOTATION FOR CURRENT ASSIGNMENT =================
     public List<AnnotationResponse> getAnnotationsByAssignmentId(String assignmentId) {
@@ -81,7 +81,7 @@ public class AnnotationService {
 
         Annotation annotation = annotationRepository.findByTask_TaskIdAndDataitem_ItemId(task.getTaskId(), dataitem.getItemId());
 
-        annotation.setAnnotationData(convertToJson(request.getAnnotationData()));
+        annotation.setAnnotationData(request.getAnnotationData());
         annotation.setAnnotationType(request.getAnnotationType());
         annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
         annotation.setAnnotationConfidence(request.getAnnotationConfidence());

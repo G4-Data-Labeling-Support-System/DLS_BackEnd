@@ -22,7 +22,7 @@ import lombok.experimental.FieldDefaults;
 public class AnnotationItemRequest {
     String taskId;
     AnnotationConfidence annotationConfidence;
-    Object annotationData;
+    AnnotationData annotationData;
     AnnotationStatus annotationStatus;
     AnnotationType annotationType;
     String comment;

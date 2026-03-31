@@ -52,12 +52,9 @@ public class CocoExportService {
 
                 if (ann.getAnnotationData() == null) continue;
 
-                AnnotationData data = mapper.readValue(
-                        ann.getAnnotationData(),
-                        AnnotationData.class
-                );
 
-                if (data.getShapes() == null) continue;
+
+                if (ann.getAnnotationData().getRaw() == null) continue;
 
                 Dataitem item = ann.getDataitem();
                 String fileName = resolveFileName(item);
@@ -85,7 +82,7 @@ public class CocoExportService {
                 int currentImageId = imageMap.get(fileName);
 
                 //  ANNOTATION
-                for (Shape s : data.getShapes()) {
+                for (Shape s : ann.getAnnotationData().getRaw()) {
 
                     if (s.getLabel() == null) continue;
 

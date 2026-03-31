@@ -57,12 +57,7 @@ public class YoloExportService {
 
                 if (ann.getAnnotationData() == null) continue;
 
-                AnnotationData data = mapper.readValue(
-                        ann.getAnnotationData(),
-                        AnnotationData.class
-                );
-
-                if (data.getShapes() == null) continue;
+                if (ann.getAnnotationData().getRaw() == null) continue;
 
                 Dataitem item = ann.getDataitem();
                 String fileName = resolveFileName(item);
@@ -80,22 +75,54 @@ public class YoloExportService {
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(labelFile, true));
 
-                for (Shape s : data.getShapes()) {
+                for (Shape s : ann.getAnnotationData().getRaw()) {
 
                     if (s.getLabel() == null) continue;
 
                     labelMap.putIfAbsent(s.getLabel(), labelMap.size());
                     int classId = labelMap.get(s.getLabel());
 
-                    double x_center = (s.getX() + s.getWidth() / 2) / item.getWidth();
-                    double y_center = (s.getY() + s.getHeight() / 2) / item.getHeight();
-                    double w = s.getWidth() / item.getWidth();
-                    double h = s.getHeight() / item.getHeight();
+                    // ======================
+                    //  BOUNDING BOX
+                    // ======================
+                    if ("bounding_box".equals(s.getType())) {
 
-                    String line = classId + " " + x_center + " " + y_center + " " + w + " " + h;
+                        if (s.getWidth() == null || s.getHeight() == null) continue;
 
-                    writer.write(line);
-                    writer.newLine();
+                        double x_center = (s.getX() + s.getWidth() / 2) / item.getWidth();
+                        double y_center = (s.getY() + s.getHeight() / 2) / item.getHeight();
+                        double w = s.getWidth() / item.getWidth();
+                        double h = s.getHeight() / item.getHeight();
+
+                        String line = classId + " " + x_center + " " + y_center + " " + w + " " + h;
+
+                        writer.write(line);
+                        writer.newLine();
+                    }
+
+                    // ======================
+                    //  POLYGON (YOLO SEGMENTATION)
+                    // ======================
+//                    else if ("polygon".equals(s.getType())) {
+//
+//                        if (s.getPoints() == null || s.getPoints().isEmpty()) continue;
+//
+//                        StringBuilder line = new StringBuilder();
+//                        line.append(classId).append(" ");
+//
+//                        for (List<Double> point : s.getPoints()) {
+//
+//                            if (point.size() < 2) continue;
+//
+//                            double x = point.get(0) / item.getWidth();
+//                            double y = point.get(1) / item.getHeight();
+//
+//                            line.append(x).append(" ").append(y).append(" ");
+//                        }
+//
+//                        writer.write(line.toString().trim());
+//                        writer.newLine();
+//                    }
                 }
 
                 writer.close();

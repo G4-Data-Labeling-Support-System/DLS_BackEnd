@@ -42,12 +42,8 @@ public class JsonExportService {
 
                 if (ann.getAnnotationData() == null) continue;
 
-                AnnotationData data = mapper.readValue(
-                        ann.getAnnotationData(),
-                        AnnotationData.class
-                );
 
-                if (data.getShapes() == null) continue;
+                if (ann.getAnnotationData().getRaw() == null) continue;
 
                 Dataitem item = ann.getDataitem();
 
@@ -72,7 +68,7 @@ public class JsonExportService {
                 List<Map<String, Object>> annList =
                         (List<Map<String, Object>>) imageMap.get("annotations");
 
-                for (Shape s : data.getShapes()) {
+                for (Shape s : ann.getAnnotationData().getRaw()) {
 
                     Map<String, Object> shapeMap = new HashMap<>();
                     shapeMap.put("label", s.getLabel());

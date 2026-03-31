@@ -3,6 +3,8 @@ package com.group4.DLS.domain.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @Getter
@@ -11,15 +13,28 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class Shape {
-    double x;
-    double y;
-    double width;
-    double height;
-    String label;
+        //  phân loại shape
+        String type; // "bounding_box" | "polygon"
 
-    // optional (không dùng nhưng cần để parse không lỗi)
-    String type;
-    String color;
-    double startX;
-    double startY;
+        // ======================
+        // 📦Bounding Box
+        // ======================
+        Double x;
+        Double y;
+        Double width;
+        Double height;
+        Double startX;
+        Double startY;
+
+        // ======================
+        //  Polygon
+        // ======================
+//        List<List<Double>> points;
+
+        // ======================
+        //  Common
+        // ======================
+        String label;
+        String color;
 }
+
