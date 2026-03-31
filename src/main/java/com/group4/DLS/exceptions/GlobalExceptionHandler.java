@@ -75,16 +75,4 @@ public class GlobalExceptionHandler {
                 .body(response);
     }
 
-    public ResponseEntity<ApiResponse<String>> handleMaxUpload(MaxUploadSizeExceededException ex) {
-        ApiResponse<String> response = new ApiResponse<>();
-        ErrorCode errorCode = ErrorCode.OVER_SIZE_FILE;
-
-        response.setCode(errorCode.getCode());
-        response.setMessage(errorCode.getMessage());
-        response.setData(null);
-
-        return ResponseEntity
-                .status(HttpStatus.PAYLOAD_TOO_LARGE)
-                .body(response);
-    }
 }

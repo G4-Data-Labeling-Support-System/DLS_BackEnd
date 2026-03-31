@@ -403,7 +403,10 @@ public class AssignmentService {
             assignment.setAssignmentStatus(AssignmentStatus.OVER_DUE);
         }
 
-        if (allDone) {
+
+        if(assignment.getAssignmentStatus() == AssignmentStatus.INACTIVE){
+            assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);
+        }else if (allDone) {
             assignment.setAssignmentStatus(AssignmentStatus.COMPLETED);
         } else if (allReadyReview) {
             assignment.setAssignmentStatus(AssignmentStatus.REVIEWING);
@@ -411,10 +414,7 @@ public class AssignmentService {
             assignment.setAssignmentStatus(AssignmentStatus.IN_PROGRESS);
         } else if (allNotStarted) {
             assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
-        } else {
-            assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);
-        }
-
+        } 
         assignment.setCompletedItems(countComplete);
         assignmentRepository.save(assignment);
     }
