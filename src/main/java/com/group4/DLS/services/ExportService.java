@@ -1,5 +1,6 @@
 package com.group4.DLS.services;
 
+import com.group4.DLS.aop.LogActivity;
 import com.group4.DLS.domain.dto.response.BoundingBoxShape;
 import com.group4.DLS.domain.dto.response.PolygonShape;
 import com.group4.DLS.domain.dto.response.Shape;
@@ -26,6 +27,13 @@ public class ExportService {
     CocoExportService cocoExportService;
     JsonExportService jsonExport;
 
+
+    @LogActivity(
+            action = "Export file",
+            entity = "Assignment",
+            description = "Export annoatation of assignment",
+            entityIdField = "assignmentId"
+    )
     public File export(String assignmentId, String format) throws Exception {
 
         Assignment assignment = assignmentRepository.findById(assignmentId)
