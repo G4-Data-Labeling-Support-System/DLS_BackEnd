@@ -3,19 +3,27 @@ package com.group4.DLS.controllers;
 import com.group4.DLS.domain.dto.request.AssignmentCreateRequest;
 import com.group4.DLS.domain.dto.request.AssignmentDatasetChangeRequest;
 import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
+import com.group4.DLS.domain.dto.request.ExportRequest;
 import com.group4.DLS.domain.dto.response.ApiResponse;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.dto.response.LabelResponse;
 import com.group4.DLS.services.AssignmentService;
 
+import com.group4.DLS.services.ExportService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.File;
 import java.util.List;
 
 @RestController
@@ -26,6 +34,27 @@ import java.util.List;
 public class AssignmentController {
 
     private final AssignmentService assignmentService;
+    private final ExportService exportService;
+
+
+    //============= Export===========
+    @PostMapping("/{id}/export")
+    @PreAuthorize("hasRole('MANAGER')")
+    public ResponseEntity<Resource> export(
+            @PathVariable("id") String assignmentId,
+            @RequestBody ExportRequest request) throws Exception {
+
+        File file = exportService.export(assignmentId, request.getExportFormat());
+
+        FileSystemResource resource = new FileSystemResource(file);
+
+        ResponseEntity<Resource> response = ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + file.getName())
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+
+        return response;
+    }
 
     // ================= GET ASSIGNMENT BY ASSIGNMENT_ID =================
     @GetMapping("/{assignmentId}")

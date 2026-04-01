@@ -27,7 +27,9 @@ public interface TaskDataItemRepository extends JpaRepository<TaskDataItem, Stri
         @Transactional
         List<TaskDataItem> findByTask_Assignment_AssignmentId(String assignmentId);
 
-        // Delete TaskDataItem for current Assignment
+    TaskDataItem findTaskDataitemByDataitem_ItemId(String dataitemItemId);
+
+    // Delete TaskDataItem for current Assignment
         @Transactional
         @Modifying
         void deleteByTask_Assignment_AssignmentId(String assignmentId);

@@ -4,10 +4,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.group4.DLS.domain.dto.request.AnnotationData;
 import com.group4.DLS.domain.enums.AnnotationConfidence;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.AnnotationType;
 
+import com.group4.DLS.helper.AnnotationDataConverter;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -40,7 +42,8 @@ public class Annotation {
     AnnotationType annotationType;
 
     @Column(name = "annotation_data", columnDefinition = "JSON")
-    String annotationData;
+    @Convert(converter = AnnotationDataConverter.class)
+    AnnotationData annotationData;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "annotation_status")

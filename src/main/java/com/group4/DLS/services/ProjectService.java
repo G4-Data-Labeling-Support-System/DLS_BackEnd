@@ -5,16 +5,15 @@ import com.group4.DLS.domain.dto.request.ProjectCreationRequest;
 import com.group4.DLS.domain.dto.request.ProjectStatusUpdateRequest;
 import com.group4.DLS.domain.dto.request.ProjectUpdateRequest;
 import com.group4.DLS.domain.dto.response.ProjectResponse;
-import com.group4.DLS.domain.entity.Dataset;
-import com.group4.DLS.domain.entity.Project;
-import com.group4.DLS.domain.entity.ProjectMember;
-import com.group4.DLS.domain.entity.User;
+import com.group4.DLS.domain.entity.*;
 import com.group4.DLS.domain.enums.ActionType;
+import com.group4.DLS.domain.enums.AssignmentStatus;
 import com.group4.DLS.domain.enums.ProjectStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.helper.RequestUtils;
 import com.group4.DLS.mappers.ProjectMapper;
+import com.group4.DLS.repositories.AssignmentRepository;
 import com.group4.DLS.repositories.DatasetRepository;
 import com.group4.DLS.repositories.ProjectMemberRepository;
 import com.group4.DLS.repositories.ProjectRepository;
@@ -43,6 +42,8 @@ public class ProjectService {
 
     ActivityLogService logService;
     DatasetRepository datasetRepository;
+    AssignmentRepository assignmentRepository;
+    DatasetService datasetService;
 
     // Lấy user hiện tại từ SecurityContextHolder
     private User getCurrentUser() {
@@ -53,9 +54,14 @@ public class ProjectService {
 
     //get project by dataset
     public ProjectResponse getProjectByDatasetId(String datasetId){
-        Dataset dataset = datasetRepository.findById(datasetId).orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
+        Dataset dataset = datasetRepository.findById(datasetId)
+                .orElseThrow(() -> new AppException(ErrorCode.DATASET_NOT_FOUND));
 
         Project project = dataset.getProject();
+
+        // update status trước khi trả
+        updateProjectStatus(project.getProjectId());
+
         return projectMapper.toProjectResponse(project);
     }
 
@@ -66,6 +72,10 @@ public class ProjectService {
                 ProjectStatus.NOT_STARTED,
                 ProjectStatus.COMPLETED,
                 ProjectStatus.IN_PROGRESS));
+
+        // update tất cả project
+        projects.forEach(p -> updateProjectStatus(p.getProjectId()));
+
         return projectMapper.toProjectResponse(projects);
     }
 
@@ -74,13 +84,15 @@ public class ProjectService {
     // ================= GET PROJECT BY ID =================
     public ProjectResponse getProjectById(String projectId) {
         Project project = projectRepository.findByProjectIdAndProjectStatusIn(projectId,
-                List.of(
-                        ProjectStatus.INACTIVE,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.COMPLETED,
-                        ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED))
+                        List.of(
+                                ProjectStatus.INACTIVE,
+                                ProjectStatus.COMPLETED,
+                                ProjectStatus.IN_PROGRESS,
+                                ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+        // update
+        updateProjectStatus(projectId);
 
         return projectMapper.toProjectResponse(project);
     }
@@ -90,6 +102,10 @@ public class ProjectService {
         List<Project> projects = projectRepository.findByProjectStatusIn(List.of(
                 ProjectStatus.NOT_STARTED,
                 ProjectStatus.IN_PROGRESS));
+
+        // update
+        projects.forEach(p -> updateProjectStatus(p.getProjectId()));
+
         return projectMapper.toProjectResponse(projects);
     }
     // ================= CREATE PROJECT =================
@@ -185,17 +201,71 @@ public class ProjectService {
     )
     public void deleteProject(String projectId) {
         Project project = projectRepository.findByProjectIdAndProjectStatusIn(
-                projectId,
-                List.of(
-                        ProjectStatus.INACTIVE,
-                        ProjectStatus.NOT_STARTED,
-                        ProjectStatus.COMPLETED,
-                        ProjectStatus.IN_PROGRESS,
-                        ProjectStatus.NOT_STARTED))
+                        projectId,
+                        List.of(
+                                ProjectStatus.INACTIVE,
+                                ProjectStatus.COMPLETED,
+                                ProjectStatus.IN_PROGRESS,
+                                ProjectStatus.NOT_STARTED))
                 .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
 
+        //  Lấy assignments của project
+        List<Assignment> assignments = assignmentRepository.findByProject_ProjectId(projectId);
+
+        //  Check điều kiện
+        boolean hasActiveAssignment = assignments.stream()
+                .anyMatch(a -> a.getAssignmentStatus() == AssignmentStatus.IN_PROGRESS
+                        || a.getAssignmentStatus() == AssignmentStatus.REVIEWING);
+
+        if (hasActiveAssignment) {
+            throw new AppException(ErrorCode.PROJECT_CANNOT_DELETE_WHEN_ASSIGNMENT_ACTIVE);
+        }
+
+        //  Nếu OK thì xóa dataset
+        project.getDatasets()
+                .forEach(d -> datasetService.deleteDataset(d.getDatasetId()));
+
+        //  Set inactive
         project.setProjectStatus(ProjectStatus.INACTIVE);
-        
+
+        projectRepository.save(project);
+    }
+
+    public void updateProjectStatus(String projectId) {
+        Project project = projectRepository.findById(projectId)
+                .orElseThrow(() -> new AppException(ErrorCode.PROJECT_NOT_FOUND));
+
+        List<Assignment> assignments = assignmentRepository.findByProject_ProjectId(projectId);
+
+        boolean allNotStarted = assignments.stream()
+                .allMatch(a -> a.getAssignmentStatus() == AssignmentStatus.ASSIGNED);
+
+        boolean anyInProgress = assignments.stream()
+                .anyMatch(a -> a.getAssignmentStatus() == AssignmentStatus.IN_PROGRESS);
+
+        boolean anyReviewing = assignments.stream()
+                .anyMatch(a -> a.getAssignmentStatus() == AssignmentStatus.REVIEWING);
+
+        boolean allDone = assignments.stream()
+                .allMatch(a -> a.getAssignmentStatus() == AssignmentStatus.COMPLETED);
+
+        // Nếu project bị inactive thì giữ nguyên
+        if (project.getProjectStatus() == ProjectStatus.INACTIVE) {
+            project.setProjectStatus(ProjectStatus.INACTIVE);
+
+        } else if (allDone && !assignments.isEmpty()) {
+            project.setProjectStatus(ProjectStatus.COMPLETED);
+
+        } else if (anyReviewing) {
+            project.setProjectStatus(ProjectStatus.IN_PROGRESS); // hoặc REVIEWING nếu bạn có
+
+        } else if (anyInProgress) {
+            project.setProjectStatus(ProjectStatus.IN_PROGRESS);
+
+        } else if (allNotStarted) {
+            project.setProjectStatus(ProjectStatus.NOT_STARTED);
+        }
+
         projectRepository.save(project);
     }
 }

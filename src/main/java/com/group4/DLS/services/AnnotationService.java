@@ -6,6 +6,7 @@ import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.entity.*;
 import com.group4.DLS.domain.enums.AnnotationStatus;
+import com.group4.DLS.domain.enums.TaskDataItemStatus;
 import com.group4.DLS.exceptions.AppException;
 import com.group4.DLS.exceptions.enums.ErrorCode;
 import com.group4.DLS.mappers.AnnotationMapper;
@@ -36,14 +37,14 @@ public class AnnotationService {
     ReviewService reviewService;
     TaskDataItemRepository taskDataItemRepository;
 
-    // function to change to jason to save database
-    private String convertToJson(Object value) {
-        try {
-            return new ObjectMapper().writeValueAsString(value);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+//    // function to change to jason to save database
+//    private String convertToJson(String value) {
+//        try {
+//            return new ObjectMapper().writeValueAsString(value);
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     // ================= GET ALL ANNOTATION FOR CURRENT ASSIGNMENT =================
     public List<AnnotationResponse> getAnnotationsByAssignmentId(String assignmentId) {
@@ -56,22 +57,13 @@ public class AnnotationService {
         return Collections.emptyList();
     }
 
-    public List<Annotation> getByTaskToSetStatus(Task task){
-        List<Annotation> annotations = annotationRepository
-                .findByTaskAndAnnotationStatusNotIn(
-                        task,
-                        List.of(AnnotationStatus.NOT_START, AnnotationStatus.REJECTED)
-                );
-        return annotations;
-    }
-
     // ================= CREATE NEW ANNOTATION =================
     @Transactional
     @LogActivity(
         action = "Update",
         entity = "Annotation",
         description = "Update annotation",
-        entityIdField = "annotationId"
+            entityIdParam = "annotationId"
     )
     public AnnotationResponse updateAnnotation(AnnotationItemRequest request) {
 
@@ -89,7 +81,7 @@ public class AnnotationService {
 
         Annotation annotation = annotationRepository.findByTask_TaskIdAndDataitem_ItemId(task.getTaskId(), dataitem.getItemId());
 
-        annotation.setAnnotationData(convertToJson(request.getAnnotationData()));
+        annotation.setAnnotationData(request.getAnnotationData());
         annotation.setAnnotationType(request.getAnnotationType());
         annotation.setAnnotationStatus(AnnotationStatus.SUBMITTED);
         annotation.setAnnotationConfidence(request.getAnnotationConfidence());
@@ -106,9 +98,10 @@ public class AnnotationService {
             }
                 annotation.setLabels(labels);
             }
+        annotationRepository.save(annotation);
+        reviewService.createReviews(annotation);
 
-
-        return annotationMapper.toAnnotationResponse(annotationRepository.save(annotation));
+        return annotationMapper.toAnnotationResponse(annotation);
     }
 
     public void createAnnotation(Task task, List<Dataitem> dataitems){
@@ -123,17 +116,7 @@ public class AnnotationService {
        annotationRepository.saveAll(annotations);
     }
 
-    //get Number of Anntation having Approved status
-    public int getNumberAnnotationIsApproved(Task task){
-        int count = 0;
-        List<Annotation> annotations = annotationRepository.findAnnotationsByTask(task);
-        for(Annotation annotation: annotations){
-            if(annotation.getAnnotationStatus().equals(AnnotationStatus.APPROVED)){
-                count++;
-            }
-        }
-        return count;
-    }
+
 
     //get Status flow by taskitem
     public AnnotationStatus getAnnotationStatusFlowTaskItem(String taskDataItemId){

@@ -19,7 +19,6 @@ public class TaskResponse {
     String taskName;
     String taskType;
     Integer completedItems;
-    Integer totalItems;
     boolean flagForReview;
     TaskStatus taskStatus;
     LocalDateTime createdAt;

@@ -29,7 +29,6 @@ public class UserService {
     UserRepository userRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
-    ActivityLogService logService;
     SeaweedFilerUploadService seaweedFilerUploadService;
 
     // ================= GET ALL USERS =================

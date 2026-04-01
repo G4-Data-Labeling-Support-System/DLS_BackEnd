@@ -13,9 +13,3 @@ management:
 jwt:
   secret: ${JWT_SECRET:default-dev-secret}
   expiration: 3600000
-
-seaweedfs:
-  master:
-    url: https://master-seaweed.hikarimoon.pro
-  filer:
-    url: https://filer-seaweed.hikarimoon.pro

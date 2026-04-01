@@ -36,7 +36,7 @@ public class Label {
     @Column(name = "label_id")
     String labelId;
 
-    @Column(name = "label_name", nullable = false, unique = true)
+    @Column(name = "label_name", nullable = false)
     String labelName;
 
     @Column(name = "color")

@@ -3,9 +3,9 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS_DEV"
+    url: "jdbc:mysql://localhost:3307/DLS"
     username: root
-    password: ${DB_PASSWORD}
+    password: TMNNT012928637160822863716
     hikari:
       minimum-idle: 5
       idle-timeout: 600000        # 10 min
@@ -22,11 +22,11 @@ spring:
         "[format_sql]": true
   servlet:
     multipart:
-      max-file-size: 500MB
-      max-request-size: 500MB
-
+      max-file-size: 5MB
+      max-request-size: 10MB
+  
 seaweedfs:
   master:
-    url: https://master-seaweed.hikarimoon.pro
+    url: http://localhost:9333
   filer:
-    url: https://filer-seaweed.hikarimoon.pro
+    url: http://localhost:8888

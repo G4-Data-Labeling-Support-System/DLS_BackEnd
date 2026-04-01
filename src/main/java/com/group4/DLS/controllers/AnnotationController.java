@@ -3,7 +3,6 @@ package com.group4.DLS.controllers;
 import com.group4.DLS.domain.dto.request.AnnotationItemRequest;
 import com.group4.DLS.domain.dto.response.AnnotationResponse;
 import com.group4.DLS.domain.dto.response.ApiResponse;
-import com.group4.DLS.domain.dto.response.ReviewResponse;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.services.AnnotationService;
 
@@ -12,9 +11,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.List;
-
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 

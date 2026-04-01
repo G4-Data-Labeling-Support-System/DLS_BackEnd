@@ -1,4 +1,4 @@
-package com.group4.DLS.domain.entity;
+package com.group4.DLS.helper;
 
 import lombok.*;
 import org.springframework.boot.context.properties.ConfigurationProperties;

@@ -7,7 +7,6 @@ import com.group4.DLS.domain.dto.request.AssignmentUpdateRequest;
 import com.group4.DLS.domain.dto.response.AssignmentResponse;
 import com.group4.DLS.domain.dto.response.DatasetResponse;
 import com.group4.DLS.domain.dto.response.LabelResponse;
-import com.group4.DLS.domain.dto.response.TaskResponse;
 import com.group4.DLS.domain.entity.Assignment;
 import com.group4.DLS.domain.entity.Dataset;
 import com.group4.DLS.domain.entity.Project;
@@ -42,6 +41,7 @@ public class AssignmentService {
     UserRepository userRepository;
     TaskDataItemRepository taskDataItemRepository;
     TaskRepository taskRepository;
+    AnnotationRepository annotationRepository;
 
     TaskService taskService;
     TaskDataItemService taskDataItemService;
@@ -230,7 +230,7 @@ public class AssignmentService {
         assignment.setDataset(dataset);
         assignment.setProject(project);
         assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
-        assignment.setTotalItems(dataset.getTotalItems());
+
 
         dataset.setAssignment(assignment);
 
@@ -247,10 +247,7 @@ public class AssignmentService {
         }
 
         datasetRepository.save(dataset);
-
         taskService.createTasksForAssignment(assignment.getAssignmentId());
-
-        assignmentRepository.save(assignment);
 
         // Update project status after create new assignment
         project.setProjectStatus(ProjectStatus.IN_PROGRESS);
@@ -307,15 +304,12 @@ public class AssignmentService {
 
         if (assignmentStatus.equals(AssignmentStatus.ASSIGNED)) {
 
-            // Remove tasks that related to this assignment
-            List<Task> tasks = taskRepository.findByAssignment_AssignmentId(assignmentId);
-            for (Task task : tasks) {
-                task.setTaskStatus(TaskStatus.INACTIVE);
-            }
-            taskRepository.saveAll(tasks);
-
+            //remove annotation
+            annotationRepository.deleteAllByTask_Assignment_AssignmentId(assignmentId);
             // Remove related TaskDataItem
             taskDataItemRepository.deleteByTask_Assignment_AssignmentId(assignmentId);
+            // Remove tasks that related to this assignment
+            taskRepository.deleteByAssignment_AssignmentId(assignmentId);
 
             // Get new dataset
             Dataset dataset = datasetRepository.findById(request.getDatasetId())
@@ -392,7 +386,6 @@ public class AssignmentService {
         for(Task task : tasks){
             countComplete += task.getCompletedCount();
         }
-        assignment.setCompletedItems(countComplete);
 
         boolean allNotStarted = tasks.stream()
                 .allMatch(t -> t.getTaskStatus() == TaskStatus.NOT_STARTED);
@@ -406,7 +399,14 @@ public class AssignmentService {
         boolean allDone = tasks.stream()
                 .allMatch(t -> t.getTaskStatus() == TaskStatus.COMPLETED);
 
-        if (allDone) {
+        if (LocalDateTime.now().isAfter(assignment.getDueDate())) {
+            assignment.setAssignmentStatus(AssignmentStatus.OVER_DUE);
+        }
+
+
+        if(assignment.getAssignmentStatus() == AssignmentStatus.INACTIVE){
+            assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);
+        }else if (allDone) {
             assignment.setAssignmentStatus(AssignmentStatus.COMPLETED);
         } else if (allReadyReview) {
             assignment.setAssignmentStatus(AssignmentStatus.REVIEWING);
@@ -414,10 +414,8 @@ public class AssignmentService {
             assignment.setAssignmentStatus(AssignmentStatus.IN_PROGRESS);
         } else if (allNotStarted) {
             assignment.setAssignmentStatus(AssignmentStatus.ASSIGNED);
-        } else {
-            assignment.setAssignmentStatus(AssignmentStatus.INACTIVE);
         }
-
+        assignment.setCompletedItems(countComplete);
         assignmentRepository.save(assignment);
     }
 }

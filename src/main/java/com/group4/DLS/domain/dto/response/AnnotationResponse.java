@@ -3,6 +3,7 @@ package com.group4.DLS.domain.dto.response;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.group4.DLS.domain.dto.request.AnnotationData;
 import com.group4.DLS.domain.enums.AnnotationConfidence;
 import com.group4.DLS.domain.enums.AnnotationStatus;
 import com.group4.DLS.domain.enums.AnnotationType;
@@ -25,7 +26,7 @@ public class AnnotationResponse {
     AnnotationConfidence annotationConfidence;
     String comment;
     AnnotationType annotationType;
-    String annotationData;
+    AnnotationData annotationData;
     AnnotationStatus annotationStatus;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
