@@ -1,25 +1,24 @@
 package com.group4.DLS.domain.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 @Data
-@Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class Shape {
-    double x;
-    double y;
-    double width;
-    double height;
-    String label;
-
-    // optional (không dùng nhưng cần để parse không lỗi)
-    String type;
-    String color;
-    double startX;
-    double startY;
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "type"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = BoundingBoxShape.class, name = "bounding_box"),
+        @JsonSubTypes.Type(value = PolygonShape.class, name = "polygon")
+})
+public abstract class Shape {
+        String label;
+        String color;
 }

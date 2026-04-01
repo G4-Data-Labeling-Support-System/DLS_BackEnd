@@ -21,13 +21,13 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
 public class DatasetUpdateRequest {
-    @NotNull(message = "PROJECT_IS_REQUIRED")
+    @NotNull(message = "project id is required")
     private String projectId;
 
-    @Size(min = 3, max = 255, message = "INVALID_DATASET_NAME_LENGTH")
+    @Size(min = 3, max = 255, message = "dataset name must be between 3 and 255 characters")
     private String datasetName;
 
-    @Size(max = 1000, message = "INVALID_DATASET_DESCRIPTION_LENGTH")
+    @Size(max = 1000, message = "description must not exceed 1000 characters")
     private String description;
 
     @Schema(type = "array", example = "[\"id1\",\"id2\"]")

@@ -6,12 +6,9 @@ import lombok.experimental.FieldDefaults;
 import java.util.List;
 
 @Data
-@Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = lombok.AccessLevel.PRIVATE)
-public class AnnotationData {
-    List<Shape> shapes;
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class PolygonShape extends Shape {
+    List<List<Double>> points;
 }

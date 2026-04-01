@@ -1,7 +1,7 @@
 package com.group4.DLS.services;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.group4.DLS.domain.dto.response.AnnotationData;
+import com.group4.DLS.domain.dto.response.BoundingBoxShape;
+import com.group4.DLS.domain.dto.response.PolygonShape;
 import com.group4.DLS.domain.dto.response.Shape;
 import com.group4.DLS.domain.entity.Annotation;
 import com.group4.DLS.domain.entity.Assignment;
@@ -17,22 +17,19 @@ import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE, makeFinal = true)
 public class YoloExportService {
 
-    ObjectMapper mapper;
+    public File export(Assignment assignment, String mode) throws Exception {
 
-    public File export(Assignment assignment) throws Exception {
+        // mode = "DETECT" | "SEGMENT"
 
         String basePath = System.getProperty("java.io.tmpdir")
-                + "/yolo_" + assignment.getAssignmentName()+ "_" + System.currentTimeMillis();
+                + "/yolo_" + assignment.getAssignmentName() + "_" + System.currentTimeMillis();
 
         File baseDir = new File(basePath);
 
@@ -55,52 +52,74 @@ public class YoloExportService {
         for (Task task : assignment.getTasks()) {
             for (Annotation ann : task.getAnnotations()) {
 
-                if (ann.getAnnotationData() == null) continue;
-
-                AnnotationData data = mapper.readValue(
-                        ann.getAnnotationData(),
-                        AnnotationData.class
-                );
-
-                if (data.getShapes() == null) continue;
+                if (ann.getAnnotationData() == null
+                        || ann.getAnnotationData().getRaw() == null) continue;
 
                 Dataitem item = ann.getDataitem();
                 String fileName = resolveFileName(item);
 
-                // FIX: đảm bảo 1 image chỉ thuộc train hoặc val
                 splitMap.putIfAbsent(fileName, random.nextDouble() < 0.8);
                 boolean isTrain = splitMap.get(fileName);
 
                 File currentImageDir = isTrain ? imagesTrainDir : imagesValDir;
                 File currentLabelDir = isTrain ? labelsTrainDir : labelsValDir;
 
-                // 📄 label file
                 File labelFile = new File(currentLabelDir,
                         fileName.replaceAll("\\.[^.]+$", "") + ".txt");
 
                 BufferedWriter writer = new BufferedWriter(new FileWriter(labelFile, true));
 
-                for (Shape s : data.getShapes()) {
+                for (Shape s : ann.getAnnotationData().getRaw()) {
 
                     if (s.getLabel() == null) continue;
 
                     labelMap.putIfAbsent(s.getLabel(), labelMap.size());
                     int classId = labelMap.get(s.getLabel());
 
-                    double x_center = (s.getX() + s.getWidth() / 2) / item.getWidth();
-                    double y_center = (s.getY() + s.getHeight() / 2) / item.getHeight();
-                    double w = s.getWidth() / item.getWidth();
-                    double h = s.getHeight() / item.getHeight();
+                    // ======================
+                    //  DETECT MODE (BBOX)
+                    // ======================
+                    if ("DETECT".equals(mode) && s instanceof BoundingBoxShape box) {
 
-                    String line = classId + " " + x_center + " " + y_center + " " + w + " " + h;
+                        if (box.getWidth() == null || box.getHeight() == null) continue;
 
-                    writer.write(line);
-                    writer.newLine();
+                        double x_center = (box.getX() + box.getWidth() / 2) / item.getWidth();
+                        double y_center = (box.getY() + box.getHeight() / 2) / item.getHeight();
+                        double w = box.getWidth() / item.getWidth();
+                        double h = box.getHeight() / item.getHeight();
+
+                        writer.write(classId + " " + x_center + " " + y_center + " " + w + " " + h);
+                        writer.newLine();
+                    }
+
+                    // ======================
+                    //  SEGMENT MODE (POLYGON)
+                    // ======================
+                    else if ("SEGMENT".equals(mode) && s instanceof PolygonShape polygon) {
+
+                        if (polygon.getPoints() == null || polygon.getPoints().size() < 3) continue;
+
+                        StringBuilder line = new StringBuilder();
+                        line.append(classId).append(" ");
+
+                        for (List<Double> p : polygon.getPoints()) {
+
+                            if (p.size() < 2) continue;
+
+                            double x = clamp(p.get(0) / item.getWidth());
+                            double y = clamp(p.get(1) / item.getHeight());
+
+                            line.append(x).append(" ").append(y).append(" ");
+                        }
+
+                        writer.write(line.toString().trim());
+                        writer.newLine();
+                    }
                 }
 
                 writer.close();
 
-                // 🖼 download ảnh
+                // download image
                 Path target = Paths.get(currentImageDir.getPath(), fileName);
                 FileUtils.downloadImage(item.getUrl(), target);
             }
@@ -110,38 +129,42 @@ public class YoloExportService {
         FileUtils.writeClassesFile(baseDir, labelMap);
 
         // dataset.yaml
+        writeYaml(baseDir, labelMap);
+
+        // zip
+        File zipFile = new File(basePath + ".zip");
+        FileUtils.zipFolder(baseDir, zipFile);
+
+        return zipFile;
+    }
+
+    // ======================
+    // HELPERS
+    // ======================
+
+    private void writeYaml(File baseDir, Map<String, Integer> labelMap) throws Exception {
+
         File yamlFile = new File(baseDir, "dataset.yaml");
-        BufferedWriter yamlWriter = new BufferedWriter(new FileWriter(yamlFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(yamlFile));
 
-        yamlWriter.write("train: ./images/train");
-        yamlWriter.newLine();
-        yamlWriter.write("val: ./images/val");
-        yamlWriter.newLine();
-
-        yamlWriter.write("nc: " + labelMap.size());
-        yamlWriter.newLine();
-
-        yamlWriter.write("names: [");
+        writer.write("train: ./images/train\n");
+        writer.write("val: ./images/val\n");
+        writer.write("nc: " + labelMap.size() + "\n");
 
         List<String> names = labelMap.entrySet().stream()
                 .sorted(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .toList();
 
-        String nameStr = names.stream()
-                .map(n -> "\"" + n + "\"")
-                .reduce((a, b) -> a + ", " + b)
-                .orElse("");
+        writer.write("names: [");
+        writer.write(String.join(", ", names.stream().map(n -> "\"" + n + "\"").toList()));
+        writer.write("]");
 
-        yamlWriter.write(nameStr);
-        yamlWriter.write("]");
-        yamlWriter.close();
+        writer.close();
+    }
 
-        // 📦 zip
-        File zipFile = new File(basePath + ".zip");
-        FileUtils.zipFolder(baseDir, zipFile);
-
-        return zipFile;
+    private double clamp(double v) {
+        return Math.max(0.0, Math.min(1.0, v));
     }
 
     private String resolveFileName(Dataitem item) {
@@ -149,8 +172,7 @@ public class YoloExportService {
             return item.getFileName();
         }
         String url = item.getUrl();
-        String name = url.substring(url.lastIndexOf("/") + 1);
-        return name.replace(",", "_") + ".jpg";
+        return url.substring(url.lastIndexOf("/") + 1);
     }
 
     private void createDir(File dir) {
