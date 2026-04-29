@@ -18,9 +18,9 @@ node {
             
             containerPort: '8081',
             testPort: '8081',
-            devPort: '8082',
-            betaPort: '8083',
-            prodPort: '8084',
+            devPort: '9082',
+            betaPort: '9083',
+            prodPort: '9084',
             
             devServer: 'jso@dev.local',
             prodServer: 'jso@192.168.1.23',
