@@ -22,7 +22,7 @@ node {
             betaPort: '8083',
             prodPort: '8084',
             
-            devServer: 'jso@192.168.1.74',
+            devServer: 'jso@dev.local',
             prodServer: 'jso@192.168.1.23',
 
             manifestRepo: 'https://github.com/G4-Data-Labeling-Support-System/Infrastructure.git',

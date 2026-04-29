@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: "jdbc:mysql://jsomysql.duckdns.org:32768/DLS_DEV"
+    url: "jdbc:mysql://database.local:32769/DLS_DEV"
     username: root
     password: ${DB_PASSWORD}
     hikari:
